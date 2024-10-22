@@ -1,14 +1,29 @@
 #figuring out user auth with spotify api to get recently played songs
+
+#These imports are for loading the enviroment with the ids from the spotify api
 import os
 from dotenv import load_dotenv
+
+#The fastapi imports are for the app, Request is used to receive spotify authorization code
+#HTTPException is for error handling
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import RedirectResponse, JSONResponse
+
+#Responses are used to serve the redirect to spotify auth
+from fastapi.responses import RedirectResponse
+
+#This function is to encode the paramaters that spotify needs to authorize and redirect 
 from urllib.parse import urlencode
+
+#requests is used to hit api endpoints 
 import requests
+
+#loading .env variables and assigning them to variable names
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = os.getenv("REDIRECT_URI")
+
+#create fastapi app instance
 app = FastAPI()
 
 
@@ -21,16 +36,23 @@ def read_root():
     return {"message": "FastAPI is running!"}
 
 
+
+#when you go to http://localhost:8000/login
+#Will have you login into spotify and authorize reading recently played
+#Encodes necessary parameters into a query string
+#When this is done, user will be redirected to http://localhost:8000/callback
 @app.get("/login")
 def login():
-    params = urlencode({
+    redirect_params = {
         "client_id" : SPOTIFY_CLIENT_ID,
         "response_type" : "code",
         "redirect_uri" : SPOTIFY_REDIRECT_URI,
         "scope" : "user-read-recently-played",
-    })
-    return RedirectResponse(f"https://accounts.spotify.com/authorize?{params}")
+    }
+    redirect_query = urlencode(redirect_params)
+    return RedirectResponse(f"https://accounts.spotify.com/authorize?{redirect_query}")
 
+#This receives the auth code and passes in the code and the ids to get an access token. We then pass in this token to use the api.
 @app.get("/callback")
 def callback(request: Request):
     code = request.query_params.get("code")
@@ -54,6 +76,7 @@ def callback(request: Request):
     token_data = response.json()
     access_token  = token_data["access_token"]
 
+    
     return RedirectResponse(f"/recently-played?access_token={access_token}")
 
 
@@ -67,18 +90,14 @@ def recently_played(access_token):
         raise HTTPException(status_code=response.status_code,detail=response.json())
     
     data = response.json()
+    
+    items = data["items"]
+    tracks = []
+    for item in items:
+        print (item)
+        tracks.append({"track_name": item["track"]["name"],
+                       "artist_name": item["track"]["artists"][0]["name"],
+                       "played_at": item["played_at"],
+                       })
 
-    tracks = [
-        {
-            "track_name" : item["track"]["name"],
-            "artist_name" : item["track"]["artists"][0]["name"],
-            "played_at" : item["played_at"]
-        }
-        for item in data.get("items",[])
-    ]
-    for track in tracks:
-        print (track["track_name"] + " - " + track["artist_name"])
-        print("This song was played at " + track["played_at"])
-        print(" ")
-        
-    return JSONResponse(content={"recently_played": tracks})
+    return tracks
