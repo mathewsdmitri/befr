@@ -17,6 +17,12 @@ from urllib.parse import urlencode
 #requests is used to hit api endpoints 
 import requests
 
+
+from fastapi import FastAPI
+from starlette.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
+
 #loading .env variables and assigning them to variable names
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
@@ -26,15 +32,18 @@ SPOTIFY_REDIRECT_URI = os.getenv("REDIRECT_URI")
 #create fastapi app instance
 app = FastAPI()
 
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 #this line below is a decorator and is essentially the home page.
 # When the server runs on http://localhost:8000/
 #The def will be run
-@app.get("/")
-def read_root():
-    return {"message": "FastAPI is running!"}
+#@app.get("/")
+#def read_root():
+#    return {"message": "FastAPI is running!"}
 
+@app.get("/")
+async def read_index():
+    return FileResponse('index.html')
 
 
 #when you go to http://localhost:8000/login

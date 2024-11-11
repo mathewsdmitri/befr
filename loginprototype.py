@@ -1,8 +1,11 @@
 from flask import Flask,render_template, url_for, request, session, redirect
 from pymongo import MongoClient
 import bcrypt
+import os
+currdir = os.getcwd()
+print(currdir)
 
-app = Flask(__name__, template_folder='todo-flask-mongo')
+app = Flask(__name__, templates = 'templates' )
 
 client = MongoClient('localhost', 27017)
 
