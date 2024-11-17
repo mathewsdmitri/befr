@@ -21,6 +21,8 @@ import requests
 from fastapi import FastAPI
 from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+import json
 
 
 #loading .env variables and assigning them to variable names
@@ -34,12 +36,40 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:8000"],  # Replace "*" with your frontend's URL for more security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 #this line below is a decorator and is essentially the home page.
 # When the server runs on http://localhost:8000/
 #The def will be run
 #@app.get("/")
 #def read_root():
 #    return {"message": "FastAPI is running!"}
+def songlist(access_token):
+    url  = "https://api.spotify.com/v1/me/player/recently-played"
+    headers = {"Authorization" : f"Bearer {access_token}"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code,detail=response.json())
+    
+    data = response.json()
+    
+    items = data["items"]
+    tracks = []
+    for item in items:
+        print (item)
+        tracks.append({"track_name": item["track"]["name"],
+                       "artist_name": item["track"]["artists"][0]["name"],
+                       "played_at": item["played_at"],
+                       })
+        
+    return tracks
 
 @app.get("/")
 async def read_index():
@@ -85,12 +115,11 @@ def callback(request: Request):
     token_data = response.json()
     access_token  = token_data["access_token"]
 
-    
-    return RedirectResponse(f"/recently-played?access_token={access_token}")
+    song_list = songlist(access_token)
+    return RedirectResponse(f"/getlistofsongs?access_token={access_token}")
 
-
-@app.get("/recently-played")
-def recently_played(access_token):
+@app.get("/getlistofsongs")
+def getsongs():
     url  = "https://api.spotify.com/v1/me/player/recently-played"
     headers = {"Authorization" : f"Bearer {access_token}"}
     response = requests.get(url, headers=headers)
@@ -108,5 +137,9 @@ def recently_played(access_token):
                        "artist_name": item["track"]["artists"][0]["name"],
                        "played_at": item["played_at"],
                        })
-
+        
     return tracks
+
+@app.get("/recently-played")
+def recently_played():
+    return FileResponse('index2.html')

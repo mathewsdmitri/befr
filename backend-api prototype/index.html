@@ -7,8 +7,20 @@
     <link rel="stylesheet" href="/static/style.css">
     <title>BeFr Intro</title>
     <script>
-        let d = new Date();
-        alert("Today's date is " + d);
+    fetch('http://localhost:8000/getlistofsongs')
+    .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json(); // Assuming the API returns JSON data
+  })
+  .then(data => {
+    // Do something with the data
+    console.log(data);
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
     </script>
 </head>
 
