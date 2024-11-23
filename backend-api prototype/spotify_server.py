@@ -38,7 +38,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8000"],  # Replace "*" with your frontend's URL for more security
+    allow_origins=["*"],  # Replace "*" with your frontend's URL for more security
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,7 +83,10 @@ async def read_index():
 @app.get("/login")
 def login():
     redirect_query = access_code_query(spotify_client_id=SPOTIFY_CLIENT_ID,spotify_redirect_uri=SPOTIFY_REDIRECT_URI)
-    return RedirectResponse(f"https://accounts.spotify.com/authorize?{redirect_query}")
+    #return RedirectResponse(f"https://accounts.spotify.com/authorize?{redirect_query}")
+    query = f"https://accounts.spotify.com/authorize?{redirect_query}"
+    print (query)
+    return query
 
 #This receives the auth code and passes in the code and the ids to get an access token. We then pass in this token to use the api.
 @app.get("/callback")

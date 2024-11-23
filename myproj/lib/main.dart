@@ -1,7 +1,12 @@
 import 'homePage.dart';
 import 'package:flutter/material.dart';
+import 'api_serv_service.dart';
 
-void main() {
+void main() async {
+  //String mystring = getString() as String;
+  //print(getString().then(onValue));
+  final mystring = await getString();
+  print(mystring);
   runApp(const MyApp());
 }
 
@@ -35,8 +40,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
 
-  static List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HomePage(),
     const Text('Post Here',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     const Text('User Profile',
