@@ -123,3 +123,7 @@ def getsongs(access_token):
 @app.get("/recently-played")
 def recently_played():
     return FileResponse('index2.html')
+
+@app.get("/getHelloPls")
+def getHello():
+    return "This is an api request."

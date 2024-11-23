@@ -27,28 +27,30 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(email: json['email'], picture: json['picture'] ['medium'], name: Name.fromJson(json['name']));
+    return User(
+        email: json['email'],
+        picture: json['picture']['medium'],
+        name: Name.fromJson(json['name']));
   }
 }
 
 class Userservice {
   Future<List<User>> getUser() async {
-    final response = await http
-        .get(Uri.parse("https://randomuser.me/api/?results=20&seed=galaxies"));
+    final response =
+        await http.get(Uri.parse("http://127.0.0.1:8000/getHelloPls"));
 
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
 
-          final List<User> list = [];
+      final List<User> list = [];
 
-          for (var i = 0; i < data['results'].length; i++) {
-            final entry = data['results'][i];
-            list.add(User.fromJson(entry));
-          }
-          return list;
-        }
-        else {
-          throw Exception('HTTP failed');
-        }
+      for (var i = 0; i < data['results'].length; i++) {
+        final entry = data['results'][i];
+        list.add(User.fromJson(entry));
+      }
+      return list;
+    } else {
+      throw Exception('HTTP failed');
+    }
   }
 }
