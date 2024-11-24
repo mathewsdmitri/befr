@@ -1,4 +1,5 @@
 import 'homePage.dart';
+import 'userPage.dart';
 import 'package:flutter/material.dart';
 import 'api_serv_service.dart';
 
@@ -44,8 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const HomePage(),
     const Text('Post Here',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    const Text('User Profile',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    const UserPage(),
   ];
 
   void _onItemTapped(int index) {
