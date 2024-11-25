@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
@@ -30,3 +29,8 @@ def get_access_token(spotify_redirect_uri, spotify_client_id, spotify_client_sec
     headers = {"Content-Type" : "application/x-www-form-urlencoded"}
     response = requests.post(url=url, data=data,headers=headers)
     return response
+
+def get_access_token_from_file():
+    with open("access_tokens.txt", "r") as file:
+        first_line = file.readline()
+    return first_line

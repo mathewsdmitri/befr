@@ -23,7 +23,7 @@ from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import json
-from spotify_ops import access_code_query, get_access_token
+from spotify_ops import access_code_query, get_access_token, get_access_token_from_file
 
 #loading .env variables and assigning them to variable names
 load_dotenv()
@@ -98,11 +98,16 @@ def callback(request: Request):
     
     token_data = response.json()
     access_token  = token_data["access_token"]
-    
-    return RedirectResponse(f"/getlistofsongs?access_token={access_token}")
+    # Open the file in write mode
+    with open("access_tokens.txt", "w") as f:
+  # Write a string to the file
+        f.write(access_token)
+    return "Login Successful, Procceed to Application."
+    #return RedirectResponse(f"/getlistofsongs?access_token={access_token}")
 
 @app.get("/getlistofsongs")
-def getsongs(access_token):
+def getsongs():
+    access_token = get_access_token_from_file()
     url  = "https://api.spotify.com/v1/me/player/recently-played"
     headers = {"Authorization" : f"Bearer {access_token}"}
     response = requests.get(url, headers=headers)

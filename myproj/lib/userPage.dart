@@ -1,8 +1,10 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 
 class UserPage extends StatefulWidget {
-  const UserPage({ Key? key }) : super(key: key);
+  const UserPage({ super.key });
 
   @override
   _UserPageState createState() => _UserPageState();
@@ -10,11 +12,31 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
 void launchSpotify() async {
-  final Uri url = Uri.parse('https://accounts.spotify.com/en/login?continue=https%3A%2F%2Faccounts.spotify.com%2Fauthorize%3Fscope%3Duser-read-recently-played%26response_type%3Dcode%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8000%252Fcallback%26client_id%3D4ed1d5e40bfd4a14a02b8f901dd913cd');
-  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-    throw Exception('COULD NOT LOAD $url');
+  final response =  await http.get(Uri.parse('http://127.0.0.1:8000/login'));
+  dynamic data;
+  if (response.statusCode == 200) {
+    data = jsonDecode(response.body);
+    data = Uri.parse(data);
+  } else {
+    throw Exception('HTTP Failed');
   }
-}
+  if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
+    throw Exception('COULD NOT LOAD $response');
+  }
+  else{
+      final response = await http.get(Uri.parse("http://127.0.0.1:8000/getlistofsongs"));
+      dynamic data;
+      if (response.statusCode == 200) {
+      data = jsonDecode(response.body);
+      print(data);
+      }
+        else {
+      throw Exception('HTTP Failed Here');
+    }
+  } 
+
+  }
+
 
 
   @override
