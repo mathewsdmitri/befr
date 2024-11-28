@@ -29,6 +29,7 @@ void launchSpotify() async {
       if (response.statusCode == 200) {
       data = jsonDecode(response.body);
       print(data);
+    //  print(data[0]['track_name']); how to access track name
       }
         else {
       throw Exception('HTTP Failed Here');
