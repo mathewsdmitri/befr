@@ -1,13 +1,10 @@
 import 'homePage.dart';
 import 'userPage.dart';
 import 'package:flutter/material.dart';
-import 'api_serv_service.dart';
 
 void main() async {
   //String mystring = getString() as String;
   //print(getString().then(onValue));
-  final mystring = await getString();
-  print(mystring);
   runApp(const MyApp());
 }
 

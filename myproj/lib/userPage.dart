@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({ super.key });
@@ -12,10 +13,16 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
 void launchSpotify() async {
-  final response =  await http.get(Uri.parse('http://127.0.0.1:8000/login'));
+
+// Create uuid object
+  var uuid = Uuid();
+  final uniqueID = uuid.v1();
+  print(uniqueID);
+  final response =  await http.get(Uri.parse('http://127.0.0.1:8000/login'+'?'+'uniqueID='+uniqueID));
   dynamic data;
   if (response.statusCode == 200) {
     data = jsonDecode(response.body);
+    print(data);
     data = Uri.parse(data);
   } else {
     throw Exception('HTTP Failed');

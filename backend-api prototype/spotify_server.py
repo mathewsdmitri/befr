@@ -23,7 +23,7 @@ from starlette.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import json
-from spotify_ops import access_code_query, get_access_token, get_access_token_from_file
+from spotify_ops import access_code_query, get_access_token, get_access_token_from_file, post_access_token_to_database
 
 #loading .env variables and assigning them to variable names
 load_dotenv()
@@ -81,8 +81,8 @@ async def read_index():
 #Encodes necessary parameters into a query string
 #When this is done, user will be redirected to http://localhost:8000/callback
 @app.get("/login")
-def login():
-    redirect_query = access_code_query(spotify_client_id=SPOTIFY_CLIENT_ID,spotify_redirect_uri=SPOTIFY_REDIRECT_URI)
+def login(uniqueID):
+    redirect_query = access_code_query(spotify_client_id=SPOTIFY_CLIENT_ID,spotify_redirect_uri=SPOTIFY_REDIRECT_URI, uniqueID=uniqueID)
     #return RedirectResponse(f"https://accounts.spotify.com/authorize?{redirect_query}")
     query = f"https://accounts.spotify.com/authorize?{redirect_query}"
     print (query)
@@ -91,17 +91,18 @@ def login():
 #This receives the auth code and passes in the code and the ids to get an access token. We then pass in this token to use the api.
 @app.get("/callback")
 def callback(request: Request):
+    uuid = request.query_params.get("state")
+    print(uuid)
     response = get_access_token(SPOTIFY_REDIRECT_URI, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, request)
+
 
     if response.status_code !=200:
         raise HTTPException(status_code=response.status_code, detail = response.json())
     
     token_data = response.json()
     access_token  = token_data["access_token"]
+    post_access_token_to_database(access_token, uuid)
     # Open the file in write mode
-    with open("access_tokens.txt", "w") as f:
-  # Write a string to the file
-        f.write(access_token)
     return "Login Successful, Procceed to Application."
     #return RedirectResponse(f"/getlistofsongs?access_token={access_token}")
 
@@ -120,7 +121,7 @@ def getsongs():
     items = data["items"]
     tracks = []
     for item in items:
-        print (item)
+        #print (item)
         tracks.append({"track_name": item["track"]["name"],
                        "artist_name": item["track"]["artists"][0]["name"],
                        "played_at": item["played_at"],
