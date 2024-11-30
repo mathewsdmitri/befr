@@ -4,74 +4,76 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+var uuid = Uuid();
+final uniqueID = uuid.v1();
+
 class UserPage extends StatefulWidget {
-  const UserPage({ super.key });
+  const UserPage({super.key});
 
   @override
   _UserPageState createState() => _UserPageState();
 }
 
 class _UserPageState extends State<UserPage> {
-void launchSpotify() async {
-
-// Create uuid object
-  var uuid = Uuid();
-  final uniqueID = uuid.v1();
-  print(uniqueID);
-  final response =  await http.get(Uri.parse('http://127.0.0.1:8000/login'+'?'+'uniqueID='+uniqueID));
-  dynamic data;
-  if (response.statusCode == 200) {
-    data = jsonDecode(response.body);
-    print(data);
-    data = Uri.parse(data);
-  } else {
-    throw Exception('HTTP Failed');
-  }
-  if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
-    throw Exception('COULD NOT LOAD $response');
-  }
-  else{
-      final response = await http.get(Uri.parse("http://127.0.0.1:8000/getlistofsongs"));
-      dynamic data;
-      if (response.statusCode == 200) {
+  void launchSpotify() async {
+    print(uniqueID);
+    final response = await http
+        .get(Uri.parse('http://127.0.0.1:8000/login?uniqueID=$uniqueID'));
+    dynamic data;
+    if (response.statusCode == 200) {
       data = jsonDecode(response.body);
       print(data);
-    //  print(data[0]['track_name']); how to access track name
-      }
-        else {
-      throw Exception('HTTP Failed Here');
+      data = Uri.parse(data);
+    } else {
+      throw Exception('HTTP Failed');
     }
-  } 
-
+    if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
+      throw Exception('COULD NOT LOAD $response');
+    }
   }
 
-
+  void listSongs() async {
+    final response = await http.get(
+        Uri.parse('http://127.0.0.1:8000/getlistofsongs?uniqueID=$uniqueID'));
+    dynamic data;
+    if (response.statusCode == 200) {
+      data = jsonDecode(response.body);
+      print(data);
+      //  print(data[0]['track_name']); how to access track name
+    } else {
+      throw Exception('HTTP Failed Here');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  appBar: PreferredSize(
-    preferredSize: const Size.fromHeight(60), //Custom height for the AppBar
-    child: Container(
-      padding: const EdgeInsets.all(10), //Add padding to bring it down
-      color: Colors.white, //AppBar background color
-      child: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text(
-          'User Login',
-          style: TextStyle(color: Colors.black),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60), //Custom height for the AppBar
+        child: Container(
+          padding: const EdgeInsets.all(10), //Add padding to bring it down
+          color: Colors.white, //AppBar background color
+          child: AppBar(
+            backgroundColor: Colors.blue,
+            title: const Text(
+              'User Login',
+              style: TextStyle(color: Colors.black),
+            ),
+            centerTitle: true,
+          ),
         ),
-        centerTitle: true,
       ),
-    ),
-  ),
-  body: Center(
-    child: ElevatedButton(
-      onPressed: launchSpotify,
-      child: const Text('Spotify Login'),
-    ),
-  ),
-);
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: launchSpotify, child: const Text("Spotify Login")),
+            ElevatedButton(
+                onPressed: listSongs, child: const Text("GO fuk urself"))
+          ],
+        ),
+      ),
+    );
   }
 }
-

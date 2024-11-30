@@ -24,6 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from spotify_ops import access_code_query, get_access_token, get_access_token_from_file, post_access_token_to_database
+from spotify_ops import get_access_token_with_uuid
 
 #loading .env variables and assigning them to variable names
 load_dotenv()
@@ -107,8 +108,8 @@ def callback(request: Request):
     #return RedirectResponse(f"/getlistofsongs?access_token={access_token}")
 
 @app.get("/getlistofsongs")
-def getsongs():
-    access_token = get_access_token_from_file()
+def getsongs(uniqueID):
+    access_token = get_access_token_with_uuid(uniqueID)
     url  = "https://api.spotify.com/v1/me/player/recently-played"
     headers = {"Authorization" : f"Bearer {access_token}"}
     response = requests.get(url, headers=headers)

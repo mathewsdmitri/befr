@@ -37,6 +37,16 @@ def get_access_token_from_file():
         first_line = file.readline()
     return first_line
 
+def get_access_token_with_uuid(uuid):
+    myclient = MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["Users"]
+    mycol = mydb["users"]
+
+    x = mycol.find_one({"uuid": uuid})
+
+    print(x["access_token"])
+    return x["access_token"]
+
 def post_access_token_to_database(access_token, uuid):
 
     # Connect to MongoDB
@@ -50,9 +60,6 @@ def post_access_token_to_database(access_token, uuid):
     print(f"Inserted document with ID: {insert_result.inserted_id}")
 
     # Read Documents
-    print("\nDocuments in the collection:")
-    for doc in collection.find():
-        print(doc)
 
 
     # Update a document
