@@ -2,16 +2,22 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
+import 'homePage.dart';
 
 class UserPage extends StatefulWidget {
-  const UserPage({ super.key });
+  final Function(List<Map<String, dynamic>>) updateSongs;
+
+  const UserPage({super.key, required this.updateSongs});
 
   @override
   _UserPageState createState() => _UserPageState();
 }
 
 class _UserPageState extends State<UserPage> {
-void launchSpotify() async {
+Future<void> launchSpotify() async {
+
+/******************************************************************* */
+
   final response =  await http.get(Uri.parse('http://127.0.0.1:8000/login'));
   dynamic data;
   if (response.statusCode == 200) {
@@ -23,20 +29,33 @@ void launchSpotify() async {
   if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
     throw Exception('COULD NOT LOAD $response');
   }
-  else{
+
+/******************************************************************* */
+
+  else {
       final response = await http.get(Uri.parse("http://127.0.0.1:8000/getlistofsongs"));
-      dynamic data;
+   //   dynamic data;
       if (response.statusCode == 200) {
-      data = jsonDecode(response.body);
-      print(data);
-    //  print(data[0]['track_name']); how to access track name
+      final data = jsonDecode(response.body) as List<dynamic>;
+      List<Map<String, dynamic>> songList = data.map((song) {
+          return {
+            'track_name': song['track_name'],
+            'artist_name': song['artist_name'],
+          };
+      }).toList();
+
+      widget.updateSongs(songList); //Update the songs in HomePage
+      
       }
+    
         else {
       throw Exception('HTTP Failed Here');
     }
   } 
 
-  }
+  /******************************************************************* */
+
+  } //launchspotify
 
 
 
