@@ -1,56 +1,32 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
-class Name {
-  final String first;
-  final String last;
-
-  const Name({
-    required this.first,
-    required this.last,
-  });
-
-  factory Name.fromJson(Map<String, dynamic> json) {
-    return Name(first: json['first'], last: json['last']);
-  }
-}
-
-class User {
-  final String email;
-  final String picture;
-  final Name name;
-
-  const User({
-    required this.email,
-    required this.picture,
-    required this.name,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-        email: json['email'],
-        picture: json['picture']['medium'],
-        name: Name.fromJson(json['name']));
-  }
-}
-
-class Userservice {
-  Future<List<User>> getUser() async {
-    final response =
-        await http.get(Uri.parse("http://127.0.0.1:8000/getHelloPls"));
-
+class UserService {
+  Future<List<Map<String, dynamic>>> launchSpotify() async {
+    final response = await http.get(Uri.parse('http://127.0.0.1:8000/login'));
+    dynamic data;
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      final List<User> list = [];
-
-      for (var i = 0; i < data['results'].length; i++) {
-        final entry = data['results'][i];
-        list.add(User.fromJson(entry));
-      }
-      return list;
+      data = jsonDecode(response.body);
+      data = Uri.parse(data);
     } else {
-      throw Exception('HTTP failed');
+      throw Exception('HTTP Failed');
+    }
+    if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
+      throw Exception('COULD NOT LOAD $response');
+    } else {
+      final response = await http.get(Uri.parse("http://127.0.0.1:8000/getlistofsongs"));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        return data.map((song) {
+          return {
+            'track_name': song['track_name'],
+            'artist_name': song['artist_name'],
+          };
+        }).toList();
+      } else {
+        throw Exception('HTTP Failed Here');
+      }
     }
   }
 }
