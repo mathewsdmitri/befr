@@ -40,13 +40,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
+  List<Map<String, dynamic>> songs = [];
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const HomePage(),
-    const Text('Post Here',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    const UserPage(),
-  ];
+  void updateSongs(List<Map<String, dynamic>> newSongs) {
+    setState(() {
+      songs = newSongs;
+    });
+  }
+
+  List<Widget> _widgetOptions() {
+    return <Widget>[
+      HomePage(songs: songs), // Pass songs to HomePage
+      const Text('Post Here', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+      UserPage(updateSongs: updateSongs), // Pass the updateSongs function
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -69,8 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Center(
-        child: _widgetOptions
-            .elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions()[_selectedIndex], // Display the selected widget
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
