@@ -48,7 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> _widgetOptions() {
     return <Widget>[
       HomePage(songs: songs), // Pass songs to HomePage
-      const Text('Post Here', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+      const Text('Post Here',
+          style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
       UserPage(updateSongs: updateSongs), // Pass the updateSongs function
     ];
   }
