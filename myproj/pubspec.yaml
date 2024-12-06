@@ -13,6 +13,7 @@ dependencies:
   lib: ^0.0.3
   url_launcher: ^6.3.1
   uuid: ^4.5.1
+  flutter_svg: ^2.0.16
 
 dev_dependencies:
   flutter_test:
@@ -21,3 +22,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+  - family: Pacifico
+    fonts:
+      - asset: fonts/Pacifico-Regular.ttf
+        weight: 700
+  - family: Lobster
+    fonts:
+      - asset: fonts/Lobster-Regular.ttf
+        weight: 500
+
+assets:
+  - assets/icons/
+
+
