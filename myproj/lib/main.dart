@@ -3,6 +3,7 @@ import 'userPage.dart';
 import 'homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'enviromentVariables.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -10,6 +11,7 @@ void main() async {
 
 var uuid = Uuid();
 final uniqueID = uuid.v1();
+final baseUrl = EnviromentVariables.baseUrl;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -63,10 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
           postedSongs: songPosts,
           uniqueID: uniqueID,
           getSongPosts: getSongPosts),
-      PostPage(
-        songs: songs,
-        uniqueID: uniqueID,
-      ),
+      PostPage(songs: songs, uniqueID: uniqueID, baseUrl: baseUrl),
       UserPage(
           updateSongs: updateSongs,
           uniqueID: uniqueID), // Pass the updateSongs function

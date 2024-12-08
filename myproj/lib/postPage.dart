@@ -1,11 +1,15 @@
-import 'userPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PostPage extends StatelessWidget {
   final List<Map<String, dynamic>> songs;
   final String uniqueID;
-  const PostPage({super.key, required this.songs, required this.uniqueID});
+  final String baseUrl;
+  const PostPage(
+      {super.key,
+      required this.songs,
+      required this.uniqueID,
+      required this.baseUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,7 @@ class PostPage extends StatelessWidget {
                     String postSong =
                         song['track_name'] + " By " + song['artist_name'];
                     final response = await http.post(Uri.parse(
-                        'http://127.0.0.1:8000/postSong?selectedSong=$postSong&uuid=$uniqueID'));
+                        '${baseUrl}postSong?selectedSong=$postSong&uuid=$uniqueID'));
                   },
                 );
               },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'enviromentVariables.dart';
 
 class HomePage extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) getSongPosts;
@@ -18,8 +19,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Future<void> getPostedSongs() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/getSongPosts'));
+    final String baseUrl = EnviromentVariables.baseUrl;
+    final response = await http.get(Uri.parse('${baseUrl}getSongPosts'));
     //   dynamic data;
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
