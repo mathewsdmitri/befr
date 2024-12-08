@@ -59,9 +59,33 @@ def post_access_token_to_database(access_token, uuid):
     insert_result = collection.insert_one(document)
     print(f"Inserted document with ID: {insert_result.inserted_id}")
 
+
+def post_song_to_database(uuid, songPost):
+
+    # Connect to MongoDB
+    client = MongoClient('mongodb://localhost:27017')
+    db = client['Users']
+    collection = db['Posts']
+
+    # Insert a document
+    document = {"post": songPost, "uuid": uuid}
+    insert_result = collection.insert_one(document)
+    print(f"Inserted document with ID: {insert_result.inserted_id}")
     # Read Documents
 
+def get_song_posts():
+    myclient = MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["Users"]
+    mycol = mydb["Posts"]
 
+    cursor = mycol.find()
+    song_posts = []
+    for document in cursor:
+        song_posts.append({
+            'uuid': document['uuid'],
+            'post': document['post']
+        })
+    return song_posts
     # Update a document
 
     #query = {"name": "Alice"}
