@@ -2,15 +2,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
-import 'homePage.dart';
-
-var uuid = Uuid();
-final uniqueID = uuid.v1();
+import 'enviromentVariables.dart';
 
 class UserPage extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) updateSongs;
-  const UserPage({super.key, required this.updateSongs});
+  final String uniqueID;
+  const UserPage(
+      {super.key, required this.updateSongs, required this.uniqueID});
 
   @override
   _UserPageState createState() => _UserPageState();
@@ -18,9 +16,10 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   void launchSpotify() async {
-    print(uniqueID);
-    final response = await http
-        .get(Uri.parse('http://127.0.0.1:8000/login?uniqueID=$uniqueID'));
+    final String baseUrl = EnviromentVariables.baseUrl;
+    final String uniqueID = widget.uniqueID;
+    final response =
+        await http.get(Uri.parse('${baseUrl}login?uniqueID=$uniqueID'));
     dynamic data;
     if (response.statusCode == 200) {
       data = jsonDecode(response.body);
@@ -35,8 +34,10 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<void> listSongs() async {
-    final response = await http.get(
-        Uri.parse('http://127.0.0.1:8000/getlistofsongs?uniqueID=$uniqueID'));
+    final String baseUrl = EnviromentVariables.baseUrl;
+    final String uniqueID = widget.uniqueID;
+    final response = await http
+        .get(Uri.parse('${baseUrl}getlistofsongs?uniqueID=$uniqueID'));
     //   dynamic data;
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;

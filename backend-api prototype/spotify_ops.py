@@ -3,6 +3,11 @@ from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
 from pymongo import MongoClient
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABASE_CONNECTION = os.getenv("DATABASE_CONNECTION_STRING")
 
 def access_code_query(spotify_client_id, spotify_redirect_uri, uniqueID):
     redirect_params = {
@@ -38,7 +43,7 @@ def get_access_token_from_file():
     return first_line
 
 def get_access_token_with_uuid(uuid):
-    myclient = MongoClient("mongodb://localhost:27017/")
+    myclient = MongoClient(DATABASE_CONNECTION)
     mydb = myclient["Users"]
     mycol = mydb["users"]
 
@@ -50,7 +55,7 @@ def get_access_token_with_uuid(uuid):
 def post_access_token_to_database(access_token, uuid):
 
     # Connect to MongoDB
-    client = MongoClient('mongodb://localhost:27017')
+    client = MongoClient(DATABASE_CONNECTION)
     db = client['Users']
     collection = db['users']
 
@@ -59,9 +64,33 @@ def post_access_token_to_database(access_token, uuid):
     insert_result = collection.insert_one(document)
     print(f"Inserted document with ID: {insert_result.inserted_id}")
 
+
+def post_song_to_database(uuid, songPost):
+
+    # Connect to MongoDB
+    client = MongoClient(DATABASE_CONNECTION)
+    db = client['Users']
+    collection = db['Posts']
+
+    # Insert a document
+    document = {"post": songPost, "uuid": uuid}
+    insert_result = collection.insert_one(document)
+    print(f"Inserted document with ID: {insert_result.inserted_id}")
     # Read Documents
 
+def get_song_posts():
+    myclient = MongoClient(DATABASE_CONNECTION)
+    mydb = myclient["Users"]
+    mycol = mydb["Posts"]
 
+    cursor = mycol.find()
+    song_posts = []
+    for document in cursor:
+        song_posts.append({
+            'uuid': document['uuid'],
+            'post': document['post']
+        })
+    return song_posts
     # Update a document
 
     #query = {"name": "Alice"}

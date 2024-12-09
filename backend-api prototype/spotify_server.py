@@ -24,7 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from spotify_ops import access_code_query, get_access_token, get_access_token_from_file, post_access_token_to_database
-from spotify_ops import get_access_token_with_uuid
+from spotify_ops import get_access_token_with_uuid, post_song_to_database, get_song_posts
 
 #loading .env variables and assigning them to variable names
 load_dotenv()
@@ -104,7 +104,7 @@ def callback(request: Request):
     access_token  = token_data["access_token"]
     post_access_token_to_database(access_token, uuid)
     # Open the file in write mode
-    return "Login Successful, Procceed to Application."
+    return FileResponse('index.html')
     #return RedirectResponse(f"/getlistofsongs?access_token={access_token}")
 
 @app.get("/getlistofsongs")
@@ -137,3 +137,16 @@ def recently_played():
 @app.get("/getHelloPls")
 def getHello():
     return "This is an api request."
+
+@app.post("/postSong")
+def postSong(selectedSong, uuid):
+    post_song_to_database(uuid, selectedSong)
+    print(selectedSong)
+    print (uuid)
+    return "Success!"
+
+@app.get("/getSongPosts")
+def getSongPosts():
+    song_posts = get_song_posts()
+
+    return song_posts
