@@ -1,3 +1,5 @@
+import 'package:flutter_svg/flutter_svg.dart';
+
 import 'homePage.dart';
 import 'userPage.dart';
 import 'package:flutter/material.dart';
@@ -66,19 +68,50 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Center(
-          child: Text(
-            'befr',
-            style: TextStyle(color: Colors.white),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Lyrix',
+          style: TextStyle(
+              color: Colors.black,
+              fontFamily: 'Pacifico',
+              fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        leading: Container(
+          margin: EdgeInsets.all(10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              color: Color(0xffF7F8F8),
+              borderRadius: BorderRadius.circular(10)),
+          child: SvgPicture.asset(
+            'assets/icons/chevron-left-icon.svg',
+            height: 20,
+            width: 20,
           ),
         ),
+        actions: [
+          GestureDetector(
+            child: Container(
+              margin: EdgeInsets.all(10),
+              alignment: Alignment.center,
+              width: 37,
+              decoration: BoxDecoration(
+                  color: Color(0xffF7F8F8),
+                  borderRadius: BorderRadius.circular(10)),
+              child: SvgPicture.asset(
+                'assets/icons/chevron-left-icon.svg',
+                height: 20,
+                width: 20,
+              ),
+            ),
+          )
+        ],
       ),
       body: Center(
         child: _widgetOptions()[_selectedIndex], // Display the selected widget
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
 
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -97,8 +130,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
         currentIndex: _selectedIndex, // Highlight the selected item
         onTap: _onItemTapped, // Handle item tap
-        selectedItemColor: Colors.yellow, // Change selected item color
-        unselectedItemColor: Colors.white, // Change unselected item color
+        selectedItemColor:
+            const Color.fromARGB(255, 3, 3, 3), // Change selected item color
+        unselectedItemColor:
+            const Color.fromARGB(255, 6, 6, 6), // Change unselected item color
       ),
     );
   }
