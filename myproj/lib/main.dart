@@ -1,14 +1,19 @@
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'homePage.dart';
+import 'postPage.dart';
 import 'userPage.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'enviromentVariables.dart';
 
 void main() async {
-  //String mystring = getString() as String;
-  //print(getString().then(onValue));
   runApp(const MyApp());
 }
+
+var uuid = Uuid();
+final uniqueID = uuid.v1();
+final baseUrl = EnviromentVariables.baseUrl;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -40,6 +45,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
   List<Map<String, dynamic>> songs = [];
+  List<Map<String, dynamic>> songPosts = [];
 
   void updateSongs(List<Map<String, dynamic>> newSongs) {
     setState(() {
@@ -47,12 +53,24 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void getSongPosts(List<Map<String, dynamic>> updSongPosts) {
+    setState(() {
+      songPosts = updSongPosts;
+      print(songPosts);
+    });
+  }
+
   List<Widget> _widgetOptions() {
     return <Widget>[
-      HomePage(songs: songs), // Pass songs to HomePage
-      const Text('Post Here',
-          style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-      UserPage(updateSongs: updateSongs), // Pass the updateSongs function
+      // Pass songs to HomePage
+      HomePage(
+          postedSongs: songPosts,
+          uniqueID: uniqueID,
+          getSongPosts: getSongPosts),
+      PostPage(songs: songs, uniqueID: uniqueID, baseUrl: baseUrl),
+      UserPage(
+          updateSongs: updateSongs,
+          uniqueID: uniqueID), // Pass the updateSongs function
     ];
   }
 
@@ -120,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle_outline),
-            label: 'More',
+            label: 'Post',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
