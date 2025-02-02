@@ -24,11 +24,12 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio=""):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str=""):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
         self.bio = bio
+        self.access_token = access_token
         
     
     def register_user(self):
