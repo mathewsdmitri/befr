@@ -1,6 +1,8 @@
 from bson.objectid import ObjectId
 from datetime import datetime
 from pymongo import MongoClient
+from pydantic import BaseModel, EmailStr, ValidationError
+import json
 
 
 client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (Change if connecting to Atlas)
@@ -17,8 +19,8 @@ class User:
         email (Emailstr): The user's email
         password (str): The user's password
         bio (str): The user's bio(Optional)
-        profile picture (Optional[UploadFile]): The uploaded profile picture file
-        date created (str): The date the user created their account
+        profile picture (Optional[UploadFile]): The uploaded profile picture file (Haven't added yet)
+        date created (str): The date the user created their account (Haven't added yet)
 
     """ 
 
@@ -35,25 +37,43 @@ class User:
 
         #Check if the username and/or email already exists in the database
 
-        if users_collection.find_one({"username": self.username}):
-            return {"Error": "Username already in use!"}
+
+        try:
+
+            if users_collection.find_one({"username": self.username}):
+                return {"Error": "Username already in use!"}
         
-        if users_collection.find_one({"email": self.email}):
-            return {"Error": "Email already in use!"}
+            if users_collection.find_one({"email": self.email}):
+                return {"Error": "Email already in use!"}
         
         #Create a dictionary with the user information to store into database
 
-        user_data = {
-            "username": self.username,
-            "email": self.email,
-            "password": self.password,
-            "bio": self.bio
-        }
+            user_data = {
+                "username": self.username,
+                "email": self.email,
+                "password": self.password,
+                "bio": self.bio
+            }
 
-        #Store the dictionary with the users data into the database
-        users_collection.insert_one(user_data)
+            #Store the dictionary with the users data into the database
+            users_collection.insert_one(user_data)
 
-        return {"message": f"User '{self.username}' registered successfully!"}
+            return {"message": f"User '{self.username}' registered successfully!"}
+        
+        #Check for valid email format
+        except ValidationError as e:
+            return {"error": f"Validation Error: {e}"}
+        
+        #Catch any other errors that occur
+        except Exception as e:
+            return {"error": f"An unexpected error occurred: {e}"}
+
+
+
+
+
+
+        
             
 
  
