@@ -1,8 +1,13 @@
+#These imports are for loading the enviroment with the ids from the spotify api
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI
+
+#The fastapi imports are for the app, Request is used to receive spotify authorization code
+#HTTPException is for error handling
+from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
-from models.Users import User
+from models.Users import User, auth_user, create_session
+from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from lyrix_backend.SpotifyAPIClient import SpotifyAPIClient
 load_dotenv()
@@ -26,6 +31,9 @@ class UserSchema(BaseModel):
     password: str
     bio: str = ""
 
+class Session(BaseModel):
+    username: str
+    uuid: str
 
 
 @app.post("/register_user")
@@ -33,8 +41,30 @@ async def register_user(user: UserSchema):
     new_user = User(user.username, user.email, user.password, user.bio)
     return new_user.register_user()
 
+@app.get("/login")
+async def login_user(user:UserSchema):
+    session = create_session(user)
+    return session
+    
+
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID):
     redirect_query = spotify_client.access_code_query(uniqueID=uniqueID)
     query = f"https://accounts.spotify.com/authorize?{redirect_query}"
     return query
+
+@app.get("/callback")
+def callback(request:Request):
+    uuid = request.query_params.get("state")
+    print(uuid)
+    response = SpotifyAPIClient.get_access_token(request)
+
+
+    if response.status_code !=200:
+        raise HTTPException(status_code=response.status_code, detail = response.json())
+    
+    token_data = response.json()
+    access_token  = token_data["access_token"]
+    token_to_user(access_token, uuid)
+    # Open the file in write mode
+    return "Success! Procceed to app"
