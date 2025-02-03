@@ -118,7 +118,9 @@ def create_session(user:User):
     new_session = Session()
     new_session.generate_session(session_user.username, session_user.email)
     return new_session
-     
+
+#def token_to_user(uuid):
+
              
 
 

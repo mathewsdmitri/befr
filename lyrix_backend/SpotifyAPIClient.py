@@ -18,9 +18,10 @@ class SpotifyAPIClient:
             "state" : uniqueID
         }
         redirect_query = urlencode(redirect_params)
-        return redirect_query
+        query = f"https://accounts.spotify.com/authorize?{redirect_query}"
+        return query
 
-    def get_access_token(self, request):
+    def get_access_token(self, request:Request):
         code = request.query_params.get("code")
         if not code:
             raise HTTPException(status_code=400, detail="Authorization code not found.")

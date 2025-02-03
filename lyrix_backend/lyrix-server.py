@@ -37,12 +37,12 @@ class Session(BaseModel):
 
 
 @app.post("/register_user")
-async def register_user(user: UserSchema):
+def register_user(user: UserSchema):
     new_user = User(user.username, user.email, user.password, user.bio)
     return new_user.register_user()
 
 @app.get("/login")
-async def login_user(user:UserSchema):
+def login_user(user:UserSchema):
     session = create_session(user)
     return session
     
@@ -50,14 +50,15 @@ async def login_user(user:UserSchema):
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID):
     redirect_query = spotify_client.access_code_query(uniqueID=uniqueID)
-    query = f"https://accounts.spotify.com/authorize?{redirect_query}"
-    return query
+    print (redirect_query)
+    return redirect_query
 
 @app.get("/callback")
 def callback(request:Request):
+    print(request)
     uuid = request.query_params.get("state")
     print(uuid)
-    response = SpotifyAPIClient.get_access_token(request)
+    response = spotify_client.get_access_token(request)
 
 
     if response.status_code !=200:

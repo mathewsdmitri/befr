@@ -1,5 +1,6 @@
 import requests
 from urllib.parse import urlencode
+import json
 
 #user is registering account to webapp
 url = 'http://127.0.0.1:8000/register_user'
@@ -27,12 +28,13 @@ user_data = {
 url = "http://127.0.0.1:8000/login"
 response = requests.get(url,json=user_data)
 #Frontend receives a session id (uuid) and is now able to be logged into account
-print(response.text)
+print(response.json)
+uuid = json.loads(response.text)
+print(uuid["uuid"])
 
 
 #User is linking their spotify account to webappp
-data = "1233451234"
-url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={data}"
+url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={uuid["uuid"]}"
 response = requests.get(url=url)
 data = response.text
 
