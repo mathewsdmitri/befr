@@ -105,7 +105,7 @@ def find_user(user:User):
 
         return {"error": "User not found!"}
 
-#Finds user with username and authorizes account with their password. If account is found it returns the whole user from database
+#Finds user with username and authorizes account with their password. If the account is found it returns the whole user from database
 def auth_user(user:User):
     auth_user = find_user(user)
     print(auth_user)
