@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:math';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -74,10 +75,20 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             margin: EdgeInsets.only(top: 30),
             child: SizedBox(
               child: ElevatedButton(
-                onPressed: (){
-                  print(Text(controllerName.text));
-                  print(Text(controllerUsername.text));
-                  print(Text(controllerPassword.text));
+                onPressed: ()async{
+                  print(controllerName.text);
+                  print(controllerUsername.text);
+                  print(controllerPassword.text);
+                  final String url = "http://localhost:8000/register_user";
+                  var body = jsonEncode({
+                    'email':controllerName.text,
+                    'username' : controllerUsername.text,
+                    'password' : controllerPassword.text
+                  });
+                  final response  = await http.post(Uri.parse(url),
+                    headers: {"Content-Type": "application/json"},
+                    body:body);
+                  print("${response.statusCode}");
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.all(20)
