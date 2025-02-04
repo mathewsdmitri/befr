@@ -1,23 +1,50 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class CreateAccountPage extends StatelessWidget {
+class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
 
   @override
+
+  State<CreateAccountPage> createState() => _CreateAccountPage();
+}
+
+class _CreateAccountPage extends State<CreateAccountPage> {
+  // Create a text controller and use it to retrieve the current value
+  // of the TextField.
+  final controllerName = TextEditingController();
+  final controllerUsername = TextEditingController();
+  final controllerPassword = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    controllerName.dispose();
+    controllerUsername.dispose();
+    controllerPassword.dispose();
+    super.dispose();
+  }
+
+  @override
+
   Widget build(BuildContext context) {
+    
+
     return Scaffold(
       appBar: appBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _label('Name'),
-          _textEntry('ex. John Doe'),
+          _textEntryName('ex. John Doe'),
           _label('Preffered Username'),
-          _textEntry(''),
+          _textEntryUsername(''),
           _label('New Password'),
-          _textEntry('Make it strong!'),
+          _textEntryPassword('Make it strong!'),
 
+          /*
           Container(
             margin: EdgeInsets.only(top: 20, left: 180),
             alignment: Alignment.center,
@@ -38,6 +65,24 @@ class CreateAccountPage extends StatelessWidget {
                 color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w600
+              ),
+            ),
+          ),
+          */
+          Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.only(top: 30),
+            child: SizedBox(
+              child: ElevatedButton(
+                onPressed: (){
+                  print(Text(controllerName.text));
+                  print(Text(controllerUsername.text));
+                  print(Text(controllerPassword.text));
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(20)
+                ),
+                child: Text('Confirm'),
               ),
             ),
           )
@@ -65,7 +110,7 @@ class CreateAccountPage extends StatelessWidget {
     );
   }
 
-  Container _textEntry(String example){
+  Container _textEntryName(String example){
     return Container(
             margin: EdgeInsets.only(top: 0, left: 20, right: 20),
             decoration: BoxDecoration(
@@ -78,6 +123,85 @@ class CreateAccountPage extends StatelessWidget {
               ]
             ),
             child: TextField(
+              controller: controllerName,
+              textAlign: TextAlign.left,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.all(15),
+                hintText: example,
+                hintStyle: TextStyle(
+                  color: const Color.fromARGB(255, 194, 186, 186),
+                ),
+                /*prefixIcon: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: SvgPicture.asset('assets/icons/Search.svg'),
+                ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SvgPicture.asset('assets/icons/Filter.svg'),
+                ),
+                */
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            )
+    );
+  }Container _textEntryUsername(String example){
+    return Container(
+            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 161, 146, 146),
+                  blurRadius: 10,
+                  spreadRadius: 0.0,
+                )
+              ]
+            ),
+            child: TextField(
+              controller: controllerUsername,
+              textAlign: TextAlign.left,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.all(15),
+                hintText: example,
+                hintStyle: TextStyle(
+                  color: const Color.fromARGB(255, 194, 186, 186),
+                ),
+                /*prefixIcon: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: SvgPicture.asset('assets/icons/Search.svg'),
+                ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SvgPicture.asset('assets/icons/Filter.svg'),
+                ),
+                */
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            )
+    );
+  }Container _textEntryPassword(String example){
+    return Container(
+            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 161, 146, 146),
+                  blurRadius: 10,
+                  spreadRadius: 0.0,
+                )
+              ]
+            ),
+            child: TextField(
+              controller: controllerPassword,
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
