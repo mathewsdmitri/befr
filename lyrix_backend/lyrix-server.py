@@ -69,4 +69,4 @@ def callback(request:Request):
     access_token  = token_data["access_token"]
     update_response = token_to_user(access_token, uuid)
     # Open the file in write mode
-    return "Success! Procceed to app"
+    return update_response

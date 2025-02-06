@@ -30,3 +30,11 @@ class Session:
             "uuid": self.uuid
             }
         sessions_collection.insert_one(session_data)
+
+def find_in_session(uuid: str):
+    session = sessions_collection.find_one({"uuid": uuid})
+
+    if session:
+        return session
+    else:
+        return None
