@@ -119,7 +119,19 @@ def create_session(user:User):
     new_session.generate_session(session_user.username, session_user.email)
     return new_session
 
-#def token_to_user(uuid):
+# Update the user's access token in the database
+def token_to_user(access_token: str, uuid: str):
+    
+    # Finds a user in the database by their uuid and updates the access token
+    result = users_collection.update_one(
+        {"_id": ObjectId(uuid)},
+        {"$set": {"access_token": access_token}}
+    )
+
+    if result.matched_count == 0:
+        return {"error": "User not found!"}
+    
+    return {"message": "Access token updated successfully!"}
 
              
 

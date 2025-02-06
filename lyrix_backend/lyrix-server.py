@@ -10,6 +10,7 @@ from models.Users import User, auth_user, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from lyrix_backend.SpotifyAPIClient import SpotifyAPIClient
+from models.Users import token_to_user
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -66,7 +67,7 @@ def callback(request:Request):
     
     token_data = response.json()
     access_token  = token_data["access_token"]
-    token_to_user(access_token, uuid)
+    update_response = token_to_user(access_token, uuid)
     # Open the file in write mode
     return "Success! Procceed to app"
 
