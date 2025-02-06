@@ -69,3 +69,7 @@ def callback(request:Request):
     token_to_user(access_token, uuid)
     # Open the file in write mode
     return "Success! Procceed to app"
+
+@app.get("/getRecentlyPlayed")
+def getRecentlyPlayed(uuid:str):
+    return ['song1','song2','song3','song4','song5','song6','song7','song8']

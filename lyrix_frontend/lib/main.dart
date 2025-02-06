@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
-import 'package:lyrix_frontend/postPage.dart';
+import 'package:lyrix_frontend/pages/postPage.dart';
+import 'package:lyrix_frontend/pages/loginPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,12 +36,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
+  List <dynamic> songs = [];
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const Text('Homepage'),
-    PostPage(),
+  void updateSongs(List <dynamic> newSongs) {
+    setState(() {
+      songs = newSongs;
+    });
+  }
+
+  List<Widget> _widgetOptions() {
+  return <Widget>[
+    LoginPage(),
+    PostPage(updateSongs: updateSongs),
     CreateAccountPage(),
   ];
+  }
+
 void _onItemTapped(int index) {
     setState(() {
        _selectedIndex = index; // Update the selected index
@@ -61,7 +72,7 @@ void _onItemTapped(int index) {
         ),
       ),
       body: Center(
-        child: _widgetOptions
+        child: _widgetOptions()
             .elementAt(_selectedIndex), // Display the selected widget
       ),
       bottomNavigationBar: BottomNavigationBar(
