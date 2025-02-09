@@ -72,14 +72,14 @@ class _CreateAccountPage extends State<CreateAccountPage> {
           */
           Container(
             alignment: Alignment.center,
-            margin: EdgeInsets.only(top: 30),
+            margin: const EdgeInsets.only(top: 30),
             child: SizedBox(
               child: ElevatedButton(
                 onPressed: ()async{
                   print(controllerName.text);
                   print(controllerUsername.text);
                   print(controllerPassword.text);
-                  final String url = "http://localhost:8000/register_user";
+                  const String url = "http://localhost:8000/register_user";
                   var body = jsonEncode({
                     'email':controllerName.text,
                     'username' : controllerUsername.text,
@@ -91,9 +91,9 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   print("${response.statusCode}");
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(20)
+                  padding: const EdgeInsets.all(20)
                 ),
-                child: Text('Confirm'),
+                child: const Text('Confirm'),
               ),
             ),
           )
@@ -105,13 +105,13 @@ class _CreateAccountPage extends State<CreateAccountPage> {
   Column _label(String label){
     return Column(
             children: [
-              SizedBox(height: 40,),
+              const SizedBox(height: 40,),
               Padding(
                 padding: const EdgeInsets.only(left:30),
                 child: Text(
                   label,
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 49, 49, 49),
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 49, 49, 49),
                     fontSize: 18,
                     fontWeight: FontWeight.w600
                   ),
@@ -123,11 +123,11 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   Container _textEntryName(String example){
     return Container(
-            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: const BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 161, 146, 146),
+                  color: Color.fromARGB(255, 161, 146, 146),
                   blurRadius: 10,
                   spreadRadius: 0.0,
                 )
@@ -139,10 +139,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(15),
+                contentPadding: const EdgeInsets.all(15),
                 hintText: example,
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 194, 186, 186),
+                hintStyle: const TextStyle(
+                  color: Color.fromARGB(255, 194, 186, 186),
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -162,11 +162,11 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }Container _textEntryUsername(String example){
     return Container(
-            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: const BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 161, 146, 146),
+                  color: Color.fromARGB(255, 161, 146, 146),
                   blurRadius: 10,
                   spreadRadius: 0.0,
                 )
@@ -178,10 +178,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(15),
+                contentPadding: const EdgeInsets.all(15),
                 hintText: example,
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 194, 186, 186),
+                hintStyle: const TextStyle(
+                  color: Color.fromARGB(255, 194, 186, 186),
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -201,11 +201,11 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }Container _textEntryPassword(String example){
     return Container(
-            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: const BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 161, 146, 146),
+                  color: Color.fromARGB(255, 161, 146, 146),
                   blurRadius: 10,
                   spreadRadius: 0.0,
                 )
@@ -217,10 +217,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(15),
+                contentPadding: const EdgeInsets.all(15),
                 hintText: example,
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 194, 186, 186),
+                hintStyle: const TextStyle(
+                  color: Color.fromARGB(255, 194, 186, 186),
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -242,7 +242,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   AppBar appBar() {
     return AppBar(
-      title: Text(
+      title: const Text(
         "Create Account",
         style: TextStyle(
           color: Colors.black,
@@ -258,7 +258,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
           
         },
         child: Container(
-          margin: EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -278,7 +278,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             
           },
           child: Container(
-            margin: EdgeInsets.all(20),
+            margin: const EdgeInsets.all(20),
             alignment: Alignment.center,
             width: 15,
             decoration: BoxDecoration(
