@@ -2,7 +2,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
-from .Sessions import Session
+from .Sessions import Session, SessionModel, find_in_session
 
 
 client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (Change if connecting to Atlas)
@@ -119,12 +119,20 @@ def create_session(user:User):
     new_session.generate_session(session_user.username, session_user.email)
     return new_session
 
+
+def session_to_user(session:Session):
+    session = find_in_session(SessionModel(**session))
+    user = find_user(User(username=session.username, email=session.email, password=""))
+    return user
+    
 # Update the user's access token in the database
 def token_to_user(access_token: str, uuid: str):
     
     # Finds a user in the database by their uuid and updates the access token
+    cur_session = find_in_session(uuid=uuid)
+    user  = session_to_user(cur_session)
     result = users_collection.update_one(
-        {"_id": ObjectId(uuid)},
+        {"username": user.username},
         {"$set": {"access_token": access_token}}
     )
 
@@ -132,18 +140,5 @@ def token_to_user(access_token: str, uuid: str):
         return {"error": "User not found!"}
     
     return {"message": "Access token updated successfully!"}
-
-             
-
-
-
-        
-
-
-
-    #def delete_user():
-
-   #     """Find and delete a user from the database if the user exists."""
-        
 
     

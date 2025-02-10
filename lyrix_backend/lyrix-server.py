@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 from models.Users import User, auth_user, create_session
-from models.Sessions import Session
+from models.Sessions import Session, find_in_session
 from fastapi.middleware.cors import CORSMiddleware
 from lyrix_backend.SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_to_user
@@ -69,7 +69,7 @@ def callback(request:Request):
     access_token  = token_data["access_token"]
     update_response = token_to_user(access_token, uuid)
     # Open the file in write mode
-    return "Success! Procceed to app"
+    return update_response
 
 @app.get("/getRecentlyPlayed")
 def getRecentlyPlayed(uuid:str):
