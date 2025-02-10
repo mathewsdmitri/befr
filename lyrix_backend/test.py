@@ -1,6 +1,17 @@
 import requests
 from urllib.parse import urlencode
 import json
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from SpotifyAPIClient import SpotifyAPIClient
+
+#I added the actualy api client if you to test the client. At the moment I have removed any calls to it but just in case
+SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+SPOTIFY_REDIRECT_URI = os.getenv("REDIRECT_URI")
+spotify_client  = SpotifyAPIClient(client_id=SPOTIFY_CLIENT_ID, client_secret= SPOTIFY_CLIENT_SECRET, redirect_uri= SPOTIFY_REDIRECT_URI)
+
 
 #user is registering account to webapp
 url = 'http://127.0.0.1:8000/register_user'
@@ -8,7 +19,8 @@ user_data = {
     "username": "Shrek",
     "email": "isLove",
     "password": "Shrek",
-    "bio": "isLife"
+    "bio": "",
+    "access_token": ""
 }
 
 response = requests.post(url, json=user_data)
@@ -22,7 +34,8 @@ user_data = {
     "username": "Shrek",
     "email": "",
     "password": "Shrek",
-    "bio": ""
+    "bio": "",
+    "access_token": ""
 }
 
 url = "http://127.0.0.1:8000/login"
@@ -33,8 +46,15 @@ uuid = json.loads(response.text)
 print(uuid["uuid"])
 
 
-#User is linking their spotify account to webappp
+
 url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={uuid["uuid"]}"
+response = requests.get(url=url)
+data = response.text
+
+uuid = "d5c7e98e-ba50-40bc-a827-037fbdbb330e"
+print(uuid)
+#print(spotify_client.getsongs(uuid))
+url = f"http://127.0.0.1:8000/getRecentlyPlayed?uuid={uuid}"
 response = requests.get(url=url)
 data = response.text
 

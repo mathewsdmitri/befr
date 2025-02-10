@@ -9,11 +9,19 @@ client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (
 db = client["Users"] # Connect to the Users database
 users_collection = db["users"] #Connect to the users collection
 
-class UserModel(BaseModel):
+#This is how you would pass data to the database and to receive it from the frontend
+class LoginModel(BaseModel):
      email: str
      username: str
      password: str
      bio: str
+     access_token: str
+
+#This model is used when you need to make queries to access spotify api
+class AccessModel(BaseModel):
+    email: str
+    username: str
+    access_token: str
 
 
 class User:
@@ -31,7 +39,7 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str=""):
+    def __init__(self, username: str, email: str, password: str, bio=" ", access_token:str=" "):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
@@ -84,7 +92,8 @@ class User:
          
 
  
-
+#Pass in a User object can be passed with ex. User(username="some name", email= "")
+#This would find a user "some name" if they exist it will return all information that the user has in the database.
 def find_user(user:User):
 
         """Finds and returns a user in the database if the user exists."""
@@ -94,13 +103,13 @@ def find_user(user:User):
         existing_user = users_collection.find_one({"username": user.username})
 
         if existing_user:
-            auth_user = UserModel(**existing_user)
+            auth_user = LoginModel(**existing_user)
             return auth_user
 
         existing_user = users_collection.find_one({"email": user.email})
 
         if user:
-            return UserModel(**existing_user)
+            return LoginModel(**existing_user)
         
 
         return {"error": "User not found!"}
@@ -123,10 +132,10 @@ def create_session(user:User):
 def session_to_user(session:Session):
     session = find_in_session(session.uuid)
     user = find_user(User(username=session.username, email=session.email, password=""))
-    return user
+    return User(username=user.username, email=user.email, password=user.password, bio=user.bio, access_token=user.access_token) 
     
 # Update the user's access token in the database
-def token_to_user(access_token: str, uuid: str):
+def token_post_to_user(access_token: str, uuid: str):
     
     # Finds a user in the database by their uuid and updates the access token
     cur_session = find_in_session(uuid=uuid)
@@ -141,4 +150,9 @@ def token_to_user(access_token: str, uuid: str):
     
     return {"message": "Access token updated successfully!"}
 
+    
+#Gets user spotify access_token from the uuid
+def uuid_to_access_token(uuid):
+    cur_user = session_to_user(Session(uuid=uuid))
+    return cur_user.access_token
     

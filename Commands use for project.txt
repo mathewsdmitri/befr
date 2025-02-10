@@ -1,2 +1,3 @@
 Use this command to run server. Needs to be this command because if not you will get import errors.
-py -m uvicorn lyrix_backend.lyrix-server:app --reload
+cd lyrix_backend
+py -m uvicorn lyrix-server:app --reload

@@ -2,6 +2,7 @@ import os
 from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
+from models.Users import uuid_to_access_token
 
 class SpotifyAPIClient:
     def __init__(self, client_id:str, client_secret:str, redirect_uri:str ):
@@ -37,3 +38,23 @@ class SpotifyAPIClient:
         headers = {"Content-Type" : "application/x-www-form-urlencoded"}
         response = requests.post(url=url, data=data,headers=headers)
         return response
+    
+    def getsongs(self, access_token):
+        url  = "https://api.spotify.com/v1/me/player/recently-played"
+        headers = {"Authorization" : f"Bearer {access_token}"}
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code,detail=response.json())
+        
+        data = response.json()
+        
+        items = data["items"]
+        tracks = []
+        for item in items:
+            tracks.append({"track_name": item["track"]["name"],
+                        "artist_name": item["track"]["artists"][0]["name"],
+                        "played_at": item["played_at"],
+                        })
+            
+        return tracks

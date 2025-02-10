@@ -1,5 +1,4 @@
 
 .env
 access_tokens.txt
-lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
 *.pyc
