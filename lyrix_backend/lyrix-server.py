@@ -36,7 +36,7 @@ class Session(BaseModel):
     username: str
     uuid: str
 
-
+#this is a post request to register users
 @app.post("/register_user")
 def register_user(user: UserSchema):
     new_user = User(user.username, user.email, user.password, user.bio)
@@ -51,7 +51,7 @@ def login_user(user:UserSchema):
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID):
     redirect_query = spotify_client.access_code_query(uniqueID=uniqueID)
-    print (redirect_query)
+    print(redirect_query)
     return redirect_query
 
 @app.get("/callback")
