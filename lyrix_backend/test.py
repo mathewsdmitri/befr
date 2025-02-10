@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 from SpotifyAPIClient import SpotifyAPIClient
 
-#I added the actualy api client if you to test the client. At the moment I have removed any calls to it but just in case
+#I added the actual api client if you need to test the client. At the moment I have removed any calls to it but just in case
+#Please use spotify_client instead of SpotifyAPIClient as this is the class name
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = os.getenv("REDIRECT_URI")
