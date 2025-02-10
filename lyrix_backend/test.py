@@ -46,14 +46,13 @@ uuid = json.loads(response.text)
 print(uuid["uuid"])
 
 
-
+#this needs to be ran and control+clicked and ran again so that your database sees that that there is an access token
 url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={uuid["uuid"]}"
 response = requests.get(url=url)
 data = response.text
 
 uuid = "d5c7e98e-ba50-40bc-a827-037fbdbb330e"
 print(uuid)
-#print(spotify_client.getsongs(uuid))
 url = f"http://127.0.0.1:8000/getRecentlyPlayed?uuid={uuid}"
 response = requests.get(url=url)
 data = response.text
