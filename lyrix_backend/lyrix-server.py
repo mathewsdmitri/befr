@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 #HTTPException is for error handling
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
-from models.Users import User, auth_user, create_session
+from models.Users import User, UserModel, auth_user, create_session
 from models.Sessions import Session, find_in_session
 from fastapi.middleware.cors import CORSMiddleware
 from lyrix_backend.SpotifyAPIClient import SpotifyAPIClient
@@ -25,25 +25,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+'''
+This is how the models look in the models directory. 
 
-class UserSchema(BaseModel):
+class UserModel(BaseModel):
     username: str
     email: str
     password: str
     bio: str = ""
 
-class Session(BaseModel):
+class SessionModel(BaseModel):
     username: str
+    email: str
     uuid: str
 
+'''
 #this is a post request to register users
 @app.post("/register_user")
-def register_user(user: UserSchema):
+def register_user(user: UserModel):
     new_user = User(user.username, user.email, user.password, user.bio)
     return new_user.register_user()
 
 @app.get("/login")
-def login_user(user:UserSchema):
+def login_user(user:UserModel):
     session = create_session(user)
     return session
     

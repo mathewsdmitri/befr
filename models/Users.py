@@ -121,7 +121,7 @@ def create_session(user:User):
 
 
 def session_to_user(session:Session):
-    session = find_in_session(SessionModel(**session))
+    session = find_in_session(session.uuid)
     user = find_user(User(username=session.username, email=session.email, password=""))
     return user
     
@@ -132,8 +132,8 @@ def token_to_user(access_token: str, uuid: str):
     cur_session = find_in_session(uuid=uuid)
     user  = session_to_user(cur_session)
     result = users_collection.update_one(
-        {"username": user.username},
-        {"$set": {"access_token": access_token}}
+        filter=users_collection.find_one({"username": user.username}),
+        update={"$set": {"access_token": access_token}}
     )
 
     if result.matched_count == 0:

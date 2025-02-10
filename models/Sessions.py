@@ -35,7 +35,8 @@ def find_in_session(uuid: str):
     session = sessions_collection.find_one({"uuid": uuid})
 
     if session:
-        return session
+        found_session = SessionModel(**session)
+        return Session(username=found_session.username, email=found_session.email, uuid=found_session.uuid)
     else:
         return None
     
