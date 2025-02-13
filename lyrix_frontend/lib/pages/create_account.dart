@@ -242,57 +242,20 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   AppBar appBar() {
     return AppBar(
+      backgroundColor: Colors.lightBlue,
+  //    automaticallyImplyLeading: false, //Gets rid of backarrow caused by new appbar
       title: const Text(
         "Create Account",
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold
         ),
       ),
-      backgroundColor: Colors.white,
+  //    backgroundColor: Colors.white,
       centerTitle: true,
       elevation: 0,
-      leading: GestureDetector(
-        onTap: (){
-          
-        },
-        child: Container(
-          margin: const EdgeInsets.all(10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: SvgPicture.asset(
-            'assets/icons/Arrow - Left 2.svg',
-            height: 20,
-            width: 20,
-          ),
-        )
-
-      ),
-      actions: [
-        GestureDetector(
-          onTap: (){
-            
-          },
-          child: Container(
-            margin: const EdgeInsets.all(20),
-            alignment: Alignment.center,
-            width: 15,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: SvgPicture.asset(
-              'assets/icons/dots.svg',
-              height: 20,
-              width: 20,
-            ),
-          ),
-        )
-      ],
+      
     );
   }
 }

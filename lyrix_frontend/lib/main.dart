@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
+import 'package:lyrix_frontend/pages/profilePage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,9 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _widgetOptions() {
   return <Widget>[
-    LoginPage(),
+    Text('Homepage Feed Under Construction'),
     PostPage(updateSongs: updateSongs),
-    CreateAccountPage(),
+    Profilepage(),
   ];
   }
 
@@ -67,7 +68,10 @@ void _onItemTapped(int index) {
         title: const Center(
           child: Text(
             'lyrix',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -95,7 +99,7 @@ void _onItemTapped(int index) {
 
         currentIndex: _selectedIndex, // Highlight the selected item
         onTap: _onItemTapped, // Handle item tap
-        selectedItemColor: Colors.yellow, // Change selected item color
+        selectedItemColor: Colors.lightBlue, // Change selected item color
         unselectedItemColor: Colors.white, // Change unselected item color
       ),
       );

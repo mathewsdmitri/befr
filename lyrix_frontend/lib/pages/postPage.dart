@@ -112,7 +112,7 @@ class _PostPageState extends State<PostPage> {
           SizedBox(height: 5), // Space between text and icon
           IconButton(
             onPressed: ()async {
-              options = await listSongs();
+    //          options = await listSongs();  //THIS IS FOR GETTIN LIST OF SONGS
               showPostDialog();
               }, 
             icon: Icon(Icons.add_circle_outline),

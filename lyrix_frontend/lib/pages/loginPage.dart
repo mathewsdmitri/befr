@@ -6,7 +6,18 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login Page')),
+      appBar: AppBar(
+        title: const Text('Login Page',
+          style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,)),
+        centerTitle: true,
+  //      automaticallyImplyLeading: false,
+        backgroundColor: Colors.lightBlue,
+        
+        ),
+      
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -15,7 +26,7 @@ class LoginPage extends StatelessWidget {
           children: [
             // this is where the intro or welcome message is put
             const Text(
-              'How have you been!',
+              'Welcome Back!',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
