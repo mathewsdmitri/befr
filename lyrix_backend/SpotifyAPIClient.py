@@ -2,7 +2,6 @@ import os
 from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
-from models.Users import uuid_to_access_token
 
 class SpotifyAPIClient:
     def __init__(self, client_id:str, client_secret:str, redirect_uri:str ):

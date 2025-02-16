@@ -9,7 +9,8 @@ from models.Users import User, LoginModel, AccessModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user
+from models.Sessions import find_in_session
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -49,11 +50,15 @@ def register_user(user: LoginModel):
 @app.get("/login")
 def login_user(user:LoginModel):
     session = create_session(user)
-    return session
+    return session.uuid
     
 
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID):
+    cur_user = uuid_to_user(uuid=uniqueID)
+    existing_token = cur_user.access_token
+    if existing_token:
+        return {"message": "Access token already exists, no need to re-authenticate."}
     redirect_query = spotify_client.access_code_query(uniqueID=uniqueID)
     print(redirect_query)
     return redirect_query

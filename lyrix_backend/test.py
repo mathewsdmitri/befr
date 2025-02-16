@@ -44,15 +44,16 @@ response = requests.get(url,json=user_data)
 #Frontend receives a session id (uuid) and is now able to be logged into account
 print(response.json)
 uuid = json.loads(response.text)
-print(uuid["uuid"])
+print(uuid)
 
 
 #this needs to be ran and control+clicked and ran again so that your database sees that that there is an access token
-url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={uuid["uuid"]}"
+url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={uuid}"
 response = requests.get(url=url)
 data = response.text
+print(response.text)
 
-uuid = "d5c7e98e-ba50-40bc-a827-037fbdbb330e"
+uuid = "3645b5b5-0268-4b45-9636-5136f1ee5f02"
 print(uuid)
 url = f"http://127.0.0.1:8000/getRecentlyPlayed?uuid={uuid}"
 response = requests.get(url=url)

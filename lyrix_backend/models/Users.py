@@ -39,7 +39,7 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio=" ", access_token:str=" "):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str=""):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
@@ -69,7 +69,8 @@ class User:
                 "username": self.username,
                 "email": self.email,
                 "password": self.password,
-                "bio": self.bio
+                "bio": self.bio,
+                "access_token": self.access_token
             }
 
             #Store the dictionary with the users data into the database
@@ -117,11 +118,11 @@ def find_user(user:User):
 #Finds user with username and authorizes account with their password. If the account is found it returns the whole user from database
 def auth_user(user:User):
     auth_user = find_user(user)
-    print(auth_user)
 
     if user.password == auth_user.password:
         return User(auth_user.username, auth_user.email, auth_user.password, auth_user.bio)
 
+#Create session authorizes user that logs in. They are passed the unique id so that they can access app
 def create_session(user:User):
     session_user = auth_user(user)
     new_session = Session()
@@ -129,17 +130,16 @@ def create_session(user:User):
     return new_session
 
 
-def session_to_user(session:Session):
-    session = find_in_session(session.uuid)
+def uuid_to_user(uuid:str):
+    session = find_in_session(uuid)
     user = find_user(User(username=session.username, email=session.email, password=""))
-    return User(username=user.username, email=user.email, password=user.password, bio=user.bio, access_token=user.access_token) 
+    return user
     
 # Update the user's access token in the database
 def token_post_to_user(access_token: str, uuid: str):
     
     # Finds a user in the database by their uuid and updates the access token
-    cur_session = find_in_session(uuid=uuid)
-    user  = session_to_user(cur_session)
+    user  = uuid_to_user(uuid)
     result = users_collection.update_one(
         filter=users_collection.find_one({"username": user.username}),
         update={"$set": {"access_token": access_token}}
@@ -153,6 +153,6 @@ def token_post_to_user(access_token: str, uuid: str):
     
 #Gets user spotify access_token from the uuid
 def uuid_to_access_token(uuid):
-    cur_user = session_to_user(Session(uuid=uuid))
+    cur_user = uuid_to_user(uuid)
     return cur_user.access_token
     
