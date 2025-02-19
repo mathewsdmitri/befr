@@ -3,6 +3,24 @@ import 'package:lyrix_frontend/pages/create_account.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = FlutterSecureStorage();
+
+// Save UUID
+Future<void> saveUUID(String uuid) async {
+  await storage.write(key: 'user_uuid', value: uuid);
+}
+
+// Get UUID
+Future<String?> getUUID() async {
+  return await storage.read(key: 'user_uuid');
+}
+
+// Remove UUID (Logout)
+Future<void> deleteUUID() async {
+  await storage.delete(key: 'user_uuid');
+}
 
 void main() {
   runApp(const MyApp());

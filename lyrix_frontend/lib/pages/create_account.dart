@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});

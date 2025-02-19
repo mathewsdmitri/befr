@@ -21,11 +21,11 @@ class _PostPageState extends State<PostPage> {
   List<dynamic> options = ["Song 1", "Song 2", "Song 3"];
 
   Future <List <dynamic>> listSongs() async{
-    final String url = 'http://localhost:8000/getRecentlyPlayed';
-    final String uniqueID = 'qwert';
-    final response = await http.get(Uri.parse('${url}?uuid=$uniqueID'));
+    const String url = 'http://localhost:8000/getRecentlyPlayed';
+    const String uniqueID = 'qwert';
+    final response = await http.get(Uri.parse('$url?uuid=$uniqueID'));
     List <dynamic> data = jsonDecode(response.body);
-    this.options = data;
+    options = data;
     print(data);
     widget.updateSongs(data);
     return data;
@@ -109,13 +109,13 @@ class _PostPageState extends State<PostPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text("Add Post", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          SizedBox(height: 5), // Space between text and icon
+          const SizedBox(height: 5), // Space between text and icon
           IconButton(
             onPressed: ()async {
     //          options = await listSongs();  //THIS IS FOR GETTIN LIST OF SONGS
               showPostDialog();
               }, 
-            icon: Icon(Icons.add_circle_outline),
+            icon: const Icon(Icons.add_circle_outline),
             color: Colors.black,
             iconSize: 50, 
           ),
