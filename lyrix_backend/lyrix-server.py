@@ -47,8 +47,9 @@ def register_user(user: LoginModel):
     new_user = User(user.username, user.email, user.password)
     return new_user.register_user()
 
-@app.get("/login")
+@app.post("/login")
 def login_user(user:LoginModel):
+    print(user)
     session = create_session(user)
     return session.uuid
     

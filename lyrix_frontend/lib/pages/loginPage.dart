@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:lyrix_frontend/account_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  _LoginPageState createState() => _LoginPageState();
+}
 
+class _LoginPageState extends State<LoginPage>{
+  final TextEditingController username = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  bool isLoading = false;
+  String errorMessage = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,14 +44,54 @@ class LoginPage extends StatelessWidget {
 
             //This is where the email goes
             TextField(
+              controller: username,
               decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   )),
+            ), 
+            TextField(
+              controller: password,
+              decoration: InputDecoration(
+                labelText: "Password",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                )),
+                obscureText: false
+              
             ),
-            const SizedBox(height: 10),
+                        // Show error message if login fails
+            if (errorMessage.isNotEmpty) 
+              Text(errorMessage, style: TextStyle(color: Colors.red)),
 
+            isLoading 
+              ? CircularProgressIndicator() // Show loading spinner
+              : ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                      errorMessage = "";
+                    });
+
+                    bool success = await sendLoginRequest(
+                      context, 
+                      username.text.trim(), 
+                      password.text.trim(),
+                    );
+
+                    setState(() {
+                      isLoading = false;
+                      if (!success) {
+                        errorMessage = "Invalid email or password.";
+                      }
+                    });
+                  },
+                  child: Text("Login"),
+                ),
+
+            const SizedBox(height: 10),
+            
             //The link for forgotten password
             Align(
               alignment: Alignment.centerRight,
@@ -53,6 +101,7 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+            
 
             //this is where the login button goes
             SizedBox(

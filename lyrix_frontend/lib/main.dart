@@ -4,13 +4,10 @@ import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 final storage = FlutterSecureStorage();
 
-// Save UUID
-Future<void> saveUUID(String uuid) async {
-  await storage.write(key: 'user_uuid', value: uuid);
-}
 
 // Get UUID
 Future<String?> getUUID() async {
@@ -22,12 +19,24 @@ Future<void> deleteUUID() async {
   await storage.delete(key: 'user_uuid');
 }
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final bool isLoggedIn = await checkLoginStatus();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
+}
+
+Future<bool> checkLoginStatus() async {
+  final storage = FlutterSecureStorage();
+  String? uuid = await storage.read(key: 'user_uuid');
+  return uuid != null; // If UUID exists, user is logged in
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   // This widget is the root of your application.
   @override
@@ -39,7 +48,11 @@ class MyApp extends StatelessWidget {
          primarySwatch: Colors.blue,
         //      useMaterial3: false,
       ),
-      home: const MyHomePage(),
+      initialRoute: isLoggedIn? "/home" : "/login",
+      routes: {
+        "/login": (context) => LoginPage(),
+        "/home": (context) => MyHomePage(),
+      }
     );
   }
 }
@@ -57,17 +70,17 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
   List <dynamic> songs = [];
 
-  void updateSongs(List <dynamic> newSongs) {
-    setState(() {
+  void updateSongs(List<dynamic> newSongs){
+    setState((){
       songs = newSongs;
     });
   }
 
   List<Widget> _widgetOptions() {
   return <Widget>[
-    Text('Homepage Feed Under Construction'),
+    const Text('Homepage Feed Under Construction'),
     PostPage(updateSongs: updateSongs),
-    Profilepage(),
+    const Profilepage(),
   ];
   }
 
