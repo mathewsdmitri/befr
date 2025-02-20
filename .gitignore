@@ -5,3 +5,5 @@ access_tokens.txt
 lyrix_database/
 lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
 lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
+lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
+lyrix_backend/__pycache__/SpotifyAPIClient.cpython-313.pyc
