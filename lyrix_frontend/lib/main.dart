@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
+import 'package:lyrix_frontend/pages/homePage.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
@@ -70,17 +71,24 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
   List <dynamic> songs = [];
 
-  void updateSongs(List<dynamic> newSongs){
-    setState((){
-      songs = newSongs;
+  // void updateSongs(List <dynamic> newSongs) {
+  //   setState(() {
+  //     songs = newSongs;
+  //   });
+  //}
+  List<Map<String, String>> posts = [];
+
+  void addPost(String song, String caption) {
+    setState(() {
+      posts.insert(0, {"song": song, "caption": caption});
     });
   }
 
   List<Widget> _widgetOptions() {
   return <Widget>[
-    const Text('Homepage Feed Under Construction'),
-    PostPage(updateSongs: updateSongs),
-    const Profilepage(),
+    HomePage(posts: posts),
+    PostPage(addPost: addPost),
+    Profilepage(),
   ];
   }
 

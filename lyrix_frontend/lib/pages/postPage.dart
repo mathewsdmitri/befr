@@ -1,11 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PostPage extends StatefulWidget {
-  final Function(List <dynamic>) updateSongs;
-  const PostPage({super.key, required this.updateSongs});
+//  final Function(List <dynamic>) updateSongs;
+ // const PostPage({super.key, required this.updateSongs});
+  
+  final Function(String, String) addPost;
+  const PostPage({super.key, required this.addPost});
+
 
   @override
   // ignore: library_private_types_in_public_api
@@ -27,7 +30,7 @@ class _PostPageState extends State<PostPage> {
     List <dynamic> data = jsonDecode(response.body);
     options = data;
     print(data);
-    widget.updateSongs(data);
+   // widget.updateSongs(data);
     return data;
   }
 
@@ -83,6 +86,7 @@ class _PostPageState extends State<PostPage> {
                 onPressed: selectedOption == null
                     ? null //Disable button if a selection isn't made
                     : () {
+                        widget.addPost(selectedOption!, captionController.text);
                         setState(() {
                           hasPosted = true; //Track that a post has been made
                         });
