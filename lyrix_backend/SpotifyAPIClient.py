@@ -45,7 +45,7 @@ class SpotifyAPIClient:
 
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code,detail=response.json())
-        
+        print(response)
         data = response.json()
         
         items = data["items"]
@@ -57,3 +57,33 @@ class SpotifyAPIClient:
                         })
             
         return tracks
+    
+    def search_track(self, access_token: str, track_name: str) -> str:
+        """
+        Searches Spotify for a track and returns the preview (snippet) URL if available.
+        Returns None or raises HTTPException if no preview is found or request fails.
+        """
+        base_url = "https://api.spotify.com/v1/search"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        params = {
+            "q": track_name,
+            "type": "track",
+            "limit": 1  # just get the top result
+        }
+
+        response = requests.get(base_url, headers=headers, params=params)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=response.json())
+
+        data = response.json()
+        tracks = data.get("tracks", {}).get("items", [])
+        print(tracks)
+        if not tracks:
+            # No matching track found
+            return None
+
+        # The snippet/preview is typically in "preview_url".
+        snippet_url = tracks[0].get("preview_url")
+        return snippet_url  # Might be None if the track has no preview

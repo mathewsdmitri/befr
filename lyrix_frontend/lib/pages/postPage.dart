@@ -24,11 +24,11 @@ class _PostPageState extends State<PostPage> {
   List<dynamic> options = ["Song 1", "Song 2", "Song 3"];
 
   Future <List <dynamic>> listSongs() async{
-    final String url = 'http://localhost:8000/getRecentlyPlayed';
-    final String uniqueID = 'qwert';
-    final response = await http.get(Uri.parse('${url}?uuid=$uniqueID'));
+    const String url = 'http://localhost:8000/getRecentlyPlayed';
+    const String uniqueID = 'qwert';
+    final response = await http.get(Uri.parse('$url?uuid=$uniqueID'));
     List <dynamic> data = jsonDecode(response.body);
-    this.options = data;
+    options = data;
     print(data);
    // widget.updateSongs(data);
     return data;

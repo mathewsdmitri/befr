@@ -4,13 +4,40 @@ import 'package:lyrix_frontend/pages/homePage.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+final storage = FlutterSecureStorage();
 
-void main() {
-  runApp(const MyApp());
+
+// Get UUID
+Future<String?> getUUID() async {
+  return await storage.read(key: 'user_uuid');
+}
+
+// Remove UUID (Logout)
+Future<void> deleteUUID() async {
+  await storage.delete(key: 'user_uuid');
+}
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final bool isLoggedIn = await checkLoginStatus();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
+}
+
+Future<bool> checkLoginStatus() async {
+  final storage = FlutterSecureStorage();
+  String? uuid = await storage.read(key: 'user_uuid');
+  return uuid != null; // If UUID exists, user is logged in
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   // This widget is the root of your application.
   @override
@@ -22,7 +49,11 @@ class MyApp extends StatelessWidget {
          primarySwatch: Colors.blue,
         //      useMaterial3: false,
       ),
-      home: const MyHomePage(),
+      initialRoute: isLoggedIn? "/home" : "/login",
+      routes: {
+        "/login": (context) => LoginPage(),
+        "/home": (context) => MyHomePage(),
+      }
     );
   }
 }

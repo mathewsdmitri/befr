@@ -37,7 +37,7 @@ def test_login_user():
         "access_token": ""
     }
 
-    response = requests.get(url, json=user_data)
+    response = requests.post(url, json=user_data)
     print("Login Response Text:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 

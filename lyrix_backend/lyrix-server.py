@@ -44,11 +44,12 @@ class SessionModel(BaseModel):
 #this is a post request to register users
 @app.post("/register_user")
 def register_user(user: LoginModel):
-    new_user = User(user.username, user.email, user.password)
+    new_user = User(user.username, user.email, user.password, user.bio, user.access_token)
     return new_user.register_user()
 
-@app.get("/login")
+@app.post("/login")
 def login_user(user:LoginModel):
+    print(user)
     session = create_session(user)
     return session.uuid
     
@@ -57,8 +58,8 @@ def login_user(user:LoginModel):
 def auth_spotify(uniqueID):
     cur_user = uuid_to_user(uuid=uniqueID)
     existing_token = cur_user.access_token
-    if existing_token:
-        return {"message": "Access token already exists, no need to re-authenticate."}
+    #if existing_token:
+    #    return {"message": "Access token already exists, no need to re-authenticate."}
     redirect_query = spotify_client.access_code_query(uniqueID=uniqueID)
     print(redirect_query)
     return redirect_query
@@ -82,4 +83,5 @@ def callback(request:Request):
 def getRecentlyPlayed(uuid):
     access_token = uuid_to_access_token(uuid=uuid)
     list = spotify_client.getsongs(access_token=access_token)
+    print(list)
     return list
