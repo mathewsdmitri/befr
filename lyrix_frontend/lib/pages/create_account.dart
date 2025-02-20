@@ -81,7 +81,9 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   var body = jsonEncode({
                     'email':controllerName.text,
                     'username' : controllerUsername.text,
-                    'password' : controllerPassword.text
+                    'password' : controllerPassword.text,
+                    'bio' : "",
+                    'access_token': ""
                   });
                   final response  = await http.post(Uri.parse(url),
                     headers: {"Content-Type": "application/json"},

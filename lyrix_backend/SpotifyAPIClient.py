@@ -45,7 +45,7 @@ class SpotifyAPIClient:
 
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code,detail=response.json())
-        
+        print(response)
         data = response.json()
         
         items = data["items"]
