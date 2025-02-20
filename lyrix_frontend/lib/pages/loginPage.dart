@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/account_service.dart';
+import 'package:lyrix_frontend/pages/create_account.dart';
+import 'package:lyrix_frontend/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,23 +45,29 @@ class _LoginPageState extends State<LoginPage>{
             const SizedBox(height: 20),
 
             //This is where the email goes
-            TextField(
-              controller: username,
-              decoration: InputDecoration(
-                  labelText: 'Email',
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: username,
+                decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    )),
+              ),
+            ), 
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: password,
+                decoration: InputDecoration(
+                  labelText: "Password",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   )),
-            ), 
-            TextField(
-              controller: password,
-              decoration: InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                )),
-                obscureText: false
-              
+                  obscureText: false
+                
+              ),
             ),
                         // Show error message if login fails
             if (errorMessage.isNotEmpty) 
@@ -67,44 +75,57 @@ class _LoginPageState extends State<LoginPage>{
 
             isLoading 
               ? CircularProgressIndicator() // Show loading spinner
-              : ElevatedButton(
-                  onPressed: () async {
-                    setState(() {
-                      isLoading = true;
-                      errorMessage = "";
-                    });
-
-                    bool success = await sendLoginRequest(
-                      context, 
-                      username.text.trim(), 
-                      password.text.trim(),
-                    );
-
-                    setState(() {
-                      isLoading = false;
-                      if (!success) {
-                        errorMessage = "Invalid email or password.";
-                      }
-                    });
-                  },
-                  child: Text("Login"),
-                ),
+              : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                        errorMessage = "";
+                      });
+                
+                      bool success = await sendLoginRequest(
+                        context, 
+                        username.text.trim(), 
+                        password.text.trim(),
+                      );
+                
+                      setState(() {
+                        isLoading = false;
+                        if (!success) {
+                          errorMessage = "Invalid email or password.";
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+                    child: const Text(
+                      "Login",
+                      style: TextStyle(color: Colors.black),
+                      
+                    ),
+                  ),
+              ),
 
             const SizedBox(height: 10),
             
             //The link for forgotten password
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text('Forgot Password!'),
-              ),
+            //Elevated button 1 for create page
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const Scaffold(
+                    body: ForgotPassword(), //Create account page
+                  );
+                }));
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white), //Background color of button
+              child: const Text('Forgot Password', style: TextStyle(color: Colors.black)), //Text and color
             ),
             const SizedBox(height: 20),
             
 
             //this is where the login button goes
-            SizedBox(
+            /*SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {},
@@ -121,6 +142,7 @@ class _LoginPageState extends State<LoginPage>{
               ),
             ),
             const SizedBox(height: 20),
+            */
 
             //this is asking for the signup prompt
             Row(
@@ -128,8 +150,17 @@ class _LoginPageState extends State<LoginPage>{
               children: [
                 const Text("Need an account?"),
                 TextButton(
-                  onPressed: () {},
-                  child: const Text('Sign up'),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const Scaffold(
+                        body: CreateAccountPage(), //Create account page
+                      );
+                    }));
+                  },
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(color: Colors.black),  
+                  ),
                 ),
               ],
             ),
