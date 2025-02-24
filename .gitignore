@@ -34,3 +34,18 @@ myproj/.dart_tool/chrome-device/Default/InterestGroups
 myproj/.dart_tool/chrome-device/Default/Cookies-journal
 myproj/.dart_tool/chrome-device/Default/Cookies
 myproj/.dart_tool/chrome-device/Default/Platform Notifications/CURRENT
+architectural-poc/myproj/pubspec.lock
+lyrix_frontend/ios/Flutter/Debug.xcconfig
+lyrix_frontend/ios/Flutter/Release.xcconfig
+lyrix_frontend/ios/Podfile
+lyrix_frontend/pubspec.lock
+lyrix_frontend/macos/Podfile
+lyrix_frontend/macos/Flutter/Flutter-Release.xcconfig
+lyrix_frontend/macos/Flutter/Flutter-Release.xcconfig
+lyrix_frontend/pubspec.lock
+lyrix_frontend/macos/Flutter/Flutter-Release.xcconfig
+lyrix_frontend/macos/Flutter/Flutter-Debug.xcconfig
+lyrix_frontend/ios/Flutter/Release.xcconfig
+lyrix_frontend/ios/Flutter/Debug.xcconfig
+architectural-poc/myproj/pubspec.lock
+lyrix_frontend/pubspec.lock
