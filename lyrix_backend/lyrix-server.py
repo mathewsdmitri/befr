@@ -11,12 +11,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user
 from models.Sessions import find_in_session
+from auth_procs import generate_random_string, sha256, base64encode
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = os.getenv("REDIRECT_URI")
+codeVerifier = generate_random_string(60)
+print(codeVerifier + "  code verifier")
+hashed = sha256(codeVerifier)
+print(hashed)
+codeChallenge = base64encode(hashed)
+print(codeChallenge + " code challenge")
 
-spotify_client  = SpotifyAPIClient(client_id=SPOTIFY_CLIENT_ID, client_secret= SPOTIFY_CLIENT_SECRET, redirect_uri= SPOTIFY_REDIRECT_URI)
+spotify_client  = SpotifyAPIClient(client_id=SPOTIFY_CLIENT_ID, client_secret= SPOTIFY_CLIENT_SECRET, redirect_uri= SPOTIFY_REDIRECT_URI, codeVerifier=codeVerifier, codeChallenge=codeChallenge)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
