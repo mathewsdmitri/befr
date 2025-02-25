@@ -20,7 +20,8 @@ Future<bool> sendLoginRequest(BuildContext context, String username, String pass
         'email': "",
         'password': password,
         'bio': "",
-        'access_token': ""
+        'access_token': "",
+        'refresh_token': ""
     }),
     );
     if (response.statusCode == 200) {

@@ -49,3 +49,6 @@ lyrix_frontend/ios/Flutter/Release.xcconfig
 lyrix_frontend/ios/Flutter/Debug.xcconfig
 architectural-poc/myproj/pubspec.lock
 lyrix_frontend/pubspec.lock
+lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
+lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
+lyrix_backend/__pycache__/SpotifyAPIClient.cpython-313.pyc

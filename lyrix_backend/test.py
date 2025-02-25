@@ -18,7 +18,8 @@ def test_register_user():
         "email": "isLove",
         "password": "Shrek",
         "bio": "",
-        "access_token": ""
+        "access_token": "",
+        "refresh_token": ""
     }
 
     response = requests.post(url, json=user_data)

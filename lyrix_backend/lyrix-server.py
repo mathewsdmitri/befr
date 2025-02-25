@@ -82,6 +82,9 @@ def callback(request:Request):
     
     token_data = response.json()
     access_token  = token_data["access_token"]
+    refresh_token = token_data["refresh_token"]
+    print(access_token)
+    print(refresh_token)
     update_response = token_post_to_user(access_token, uuid)
     # Open the file in write mode
     return update_response
