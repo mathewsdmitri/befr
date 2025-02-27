@@ -72,7 +72,8 @@ class User:
                 "email": self.email,
                 "password": self.password,
                 "bio": self.bio,
-                "access_token": self.access_token
+                "access_token": self.access_token,
+                "refresh_token": self.refresh_token,
             }
 
             #Store the dictionary with the users data into the database

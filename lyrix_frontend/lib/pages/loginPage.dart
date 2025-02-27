@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage>{
               child: TextField(
                 controller: username,
                 decoration: InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Email or Username',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     )),

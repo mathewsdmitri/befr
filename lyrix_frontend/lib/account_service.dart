@@ -7,6 +7,13 @@ const String url = 'http://localhost:8000/login'; // FastAPI endpoint
 final storage = FlutterSecureStorage(); // Secure storage instance
 
 Future<bool> sendLoginRequest(BuildContext context, String username, String password) async {
+  String username_test = "";
+  String email_test = "";
+  if (username.contains('@')){
+    email_test = username;
+  }else{
+    username_test = username;
+  }
   print(username);
   print(password);
   try {
@@ -16,8 +23,8 @@ Future<bool> sendLoginRequest(BuildContext context, String username, String pass
         "Content-Type": "application/json", 
       },
       body: jsonEncode({
-        'username': username,
-        'email': "",
+        'username': username_test,
+        'email': email_test,
         'password': password,
         'bio': "",
         'access_token': "",
