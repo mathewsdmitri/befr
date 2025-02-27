@@ -39,9 +39,9 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _label('Preffered Username'),
+          _label('Preferred Username'),
           _textEntryUsername(''),
-          _label('Preffered Email'),
+          _label('Preferred Email'),
           _textEntryEmail('Please enter valid email.'),
           _label('New Password'),
           _textEntryPassword('Make it strong!'),

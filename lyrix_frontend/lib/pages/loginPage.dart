@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage>{
             ),
             const SizedBox(height: 20),
 
-            //This is where the email goes
+            //This is where the username/email goes
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
