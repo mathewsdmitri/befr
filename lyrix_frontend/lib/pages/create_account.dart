@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:lyrix_frontend/account_service.dart';
 import 'package:lyrix_frontend/pages/link_spotify.dart';
 
 class CreateAccountPage extends StatefulWidget {
@@ -93,6 +94,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     headers: {"Content-Type": "application/json"},
                     body:body);
                   print("${response.statusCode}");
+                  sendLoginRequest(context, controllerUsername.text, controllerPassword.text);
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const Scaffold(
                         body: LinkSpotify(), //Link Spotify Page

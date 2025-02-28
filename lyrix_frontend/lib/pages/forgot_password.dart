@@ -74,10 +74,9 @@ class _ForgotPassword extends State<ForgotPassword> {
                         errorMessage = "";
                       });
                 
-                      bool success = await sendLoginRequest(
+                      bool success = await sendForgotPassword(
                         context, 
-                        username.text.trim(), 
-                        ''.trim(),
+                        username.text.trim(),
                       );
                 
                       setState(() {
