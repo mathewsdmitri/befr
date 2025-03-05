@@ -89,12 +89,16 @@ class _LoginPageState extends State<LoginPage>{
                         username.text.trim(), 
                         password.text.trim(),
                       );
+                      
                 
                       setState(() {
                         isLoading = false;
                         if (!success) {
                           errorMessage = "Invalid email or password.";
+                        }else{
+                          Navigator.pushReplacementNamed(context, "/home"); // Navigate to HomePage
                         }
+                        
                       });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
