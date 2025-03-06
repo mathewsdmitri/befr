@@ -15,10 +15,11 @@ def test_register_user():
     url = f"{BASE_URL}/register_user"
     user_data = {
         "username": "Shrek",
-        "email": "isLove",
+        "email": "isLove@",
         "password": "Shrek",
         "bio": "",
-        "access_token": ""
+        "access_token": "",
+        "refresh_token": "",
     }
 
     response = requests.post(url, json=user_data)
@@ -34,7 +35,8 @@ def test_login_user():
         "email": "",
         "password": "Shrek",
         "bio": "",
-        "access_token": ""
+        "access_token": "",
+        "refresh_token": "",
     }
 
     response = requests.post(url, json=user_data)

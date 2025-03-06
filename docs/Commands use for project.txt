@@ -3,7 +3,12 @@ Use this command to run server. Needs to be this command because if not you will
 cd lyrix_backend
 py -m uvicorn lyrix-server:app --reload
 
+FOR MAC
+python3 -m uvicorn lyrix-server:app --reload 
+
+
 new terminal
 
 cd lyrix_frontend
 flutter run // ctrl F5
+

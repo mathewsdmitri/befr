@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:lyrix_frontend/account_service.dart';
+import 'package:lyrix_frontend/pages/link_spotify.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -15,6 +17,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
   // of the TextField.
   final controllerName = TextEditingController();
   final controllerUsername = TextEditingController();
+  final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
 
   @override
@@ -22,6 +25,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     // Clean up the controller when the widget is disposed.
     controllerName.dispose();
     controllerUsername.dispose();
+    controllerEmail.dispose();
     controllerPassword.dispose();
     super.dispose();
   }
@@ -36,10 +40,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _label('Name'),
-          _textEntryName('ex. John Doe'),
-          _label('Preffered Username'),
+          _label('Preferred Username'),
           _textEntryUsername(''),
+          _label('Preferred Email'),
+          _textEntryEmail('Please enter valid email.'),
           _label('New Password'),
           _textEntryPassword('Make it strong!'),
 
@@ -74,21 +78,28 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             child: SizedBox(
               child: ElevatedButton(
                 onPressed: ()async{
-                  print(controllerName.text);
+                  print(controllerEmail.text);
                   print(controllerUsername.text);
                   print(controllerPassword.text);
                   const String url = "http://localhost:8000/register_user";
                   var body = jsonEncode({
-                    'email':controllerName.text,
+                    'email':controllerEmail.text,
                     'username' : controllerUsername.text,
                     'password' : controllerPassword.text,
                     'bio' : "",
-                    'access_token': ""
+                    'access_token': "",
+                    'refresh_token': "" 
                   });
                   final response  = await http.post(Uri.parse(url),
                     headers: {"Content-Type": "application/json"},
                     body:body);
                   print("${response.statusCode}");
+                  sendLoginRequest(context, controllerUsername.text, controllerPassword.text);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const Scaffold(
+                        body: LinkSpotify(), //Link Spotify Page
+                      );
+                  }));
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(20)
@@ -121,7 +132,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }
 
-  Container _textEntryName(String example){
+  Container _textEntryUsername(String example){
     return Container(
             margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
             decoration: const BoxDecoration(
@@ -134,7 +145,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               ]
             ),
             child: TextField(
-              controller: controllerName,
+              controller: controllerUsername,
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
@@ -160,7 +171,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               ),
             )
     );
-  }Container _textEntryUsername(String example){
+  }Container _textEntryEmail(String example){
     return Container(
             margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
             decoration: const BoxDecoration(
@@ -173,7 +184,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               ]
             ),
             child: TextField(
-              controller: controllerUsername,
+              controller: controllerEmail,
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,

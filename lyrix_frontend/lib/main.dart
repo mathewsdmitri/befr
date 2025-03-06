@@ -5,7 +5,6 @@ import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 

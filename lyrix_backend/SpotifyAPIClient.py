@@ -3,11 +3,17 @@ from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
 
+
+
+
 class SpotifyAPIClient:
-    def __init__(self, client_id:str, client_secret:str, redirect_uri:str ):
+    def __init__(self, client_id:str, client_secret:str, redirect_uri:str, codeVerifier, codeChallenge):
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
+        self.codeVerifier = codeVerifier
+        self.codeChallenge = codeChallenge
+        
     
     def access_code_query(self, uniqueID:str):
         redirect_params = {
@@ -15,7 +21,9 @@ class SpotifyAPIClient:
             "response_type" : "code",
             "redirect_uri" : self.redirect_uri,
             "scope" : "user-read-recently-played",
-            "state" : uniqueID
+            "state" : uniqueID,
+            "code_challenge_method": 'S256',
+            "code_challenge" : self.codeChallenge
         }
         redirect_query = urlencode(redirect_params)
         query = f"https://accounts.spotify.com/authorize?{redirect_query}"
@@ -33,6 +41,7 @@ class SpotifyAPIClient:
             "redirect_uri" : self.redirect_uri,
             "client_id" : self.client_id,
             "client_secret": self.client_secret,
+            "code_verifier" : self.codeVerifier,
         }
         headers = {"Content-Type" : "application/x-www-form-urlencoded"}
         response = requests.post(url=url, data=data,headers=headers)

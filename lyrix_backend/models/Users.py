@@ -16,6 +16,7 @@ class LoginModel(BaseModel):
      password: str
      bio: str
      access_token: str
+     refresh_token: str
 
 #This model is used when you need to make queries to access spotify api
 class AccessModel(BaseModel):
@@ -39,12 +40,13 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str=""):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = ""):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
         self.bio = bio
         self.access_token = access_token
+        self.refresh_token = refresh_token
         
     
     #Adds user to database and returns a string if the username is already in use or if the user registered succesfully
@@ -70,7 +72,8 @@ class User:
                 "email": self.email,
                 "password": self.password,
                 "bio": self.bio,
-                "access_token": self.access_token
+                "access_token": self.access_token,
+                "refresh_token": self.refresh_token,
             }
 
             #Store the dictionary with the users data into the database

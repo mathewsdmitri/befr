@@ -44,13 +44,13 @@ class _LoginPageState extends State<LoginPage>{
             ),
             const SizedBox(height: 20),
 
-            //This is where the email goes
+            //This is where the username/email goes
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: username,
                 decoration: InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Email or Username',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     )),
@@ -89,12 +89,16 @@ class _LoginPageState extends State<LoginPage>{
                         username.text.trim(), 
                         password.text.trim(),
                       );
+                      
                 
                       setState(() {
                         isLoading = false;
                         if (!success) {
                           errorMessage = "Invalid email or password.";
+                        }else{
+                          Navigator.pushReplacementNamed(context, "/home"); // Navigate to HomePage
                         }
+                        
                       });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.white),

@@ -9,14 +9,21 @@ from models.Users import User, LoginModel, AccessModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
 from models.Sessions import find_in_session
+from auth_procs import generate_random_string, sha256, base64encode
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = os.getenv("REDIRECT_URI")
+codeVerifier = generate_random_string(60)
+print(codeVerifier + "  code verifier")
+hashed = sha256(codeVerifier)
+print(hashed)
+codeChallenge = base64encode(hashed)
+print(codeChallenge + " code challenge")
 
-spotify_client  = SpotifyAPIClient(client_id=SPOTIFY_CLIENT_ID, client_secret= SPOTIFY_CLIENT_SECRET, redirect_uri= SPOTIFY_REDIRECT_URI)
+spotify_client  = SpotifyAPIClient(client_id=SPOTIFY_CLIENT_ID, client_secret= SPOTIFY_CLIENT_SECRET, redirect_uri= SPOTIFY_REDIRECT_URI, codeVerifier=codeVerifier, codeChallenge=codeChallenge)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -52,10 +59,16 @@ def login_user(user:LoginModel):
     print(user)
     session = create_session(user)
     return session.uuid
+
+@app.post("/forgot_password")
+def forgot_password(user:LoginModel):
+    return find_user(user).password
+    
     
 
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID):
+    uniqueID = uniqueID.replace('"', '')
     cur_user = uuid_to_user(uuid=uniqueID)
     existing_token = cur_user.access_token
     #if existing_token:
@@ -75,6 +88,9 @@ def callback(request:Request):
     
     token_data = response.json()
     access_token  = token_data["access_token"]
+    refresh_token = token_data["refresh_token"]
+    print(access_token)
+    print(refresh_token)
     update_response = token_post_to_user(access_token, uuid)
     # Open the file in write mode
     return update_response
