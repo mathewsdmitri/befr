@@ -7,6 +7,8 @@ import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
+
 final storage = FlutterSecureStorage();
 
 
@@ -35,9 +37,9 @@ Future<bool> checkLoginStatus() async {
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
+ final bool isLoggedIn;
 
-  const MyApp({super.key, required this.isLoggedIn});
+ const MyApp({super.key, required this.isLoggedIn});
 
   // This widget is the root of your application.
   @override
@@ -46,6 +48,7 @@ class MyApp extends StatelessWidget {
       title: 'befr demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,      //Background of app
          primarySwatch: Colors.blue,
         //      useMaterial3: false,
       ),
@@ -104,12 +107,15 @@ void _onItemTapped(int index) {
     return Scaffold(
       appBar: AppBar(
          backgroundColor: Colors.black,
-        title: const Center(
+        title: Center(
           child: Text(
             'lyrix',
-            style: TextStyle(color: Colors.white,
-            fontSize: 20,
+            style: GoogleFonts.lato(
+            textStyle: Theme.of(context).textTheme.displayLarge,
+            fontSize: 35,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
             ),
           ),
         ),
@@ -123,22 +129,22 @@ void _onItemTapped(int index) {
 
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle_outline),
-            label: 'More',
+            label: 'Post',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline),
             label: 'Profile',
           ),
         ],
 
         currentIndex: _selectedIndex, // Highlight the selected item
         onTap: _onItemTapped, // Handle item tap
-        selectedItemColor: Colors.lightBlue, // Change selected item color
+        selectedItemColor: Colors.lightBlue[200], // Change selected item color
         unselectedItemColor: Colors.white, // Change unselected item color
       ),
       );
