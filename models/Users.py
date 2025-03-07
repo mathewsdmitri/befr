@@ -3,6 +3,7 @@ from datetime import datetime
 from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
 from .Sessions import Session
+import bcrypt
 
 
 client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (Change if connecting to Atlas)
@@ -40,14 +41,43 @@ class User:
         
     
     #Adds user to database and returns a string if the username is already in use or if the user registered succesfully
-    def register_user(self):
+    def register_user(self, request, username: str, email: str, password: str):
 
         """Adds a user to the database if that user doesn't already exist."""
 
         #Check if the username and/or email already exists in the database
+        existing_user = users_collection.find_one({"username": username})
+        if existing_user:
+            return {"Error": "Username already exists"}
+
+        existing_email = users_collection.find_one({"email": email})
+        if existing_email:
+            return {"Error": "Email already in use"}
+        
+
+        #Encrypt password
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+        #User data to be stored
+        user_data = {
+            "email": email,
+            "username": username,
+            "password": hashed_password,
+            "bio": ""
+
+        }
+
+        #Store user data into database
+        users_collection.insert_one(user_data)
+
+        #Automatically log in user after registration is complete
+        request.session["username"] = username
+    
 
 
-        try:
+
+
+        '''try:
 
             if users_collection.find_one({"username": self.username}):
                 return {"Error": "Username already in use!"}
@@ -76,6 +106,7 @@ class User:
         #Catch any other errors that occur
         except Exception as e:
             return {"error": f"An unexpected error occurred: {e}"}
+        '''
         
     def login_user(self):
 

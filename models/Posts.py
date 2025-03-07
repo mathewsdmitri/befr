@@ -65,9 +65,6 @@ class Post():
         return {"message": "Post was made successfully!"}
 
 
-
-
-
     def find_post(user_id: str):
         """ Finds a post in the database if it exists. """
 
@@ -79,13 +76,41 @@ class Post():
         else:
             return {"message": "No posts found!"}
         
+    def delete_post(self, user_id: str):
+        post = posts_collection.find_one({"post_id": self.post_id})
+        if post:
+            posts_collection.delete_one({"_id": self.post_id})
+            return {"message": "Post deleted!"}
+    
+        else:
+            return {"message": "Post not found!"}
+        
+    def like_post(self, user_id: str):
+        """ Adds a like from the post. """
 
-    def delete_post():
-        """ Deletes a post from the database if it exists. """
+        post = posts_collection.find_one({"post_id": self.post_id})
 
-    def like_post(user_id: str, post_id: str):
-        """ Adds or removes a like from the post. """
+        if post:
+            if user_id in post["likes"]:
+                return {"message": "User already liked this post!"}
 
+            posts_collection.update_one({"_id": self.post_id}, {"$push": {"likes": user_id}})
+            return {"message": "Post liked!"}
+
+        return {"error": "Post not found"}
+    
+    def unlike_post (self, user_id: str):
+        """removes a like from the post. """
+        post = posts_collection.find_one({"post_id": self.post_id})
+        if post:
+            if user_id in post ["likes"]:
+                posts_collection.update_one({"post_id": self.post_id}, {"$pull": {"likes": user_id}})
+                return {"message": "User has unliked this post!"}
+        
+        
+            return {"message": "Post hasn't been liked yet"}
+
+        return {"error": "Post not found"}
         
 
 
