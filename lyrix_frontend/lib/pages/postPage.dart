@@ -1,9 +1,17 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class PostPage extends StatefulWidget {
-  const PostPage({super.key});
+//  final Function(List <dynamic>) updateSongs;
+ // const PostPage({super.key, required this.updateSongs});
+  
+  final Function(String, String) addPost;
+  const PostPage({super.key, required this.addPost});
+
 
   @override
+  // ignore: library_private_types_in_public_api
   _PostPageState createState() => _PostPageState();
 }
 
@@ -13,7 +21,18 @@ class _PostPageState extends State<PostPage> {
   final TextEditingController captionController = TextEditingController();
 
   //List of predefined dropdown options (will be replaced with backend data later)
-  final List<String> options = ["Song 1", "Song 2", "Song 3"];
+  List<dynamic> options = ["Song 1", "Song 2", "Song 3"];
+
+  Future <List <dynamic>> listSongs() async{
+    const String url = 'http://localhost:8000/getRecentlyPlayed';
+    const String uniqueID = 'qwert';
+    final response = await http.get(Uri.parse('$url?uuid=$uniqueID'));
+    List <dynamic> data = jsonDecode(response.body);
+    options = data;
+    print(data);
+   // widget.updateSongs(data);
+    return data;
+  }
 
   void showPostDialog() {
     if (hasPosted) {
@@ -38,13 +57,14 @@ class _PostPageState extends State<PostPage> {
                 isExpanded: true,
                 onChanged: (String? newValue) {
                   setState(() {
+                    print(options);
                     selectedOption = newValue;
                   });
                   print('selected song: $selectedOption');
                   Navigator.of(context).pop();
                   showPostDialog(); //Reopen dialog to reflect selection
                 },
-                items: options.map((String option) {
+                items: options.map((dynamic option) {
                   return DropdownMenuItem<String>(
                     value: option,
                     child: Text(option),
@@ -66,6 +86,7 @@ class _PostPageState extends State<PostPage> {
                 onPressed: selectedOption == null
                     ? null //Disable button if a selection isn't made
                     : () {
+                        widget.addPost(selectedOption!, captionController.text);
                         setState(() {
                           hasPosted = true; //Track that a post has been made
                         });
@@ -92,10 +113,13 @@ class _PostPageState extends State<PostPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text("Add Post", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          SizedBox(height: 5), // Space between text and icon
+          const SizedBox(height: 5), // Space between text and icon
           IconButton(
-            onPressed: showPostDialog,
-            icon: Icon(Icons.add_circle_outline),
+            onPressed: ()async {
+              options = await listSongs();  //THIS IS FOR GETTIN LIST OF SONGS
+              showPostDialog();
+              }, 
+            icon: const Icon(Icons.add_circle_outline),
             color: Colors.black,
             iconSize: 50, 
           ),

@@ -1,13 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
-import 'package:lyrix_frontend/postPage.dart';
+import 'package:lyrix_frontend/pages/homePage.dart';
+import 'package:lyrix_frontend/pages/postPage.dart';
+import 'package:lyrix_frontend/pages/loginPage.dart';
+import 'package:lyrix_frontend/pages/profilePage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  runApp(const MyApp());
+final storage = FlutterSecureStorage();
+
+
+// Get UUID
+Future<String?> getUUID() async {
+  return await storage.read(key: 'user_uuid');
+}
+
+// Remove UUID (Logout)
+Future<void> deleteUUID() async {
+  await storage.delete(key: 'user_uuid');
+}
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final bool isLoggedIn = await checkLoginStatus();
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
+}
+
+Future<bool> checkLoginStatus() async {
+  final storage = FlutterSecureStorage();
+  String? uuid = await storage.read(key: 'user_uuid');
+  return uuid != null; // If UUID exists, user is logged in
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+ final bool isLoggedIn;
+
+ const MyApp({super.key, required this.isLoggedIn});
 
   // This widget is the root of your application.
   @override
@@ -16,10 +47,15 @@ class MyApp extends StatelessWidget {
       title: 'befr demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,      //Background of app
          primarySwatch: Colors.blue,
         //      useMaterial3: false,
       ),
-      home: const MyHomePage(),
+      initialRoute: isLoggedIn? "/home" : "/login",
+      routes: {
+        "/login": (context) => LoginPage(),
+        "/home": (context) => MyHomePage(),
+      }
     );
   }
 }
@@ -35,12 +71,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
+  List <dynamic> songs = [];
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const Text('Homepage'),
-    PostPage(),
-    CreateAccountPage(),
+  // void updateSongs(List <dynamic> newSongs) {
+  //   setState(() {
+  //     songs = newSongs;
+  //   });
+  //}
+  List<Map<String, String>> posts = [];
+
+  void addPost(String song, String caption) {
+    setState(() {
+      posts.insert(0, {"song": song, "caption": caption});
+    });
+  }
+
+  List<Widget> _widgetOptions() {
+  return <Widget>[
+    HomePage(posts: posts),
+    PostPage(addPost: addPost),
+    Profilepage(),
   ];
+  }
+
 void _onItemTapped(int index) {
     setState(() {
        _selectedIndex = index; // Update the selected index
@@ -53,15 +106,21 @@ void _onItemTapped(int index) {
     return Scaffold(
       appBar: AppBar(
          backgroundColor: Colors.black,
-        title: const Center(
+        title: Center(
           child: Text(
             'lyrix',
-            style: TextStyle(color: Colors.white),
+            style: GoogleFonts.lato(
+            textStyle: Theme.of(context).textTheme.displayLarge,
+            fontSize: 35,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+            ),
           ),
         ),
       ),
       body: Center(
-        child: _widgetOptions
+        child: _widgetOptions()
             .elementAt(_selectedIndex), // Display the selected widget
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -69,22 +128,22 @@ void _onItemTapped(int index) {
 
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle_outline),
-            label: 'More',
+            label: 'Post',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline),
             label: 'Profile',
           ),
         ],
 
         currentIndex: _selectedIndex, // Highlight the selected item
         onTap: _onItemTapped, // Handle item tap
-        selectedItemColor: Colors.yellow, // Change selected item color
+        selectedItemColor: Colors.lightBlue[200], // Change selected item color
         unselectedItemColor: Colors.white, // Change unselected item color
       ),
       );

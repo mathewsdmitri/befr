@@ -2,19 +2,28 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
-from .Sessions import Session
 import bcrypt
+from .Sessions import Session, SessionModel, find_in_session
 
 
 client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (Change if connecting to Atlas)
 db = client["Users"] # Connect to the Users database
 users_collection = db["users"] #Connect to the users collection
 
-class UserModel(BaseModel):
+#This is how you would pass data to the database and to receive it from the frontend
+class LoginModel(BaseModel):
      email: str
      username: str
      password: str
      bio: str
+     access_token: str
+     refresh_token: str
+
+#This model is used when you need to make queries to access spotify api
+class AccessModel(BaseModel):
+    email: str
+    username: str
+    access_token: str
 
 
 class User:
@@ -32,12 +41,13 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str=""):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = ""):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
         self.bio = bio
         self.access_token = access_token
+        self.refresh_token = refresh_token
         
     
     #Adds user to database and returns a string if the username is already in use or if the user registered succesfully
@@ -91,7 +101,9 @@ class User:
                 "username": self.username,
                 "email": self.email,
                 "password": self.password,
-                "bio": self.bio
+                "bio": self.bio,
+                "access_token": self.access_token,
+                "refresh_token": self.refresh_token,
             }
 
             #Store the dictionary with the users data into the database
@@ -115,7 +127,8 @@ class User:
          
 
  
-
+#Pass in a User object can be passed with ex. User(username="some name", email= "")
+#This would find a user "some name" if they exist it will return all information that the user has in the database.
 def find_user(user:User):
 
         """Finds and returns a user in the database if the user exists."""
@@ -125,13 +138,13 @@ def find_user(user:User):
         existing_user = users_collection.find_one({"username": user.username})
 
         if existing_user:
-            auth_user = UserModel(**existing_user)
+            auth_user = LoginModel(**existing_user)
             return auth_user
 
         existing_user = users_collection.find_one({"email": user.email})
 
         if user:
-            return UserModel(**existing_user)
+            return LoginModel(**existing_user)
         
 
         return {"error": "User not found!"}
@@ -139,24 +152,31 @@ def find_user(user:User):
 #Finds user with username and authorizes account with their password. If the account is found it returns the whole user from database
 def auth_user(user:User):
     auth_user = find_user(user)
-    print(auth_user)
 
     if user.password == auth_user.password:
         return User(auth_user.username, auth_user.email, auth_user.password, auth_user.bio)
 
+#Create session authorizes user that logs in. They are passed the unique id so that they can access app
 def create_session(user:User):
     session_user = auth_user(user)
     new_session = Session()
     new_session.generate_session(session_user.username, session_user.email)
     return new_session
 
+
+def uuid_to_user(uuid:str):
+    session = find_in_session(uuid)
+    user = find_user(User(username=session.username, email=session.email, password=""))
+    return user
+    
 # Update the user's access token in the database
-def token_to_user(access_token: str, uuid: str):
+def token_post_to_user(access_token: str, uuid: str):
     
     # Finds a user in the database by their uuid and updates the access token
+    user  = uuid_to_user(uuid)
     result = users_collection.update_one(
-        {"_id": ObjectId(uuid)},
-        {"$set": {"access_token": access_token}}
+        filter=users_collection.find_one({"username": user.username}),
+        update={"$set": {"access_token": access_token}}
     )
 
     if result.matched_count == 0:
@@ -164,17 +184,9 @@ def token_to_user(access_token: str, uuid: str):
     
     return {"message": "Access token updated successfully!"}
 
-             
-
-
-
-        
-
-
-
-    #def delete_user():
-
-   #     """Find and delete a user from the database if the user exists."""
-        
-
+    
+#Gets user spotify access_token from the uuid
+def uuid_to_access_token(uuid):
+    cur_user = uuid_to_user(uuid)
+    return cur_user.access_token
     

@@ -1,23 +1,27 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/account_service.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
-import 'package:lyrix_frontend/pages/forgot_password.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-  _LoginPageState createState() => _LoginPageState();
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({super.key});
+  State<ForgotPassword> createState() => _ForgotPassword();
 }
 
-class _LoginPageState extends State<LoginPage>{
+@override
+
+class _ForgotPassword extends State<ForgotPassword> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool isLoading = false;
   String errorMessage = "";
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page',
+        title: const Text('Forgot Password Page',
           style: TextStyle(
           color: Colors.white,
           fontSize: 18,
@@ -27,7 +31,6 @@ class _LoginPageState extends State<LoginPage>{
         backgroundColor: Colors.lightBlue,
         
         ),
-      
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -36,7 +39,7 @@ class _LoginPageState extends State<LoginPage>{
           children: [
             // this is where the intro or welcome message is put
             const Text(
-              'Welcome Back!',
+              'Please enter your email!',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -44,31 +47,18 @@ class _LoginPageState extends State<LoginPage>{
             ),
             const SizedBox(height: 20),
 
-            //This is where the username/email goes
+            //This is where the email goes
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: username,
                 decoration: InputDecoration(
-                    labelText: 'Email or Username',
+                    labelText: 'Email',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     )),
               ),
             ), 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: password,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  )),
-                  obscureText: false
-                
-              ),
-            ),
                         // Show error message if login fails
             if (errorMessage.isNotEmpty) 
               Text(errorMessage, style: TextStyle(color: Colors.red)),
@@ -84,26 +74,21 @@ class _LoginPageState extends State<LoginPage>{
                         errorMessage = "";
                       });
                 
-                      bool success = await sendLoginRequest(
+                      bool success = await sendForgotPassword(
                         context, 
-                        username.text.trim(), 
-                        password.text.trim(),
+                        username.text.trim(),
                       );
-                      
                 
                       setState(() {
                         isLoading = false;
                         if (!success) {
-                          errorMessage = "Invalid email or password.";
-                        }else{
-                          Navigator.pushReplacementNamed(context, "/home"); // Navigate to HomePage
+                          errorMessage = "Invalid email.";
                         }
-                        
                       });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
                     child: const Text(
-                      "Login",
+                      "Try Email",
                       style: TextStyle(color: Colors.black),
                       
                     ),
@@ -112,47 +97,11 @@ class _LoginPageState extends State<LoginPage>{
 
             const SizedBox(height: 10),
             
-            //The link for forgotten password
-            //Elevated button 1 for create page
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const Scaffold(
-                    body: ForgotPassword(), //Create account page
-                  );
-                }));
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white), //Background color of button
-              child: const Text('Forgot Password', style: TextStyle(color: Colors.black)), //Text and color
-            ),
-            const SizedBox(height: 20),
-            
-
-            //this is where the login button goes
-            /*SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            */
-
             //this is asking for the signup prompt
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Need an account?"),
+                const Text("Cant find your account?"),
                 TextButton(
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {

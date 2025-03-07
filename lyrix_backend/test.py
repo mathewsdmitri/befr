@@ -1,41 +1,99 @@
 import requests
-from urllib.parse import urlencode
 import json
+import os
+from dotenv import load_dotenv
+from urllib.parse import urlencode
+# If needed, import 'spotify_client' from your local file:
+# from SpotifyAPIClient import spotify_client
 
-#user is registering account to webapp
-url = 'http://127.0.0.1:8000/register_user'
-user_data = {
-    "username": "Shrek",
-    "email": "isLove",
-    "password": "Shrek",
-    "bio": "isLife"
-}
+load_dotenv()
 
-response = requests.post(url, json=user_data)
+BASE_URL = "http://127.0.0.1:8000"
 
-#Here is what frontend recevies
-print(response.text)
+def test_register_user():
+    """Register a new user."""
+    url = f"{BASE_URL}/register_user"
+    user_data = {
+        "username": "Shrek",
+        "email": "isLove@",
+        "password": "Shrek",
+        "bio": "",
+        "access_token": "",
+        "refresh_token": "",
+    }
+
+    response = requests.post(url, json=user_data)
+    print("Register User Response:", response.text)
+    # Example assertion
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+def test_login_user():
+    """Log in the user and retrieve the session UUID."""
+    url = f"{BASE_URL}/login"
+    user_data = {
+        "username": "Shrek",
+        "email": "",
+        "password": "Shrek",
+        "bio": "",
+        "access_token": "",
+        "refresh_token": "",
+    }
+
+    response = requests.post(url, json=user_data)
+    print("Login Response Text:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+    # Parse the UUID from the response
+    data = json.loads(response.text)
+    uuid = data
+    assert uuid, "No 'uuid' found in login response!"
+    return uuid
+
+def test_spotify_auth(uuid: str):
+    """
+    Instruct the user to manually open the /spotifyAuth endpoint in their browser
+    (simulating an OAuth flow), then wait for them to come back to the terminal.
+    """
+    # 1. Print the URL so the user can open it manually in a browser
+    auth_url = f"{BASE_URL}/spotifyAuth?uniqueID={uuid}"
+    print("\n----------------------------------------------------------")
+    print("SPOTIFY AUTH STEP:")
+    print(f"Please open this URL in your browser to authenticate or if response says that access token exists then api call is good and access token is already in database")
+    response = requests.get(auth_url)
+    print(response.text)
+    print("----------------------------------------------------------\n")
+    print("SpotifyAuth (confirmation) Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    # 2. Wait for the user to finish
+    input("After completing the browser-based Spotify authorization, close the browser window/tab and press ENTER here to continue...")
+    
 
 
-#User is logging into web app 
-user_data = {
-    "username": "Shrek",
-    "email": "",
-    "password": "Shrek",
-    "bio": ""
-}
+def test_get_recently_played(uuid: str):
+    """Call getRecentlyPlayed using the existing UUID."""
+    url = f"{BASE_URL}/getRecentlyPlayed?uuid={uuid}"
+    response = requests.get(url)
+    print("getRecentlyPlayed Response:", response.text)
 
-url = "http://127.0.0.1:8000/login"
-response = requests.get(url,json=user_data)
-#Frontend receives a session id (uuid) and is now able to be logged into account
-print(response.json)
-uuid = json.loads(response.text)
-print(uuid["uuid"])
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    return response.text
 
+def main():
+    # 1. Register user
+    test_register_user()
 
-#User is linking their spotify account to webappp
-url = f"http://127.0.0.1:8000/spotifyAuth?uniqueID={uuid["uuid"]}"
-response = requests.get(url=url)
-data = response.text
+    # 2. Log in to retrieve UUID
+    user_uuid = test_login_user()
+    print("Extracted UUID:", user_uuid)
 
-print(data)
+    # 3. Prompt user for Spotify Auth
+    test_spotify_auth(user_uuid)
+
+    # 4. Get recently played tracks
+    recently_played = test_get_recently_played(user_uuid)
+    print("Recently Played:", recently_played)
+
+    print("\nAll test steps completed successfully.")
+
+if __name__ == "__main__":
+    main()

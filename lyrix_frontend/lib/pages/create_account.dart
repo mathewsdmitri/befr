@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lyrix_frontend/account_service.dart';
+import 'package:lyrix_frontend/pages/link_spotify.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -17,6 +17,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
   // of the TextField.
   final controllerName = TextEditingController();
   final controllerUsername = TextEditingController();
+  final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
 
   @override
@@ -24,6 +25,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     // Clean up the controller when the widget is disposed.
     controllerName.dispose();
     controllerUsername.dispose();
+    controllerEmail.dispose();
     controllerPassword.dispose();
     super.dispose();
   }
@@ -38,10 +40,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _label('Name'),
-          _textEntryName('ex. John Doe'),
-          _label('Preffered Username'),
+          _label('Preferred Username'),
           _textEntryUsername(''),
+          _label('Preferred Email'),
+          _textEntryEmail('Please enter valid email.'),
           _label('New Password'),
           _textEntryPassword('Make it strong!'),
 
@@ -72,28 +74,37 @@ class _CreateAccountPage extends State<CreateAccountPage> {
           */
           Container(
             alignment: Alignment.center,
-            margin: EdgeInsets.only(top: 30),
+            margin: const EdgeInsets.only(top: 30),
             child: SizedBox(
               child: ElevatedButton(
                 onPressed: ()async{
-                  print(controllerName.text);
+                  print(controllerEmail.text);
                   print(controllerUsername.text);
                   print(controllerPassword.text);
-                  final String url = "http://localhost:8000/register_user";
+                  const String url = "http://localhost:8000/register_user";
                   var body = jsonEncode({
-                    'email':controllerName.text,
+                    'email':controllerEmail.text,
                     'username' : controllerUsername.text,
-                    'password' : controllerPassword.text
+                    'password' : controllerPassword.text,
+                    'bio' : "",
+                    'access_token': "",
+                    'refresh_token': "" 
                   });
                   final response  = await http.post(Uri.parse(url),
                     headers: {"Content-Type": "application/json"},
                     body:body);
                   print("${response.statusCode}");
+                  sendLoginRequest(context, controllerUsername.text, controllerPassword.text);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const Scaffold(
+                        body: LinkSpotify(), //Link Spotify Page
+                      );
+                  }));
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(20)
+                  padding: const EdgeInsets.all(20)
                 ),
-                child: Text('Confirm'),
+                child: const Text('Confirm'),
               ),
             ),
           )
@@ -105,13 +116,13 @@ class _CreateAccountPage extends State<CreateAccountPage> {
   Column _label(String label){
     return Column(
             children: [
-              SizedBox(height: 40,),
+              const SizedBox(height: 40,),
               Padding(
                 padding: const EdgeInsets.only(left:30),
                 child: Text(
                   label,
-                  style: TextStyle(
-                    color: const Color.fromARGB(255, 49, 49, 49),
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 49, 49, 49),
                     fontSize: 18,
                     fontWeight: FontWeight.w600
                   ),
@@ -121,28 +132,28 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }
 
-  Container _textEntryName(String example){
+  Container _textEntryUsername(String example){
     return Container(
-            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: const BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 161, 146, 146),
+                  color: Color.fromARGB(255, 161, 146, 146),
                   blurRadius: 10,
                   spreadRadius: 0.0,
                 )
               ]
             ),
             child: TextField(
-              controller: controllerName,
+              controller: controllerUsername,
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(15),
+                contentPadding: const EdgeInsets.all(15),
                 hintText: example,
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 194, 186, 186),
+                hintStyle: const TextStyle(
+                  color: Color.fromARGB(255, 194, 186, 186),
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -160,28 +171,28 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               ),
             )
     );
-  }Container _textEntryUsername(String example){
+  }Container _textEntryEmail(String example){
     return Container(
-            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: const BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 161, 146, 146),
+                  color: Color.fromARGB(255, 161, 146, 146),
                   blurRadius: 10,
                   spreadRadius: 0.0,
                 )
               ]
             ),
             child: TextField(
-              controller: controllerUsername,
+              controller: controllerEmail,
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(15),
+                contentPadding: const EdgeInsets.all(15),
                 hintText: example,
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 194, 186, 186),
+                hintStyle: const TextStyle(
+                  color: Color.fromARGB(255, 194, 186, 186),
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -201,11 +212,11 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }Container _textEntryPassword(String example){
     return Container(
-            margin: EdgeInsets.only(top: 0, left: 20, right: 20),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            decoration: const BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(255, 161, 146, 146),
+                  color: Color.fromARGB(255, 161, 146, 146),
                   blurRadius: 10,
                   spreadRadius: 0.0,
                 )
@@ -217,10 +228,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(15),
+                contentPadding: const EdgeInsets.all(15),
                 hintText: example,
-                hintStyle: TextStyle(
-                  color: const Color.fromARGB(255, 194, 186, 186),
+                hintStyle: const TextStyle(
+                  color: Color.fromARGB(255, 194, 186, 186),
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -242,57 +253,20 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   AppBar appBar() {
     return AppBar(
-      title: Text(
+      backgroundColor: Colors.lightBlue,
+  //    automaticallyImplyLeading: false, //Gets rid of backarrow caused by new appbar
+      title: const Text(
         "Create Account",
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold
         ),
       ),
-      backgroundColor: Colors.white,
+  //    backgroundColor: Colors.white,
       centerTitle: true,
       elevation: 0,
-      leading: GestureDetector(
-        onTap: (){
-          
-        },
-        child: Container(
-          margin: EdgeInsets.all(10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: SvgPicture.asset(
-            'assets/icons/Arrow - Left 2.svg',
-            height: 20,
-            width: 20,
-          ),
-        )
-
-      ),
-      actions: [
-        GestureDetector(
-          onTap: (){
-            
-          },
-          child: Container(
-            margin: EdgeInsets.all(20),
-            alignment: Alignment.center,
-            width: 15,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: SvgPicture.asset(
-              'assets/icons/dots.svg',
-              height: 20,
-              width: 20,
-            ),
-          ),
-        )
-      ],
+      
     );
   }
 }

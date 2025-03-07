@@ -3,11 +3,17 @@ from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
 
+
+
+
 class SpotifyAPIClient:
-    def __init__(self, client_id:str, client_secret:str, redirect_uri:str ):
+    def __init__(self, client_id:str, client_secret:str, redirect_uri:str, codeVerifier, codeChallenge):
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
+        self.codeVerifier = codeVerifier
+        self.codeChallenge = codeChallenge
+        
     
     def access_code_query(self, uniqueID:str):
         redirect_params = {
@@ -15,7 +21,9 @@ class SpotifyAPIClient:
             "response_type" : "code",
             "redirect_uri" : self.redirect_uri,
             "scope" : "user-read-recently-played",
-            "state" : uniqueID
+            "state" : uniqueID,
+            "code_challenge_method": 'S256',
+            "code_challenge" : self.codeChallenge
         }
         redirect_query = urlencode(redirect_params)
         query = f"https://accounts.spotify.com/authorize?{redirect_query}"
@@ -33,7 +41,58 @@ class SpotifyAPIClient:
             "redirect_uri" : self.redirect_uri,
             "client_id" : self.client_id,
             "client_secret": self.client_secret,
+            "code_verifier" : self.codeVerifier,
         }
         headers = {"Content-Type" : "application/x-www-form-urlencoded"}
         response = requests.post(url=url, data=data,headers=headers)
         return response
+    
+    def getsongs(self, access_token):
+        url  = "https://api.spotify.com/v1/me/player/recently-played"
+        headers = {"Authorization" : f"Bearer {access_token}"}
+        response = requests.get(url, headers=headers)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code,detail=response.json())
+        print(response)
+        data = response.json()
+        
+        items = data["items"]
+        tracks = []
+        for item in items:
+            tracks.append({"track_name": item["track"]["name"],
+                        "artist_name": item["track"]["artists"][0]["name"],
+                        "played_at": item["played_at"],
+                        })
+            
+        return tracks
+    
+    def search_track(self, access_token: str, track_name: str) -> str:
+        """
+        Searches Spotify for a track and returns the preview (snippet) URL if available.
+        Returns None or raises HTTPException if no preview is found or request fails.
+        """
+        base_url = "https://api.spotify.com/v1/search"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        params = {
+            "q": track_name,
+            "type": "track",
+            "limit": 1  # just get the top result
+        }
+
+        response = requests.get(base_url, headers=headers, params=params)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=response.json())
+
+        data = response.json()
+        tracks = data.get("tracks", {}).get("items", [])
+        print(tracks)
+        if not tracks:
+            # No matching track found
+            return None
+
+        # The snippet/preview is typically in "preview_url".
+        snippet_url = tracks[0].get("preview_url")
+        return snippet_url  # Might be None if the track has no preview

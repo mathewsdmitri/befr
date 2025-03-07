@@ -1,0 +1,14 @@
+Use this command to run server. Needs to be this command because if not you will get import errors. This is because of the way that the models are imported
+
+cd lyrix_backend
+py -m uvicorn lyrix-server:app --reload
+
+FOR MAC
+python3 -m uvicorn lyrix-server:app --reload 
+
+
+new terminal
+
+cd lyrix_frontend
+flutter run // ctrl F5
+
