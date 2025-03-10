@@ -15,6 +15,7 @@ class LinkSpotify extends StatefulWidget {
 @override
 
 class _LinkSpotify extends State<LinkSpotify> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
@@ -28,7 +29,7 @@ class _LinkSpotify extends State<LinkSpotify> {
               child: ElevatedButton(
                 onPressed: ()async{
                   String? uuid = await getUUID();
-                  String test = await uuid.toString();
+                  String test = uuid.toString();
                   test.replaceAll('"', '');
                   print(test);
                   print(uuid);

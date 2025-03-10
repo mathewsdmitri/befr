@@ -3,16 +3,16 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 
-final storage = FlutterSecureStorage(); // Secure storage instance
+const storage = FlutterSecureStorage(); // Secure storage instance
 
 Future<bool> sendLoginRequest(BuildContext context, String username, String password) async {
   const String url = 'http://localhost:8000/login'; // FastAPI endpoint
-  String username_test = "";
-  String email_test = "";
+  String usernameTest = "";
+  String emailTest = "";
   if (username.contains('@')){
-    email_test = username;
+    emailTest = username;
   }else{
-    username_test = username;
+    usernameTest = username;
   }
   print(username);
   print(password);
@@ -23,8 +23,8 @@ Future<bool> sendLoginRequest(BuildContext context, String username, String pass
         "Content-Type": "application/json", 
       },
       body: jsonEncode({
-        'username': username_test,
-        'email': email_test,
+        'username': usernameTest,
+        'email': emailTest,
         'password': password,
         'bio': "",
         'access_token': "",

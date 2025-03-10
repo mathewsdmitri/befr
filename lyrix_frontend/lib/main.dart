@@ -8,7 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 
 // Get UUID
@@ -30,7 +30,7 @@ void main() async{
 }
 
 Future<bool> checkLoginStatus() async {
-  final storage = FlutterSecureStorage();
+  const storage = FlutterSecureStorage();
   String? uuid = await storage.read(key: 'user_uuid');
   return uuid != null; // If UUID exists, user is logged in
 }
@@ -53,8 +53,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: isLoggedIn? "/home" : "/login",
       routes: {
-        "/login": (context) => LoginPage(),
-        "/home": (context) => MyHomePage(),
+        "/login": (context) => const LoginPage(),
+        "/home": (context) => const MyHomePage(),
       }
     );
   }
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   return <Widget>[
     HomePage(posts: posts),
     PostPage(addPost: addPost),
-    Profilepage(),
+    const Profilepage(),
   ];
   }
 

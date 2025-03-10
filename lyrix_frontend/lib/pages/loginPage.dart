@@ -5,6 +5,7 @@ import 'package:lyrix_frontend/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  @override
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -71,10 +72,10 @@ class _LoginPageState extends State<LoginPage>{
             ),
                         // Show error message if login fails
             if (errorMessage.isNotEmpty) 
-              Text(errorMessage, style: TextStyle(color: Colors.red)),
+              Text(errorMessage, style: const TextStyle(color: Colors.red)),
 
             isLoading 
-              ? CircularProgressIndicator() // Show loading spinner
+              ? const CircularProgressIndicator() // Show loading spinner
               : Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
