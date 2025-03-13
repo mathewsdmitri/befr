@@ -14,9 +14,9 @@ def test_register_user():
     """Register a new user."""
     url = f"{BASE_URL}/register_user"
     user_data = {
-        "username": "Shrek",
-        "email": "isLove@",
-        "password": "Shrek",
+        "username": "Steve",
+        "email": "steveisLove@",
+        "password": "steve",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -31,9 +31,9 @@ def test_login_user():
     """Log in the user and retrieve the session UUID."""
     url = f"{BASE_URL}/login"
     user_data = {
-        "username": "Shrek",
+        "username": "Steve",
         "email": "",
-        "password": "Shrek",
+        "password": "steve",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -80,7 +80,7 @@ def test_get_recently_played(uuid: str):
 
 def main():
     # 1. Register user
-    test_register_user()
+    #test_register_user()
 
     # 2. Log in to retrieve UUID
     user_uuid = test_login_user()
