@@ -78,7 +78,23 @@ def test_get_recently_played(uuid: str):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     return response.text
 
+def test_create_post():
+    url = f"{BASE_URL}/post"
+    post_data = {
+        "username": "",
+        "content": "",
+        "likes": [],
+        "comments": [],
+    }
+    response = requests.post(url, json=post_data)
+    print("Register User Response:", response.text)
+    # Example assertion
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 def main():
+    # 0. Create Post
+    test_create_post()
+
     # 1. Register user
     #test_register_user()
 
