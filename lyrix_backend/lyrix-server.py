@@ -10,6 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
+from models.Posts import PostModel, Post
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 load_dotenv()
@@ -102,3 +103,9 @@ def getRecentlyPlayed(uuid):
     list = spotify_client.getsongs(access_token=access_token)
     print(list)
     return list
+
+@app.post("/post")
+def createPost(post:PostModel):
+    newPost = Post(username=post.username, content=post.content)
+    newPost.create_post()
+    return newPost
