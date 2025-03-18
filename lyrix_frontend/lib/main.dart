@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   return <Widget>[
     HomePage(posts: posts),
     PostPage(addPost: addPost),
-    const Profilepage(),
+    Profilepage(),
   ];
   }
 
