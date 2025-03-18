@@ -10,6 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
+from models.Posts import PostModel, Post
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 load_dotenv()
@@ -41,6 +42,7 @@ class LoginModel(BaseModel):
     password: str
     bio: str
     access_token: str
+    refresh_token: str
 
 class SessionModel(BaseModel):
     username: str
@@ -51,7 +53,7 @@ class SessionModel(BaseModel):
 #this is a post request to register users
 @app.post("/register_user")
 def register_user(user: LoginModel):
-    new_user = User(user.username, user.email, user.password, user.bio, user.access_token)
+    new_user = User(username = user.username, email = user.email, password = user.password, bio = user.bio, access_token = user.access_token, refresh_token = user.refresh_token)
     return new_user.register_user()
 
 @app.post("/login")
@@ -91,7 +93,7 @@ def callback(request:Request):
     refresh_token = token_data["refresh_token"]
     print(access_token)
     print(refresh_token)
-    update_response = token_post_to_user(access_token, uuid)
+    update_response = token_post_to_user(access_token = access_token, uuid = uuid, refresh_token = refresh_token)
     # Open the file in write mode
     return update_response
 
@@ -101,3 +103,9 @@ def getRecentlyPlayed(uuid):
     list = spotify_client.getsongs(access_token=access_token)
     print(list)
     return list
+
+@app.post("/post")
+def createPost(post:PostModel):
+    newPost = Post(username=post.username, content=post.content)
+    newPost.create_post()
+    return newPost

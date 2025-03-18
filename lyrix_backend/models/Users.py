@@ -2,6 +2,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
+import bcrypt
 from .Sessions import Session, SessionModel, find_in_session
 
 
@@ -55,44 +56,56 @@ class User:
         """Adds a user to the database if that user doesn't already exist."""
 
         #Check if the username and/or email already exists in the database
+        existing_user = users_collection.find_one({"username": self.username})
+        if existing_user:
+            return {"Error": "Username already exists"}
 
-
-        try:
-
-            if users_collection.find_one({"username": self.username}):
-                return {"Error": "Username already in use!"}
+        existing_email = users_collection.find_one({"email": self.email})
+        if existing_email:
+            return {"Error": "Email already in use"}
         
-            if users_collection.find_one({"email": self.email}):
-                return {"Error": "Email already in use!"}
-        
-        #Create a dictionary with the user information to store into database
 
-            user_data = {
-                "username": self.username,
-                "email": self.email,
-                "password": self.password,
-                "bio": self.bio,
-                "access_token": self.access_token,
-                "refresh_token": self.refresh_token,
-            }
+        #Encrypt password
+        hashed_bytes = bcrypt.hashpw(self.password.encode("utf-8"), bcrypt.gensalt())
 
-            #Store the dictionary with the users data into the database
-            users_collection.insert_one(user_data)
+        hashed_str = hashed_bytes.decode("utf-8")
 
-            return {"message": f"User '{self.username}' registered successfully!"}
-        
-        #Check for valid email format
-        except ValidationError as e:
-            return {"error": f"Validation Error: {e}"}
-        
-        #Catch any other errors that occur
-        except Exception as e:
-            return {"error": f"An unexpected error occurred: {e}"}
-        
-    def login_user(self):
+        #User data to be stored
+        user_data = {
+            "email": self.email,
+            "username": self.username,
+            "password": hashed_str, 
+            "bio": self.bio,
+            "access_token": self.access_token,
+            "refresh_token": self.refresh_token
 
-        if users_collection.find_one({"username": self.username}):
-            return {"Error": "Username already in use!"}
+        }
+
+        #Store user data into database
+        users_collection.insert_one(user_data)
+
+        #Automatically log in user after registration is complete
+        #request.session["username"] = self.username
+
+        return{"message": "Successfully Registered"}
+
+        
+    def login_user(username, password):
+        
+        user = users_collection.find_one({"username": username})
+        if not user:
+            return{"error": "User not found"}\
+            
+        stored_hash_str = user["password"]
+        stored_hash_bytes = stored_hash_str.encode("utf-8")
+
+        if bcrypt.checkpw(password.encode("utf-8"), stored_hash_bytes):
+            # Auth success!
+            return {"message": "Login successful"}
+        else:
+            return {"error": "Invalid password."}
+
+    
          
 
  
@@ -121,9 +134,16 @@ def find_user(user:User):
 #Finds user with username and authorizes account with their password. If the account is found it returns the whole user from database
 def auth_user(user:User):
     auth_user = find_user(user)
+    
+    stored_hash_str = auth_user.password
 
-    if user.password == auth_user.password:
-        return User(auth_user.username, auth_user.email, auth_user.password, auth_user.bio)
+    stored_hash_bytes = stored_hash_str.encode("utf-8")
+
+    if bcrypt.checkpw(user.password.encode("utf-8"), stored_hash_bytes):
+         return User(auth_user.username, auth_user.email, auth_user.password, auth_user.bio)
+        
+    else:
+         return {"error": "Invalid password."}
 
 #Create session authorizes user that logs in. They are passed the unique id so that they can access app
 def create_session(user:User):
@@ -139,13 +159,13 @@ def uuid_to_user(uuid:str):
     return user
     
 # Update the user's access token in the database
-def token_post_to_user(access_token: str, uuid: str):
+def token_post_to_user(access_token: str, uuid: str, refresh_token: str):
     
     # Finds a user in the database by their uuid and updates the access token
     user  = uuid_to_user(uuid)
     result = users_collection.update_one(
         filter=users_collection.find_one({"username": user.username}),
-        update={"$set": {"access_token": access_token}}
+        update={"$set": {"access_token": access_token, "refresh_token": refresh_token}}
     )
 
     if result.matched_count == 0:

@@ -1,6 +1,24 @@
 
 .env
 access_tokens.txt
+architectural-poc/myproj/android/gradle/wrapper/gradle-wrapper.properties
+architectural-poc/myproj/android/gradle/wrapper/gradle-wrapper.properties
+architectural-poc/myproj/linux/flutter/generated_plugin_registrant.cc
+architectural-poc/myproj/linux/flutter/generated_plugin_registrant.h
+architectural-poc/myproj/linux/flutter/generated_plugins.cmake
+architectural-poc/myproj/macos/Flutter/GeneratedPluginRegistrant.swift
+architectural-poc/myproj/pubspec.lock
+architectural-poc/myproj/windows/flutter/generated_plugin_registrant.h
+architectural-poc/myproj/windows/flutter/generated_plugin_registrant.cc
+architectural-poc/myproj/windows/flutter/generated_plugins.cmake
+lyrix_frontend/android/gradle/wrapper/gradle-wrapper.properties
+lyrix_frontend/linux/flutter/generated_plugin_registrant.cc
+lyrix_frontend/linux/flutter/generated_plugin_registrant.h
+lyrix_frontend/linux/flutter/generated_plugins.cmake
+lyrix_frontend/macos/Flutter/GeneratedPluginRegistrant.swift
+lyrix_frontend/windows/flutter/generated_plugin_registrant.cc
+lyrix_frontend/windows/flutter/generated_plugin_registrant.h
+lyrix_frontend/windows/flutter/generated_plugins.cmake
 *.pyc
 lyrix_database/
 lyrix_backend/__pycache__/lyrix-server.cpython-313.pyc
