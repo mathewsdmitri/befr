@@ -12,10 +12,11 @@ posts_collection = db["posts"] #Connect to the posts collection
 
 class PostModel(BaseModel):
     username: str
+    post_id: str
     content: str # Still need to refine this
     timestamp: datetime = datetime.utcnow() # Still need to refine this
-    likes: list[dict] = []
-    comments: list[dict] = []
+    likes: list[dict]
+    comments: list[dict]
 
 
 
@@ -46,6 +47,7 @@ class Post:
 
     def create_post(self):
         """ Adds a new post to the database. """
+
         
         
         # Create a dictionary with the posts information
@@ -57,7 +59,6 @@ class Post:
             "likes": self.likes,
             "date_created": self.timestamp          
         }
-
         # Add the dictionary with the posts information into the database
 
         posts_collection.insert_one(post_data)
@@ -65,7 +66,7 @@ class Post:
         return {"message": "Post was made successfully!"}
 
 
-def find_post(username: str):
+def find_user_posts(username: str):
     """ Finds a post in the database if it exists. """
 
     list_posts = list(posts_collection.find_one({"username": username}))
@@ -85,16 +86,16 @@ def delete_post(self, username: str):
     else:
         return {"message": "Post not found!"}
         
-def like_post(self, username: str):
+def like_post(post_id:str, username: str):
     """ Adds a like from the post. """
 
-    post = posts_collection.find_one({"post_id": self.post_id})
+    post = posts_collection.find_one({"post_id": post_id})
 
     if post:
         if username in post["likes"]:
             return {"message": "User already liked this post!"}
 
-        posts_collection.update_one({"_id": self.post_id}, {"$push": {"likes": username}})
+        posts_collection.update_one({"_id": post_id}, {"$push": {"likes": username}})
         return {"message": "Post liked!"}
 
     return {"error": "Post not found"}

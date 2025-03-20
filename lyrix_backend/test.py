@@ -81,13 +81,15 @@ def test_get_recently_played(uuid: str):
 def test_create_post():
     url = f"{BASE_URL}/post"
     post_data = {
-        "username": "",
+        "username": "Shrek",
+        "post_id": "",
         "content": "",
-        "likes": [],
-        "comments": [],
+        "date_created": "",
+        "likes": [{}],
+        "comments": [{}],
     }
     response = requests.post(url, json=post_data)
-    print("Register User Response:", response.text)
+    print("Post Response:", response.text)
     # Example assertion
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
@@ -96,7 +98,7 @@ def main():
     test_create_post()
 
     # 1. Register user
-    #test_register_user()
+    test_register_user()
 
     # 2. Log in to retrieve UUID
     user_uuid = test_login_user()
