@@ -111,6 +111,7 @@ def callback(request:Request):
 
 @app.get("/getRecentlyPlayed")
 def getRecentlyPlayed(uuid):
+    #isExpired = check_access()
     access_token = uuid_to_access_token(uuid=uuid)
     list = spotify_client.getsongs(access_token=access_token)
     print(list)

@@ -41,13 +41,16 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = ""):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", access_time:datetime=datetime, friends = []):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
         self.bio = bio
         self.access_token = access_token
         self.refresh_token = refresh_token
+        self.access_time = access_time
+        self.friends = friends
+
         
     
     #Adds user to database and returns a string if the username is already in use or if the user registered succesfully
@@ -77,7 +80,9 @@ class User:
             "password": hashed_str, 
             "bio": self.bio,
             "access_token": self.access_token,
-            "refresh_token": self.refresh_token
+            "refresh_token": self.refresh_token,
+            "access_time" : self.access_time,
+            "friends": self.friends
 
         }
 
@@ -94,7 +99,7 @@ class User:
         
         user = users_collection.find_one({"username": username})
         if not user:
-            return{"error": "User not found"}\
+            return{"error": "User not found"}
             
         stored_hash_str = user["password"]
         stored_hash_bytes = stored_hash_str.encode("utf-8")
@@ -173,9 +178,13 @@ def token_post_to_user(access_token: str, uuid: str, refresh_token: str):
     
     return {"message": "Access token updated successfully!"}
 
-    
+def check_access(user:User):
+    return "No Access"
 #Gets user spotify access_token from the uuid
 def uuid_to_access_token(uuid):
     cur_user = uuid_to_user(uuid)
+    isExpired = check_access(cur_user)
+    if isExpired:
+        
     return cur_user.access_token
     
