@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 #The fastapi imports are for the app, Request is used to receive spotify authorization code
 #HTTPException is for error handling
 from fastapi import FastAPI, Request, HTTPException
-from models.Users import User, LoginModel, AccessModel, create_session
+from models.Users import User, LoginModel, ProfileModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
@@ -44,10 +44,10 @@ class LoginModel(BaseModel):
     access_token: str
     refresh_token: str
 
-class SessionModel(BaseModel):
+class ProfileModel(BaseModel):
     username: str
     email: str
-    uuid: str
+    bio: str
 
 '''
 #this is a post request to register users
@@ -60,16 +60,19 @@ def register_user(user: LoginModel):
 def login_user(user:LoginModel):
     print(user)
     session = create_session(user)
-    return session.uuid
+    return session
 
 @app.post("/forgot_password")
 def forgot_password(user:LoginModel):
     return find_user(user).password
     
-    
+@app.get("/get_user")   
+def get_user(user: LoginModel):
+    user = find_user(user).username
+    return user
 
 @app.get("/spotifyAuth")
-def auth_spotify(uniqueID):
+def auth_spotify(uniqueID:str):
     uniqueID = uniqueID.replace('"', '')
     cur_user = uuid_to_user(uuid=uniqueID)
     existing_token = cur_user.access_token

@@ -20,10 +20,10 @@ class LoginModel(BaseModel):
      refresh_token: str
 
 #This model is used when you need to make queries to access spotify api
-class AccessModel(BaseModel):
+class ProfileModel(BaseModel):
     email: str
     username: str
-    access_token: str
+    bio: str
 
 
 class User:

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lyrix_frontend/account_service.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 
 class Profilepage extends StatefulWidget {
-  final String username;
+  final String? username;
 
   const Profilepage({super.key, required this.username});
 
@@ -15,7 +16,7 @@ class _ProfilepageState extends State<Profilepage> {
 
   bool showSongs = true; //to help toggle tabs between posted songs and friend list
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +36,7 @@ class _ProfilepageState extends State<Profilepage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Username", // Updated to use passed username
+                  Text(widget.username ?? "User", // Updated to use passed username
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 5),
                   const Text(

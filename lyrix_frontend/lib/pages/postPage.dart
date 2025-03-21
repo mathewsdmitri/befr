@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lyrix_frontend/main.dart';
 
 class PostPage extends StatefulWidget {
 //  final Function(List <dynamic>) updateSongs;
@@ -21,17 +22,19 @@ class _PostPageState extends State<PostPage> {
   final TextEditingController captionController = TextEditingController();
 
   //List of predefined dropdown options (will be replaced with backend data later)
-  List<dynamic> options = ["Song 1", "Song 2", "Song 3"];
+  late List<dynamic> options;
 
   Future <List <dynamic>> listSongs() async{
     const String url = 'http://localhost:8000/getRecentlyPlayed';
-    const String uniqueID = 'qwert';
+    String? uniqueID = await getUUID();
     final response = await http.get(Uri.parse('$url?uuid=$uniqueID'));
     List <dynamic> data = jsonDecode(response.body);
-    options = data;
-    print(data);
-   // widget.updateSongs(data);
-    return data;
+            return data.map((song) {
+          return {
+            'track_name': song['track_name'],
+            'artist_name': song['artist_name'],
+          };
+        }).toList();
   }
 
   void showPostDialog() {
@@ -66,8 +69,8 @@ class _PostPageState extends State<PostPage> {
                 },
                 items: options.map((dynamic option) {
                   return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
+                    value: option['track_name'],
+                    child: Text(option['track_name']),
                   );
                 }).toList(),
               ),
@@ -116,7 +119,8 @@ class _PostPageState extends State<PostPage> {
           const SizedBox(height: 5), // Space between text and icon
           IconButton(
             onPressed: ()async {
-      //        options = await listSongs();  //THIS IS FOR GETTIN LIST OF SONGS
+             options = await listSongs();  //THIS IS FOR GETTIN LIST OF SONGS
+             print(options);
               showPostDialog();
               }, 
             icon: const Icon(Icons.add_circle_outline),
