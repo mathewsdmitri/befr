@@ -10,7 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
-from models.Posts import PostModel, Post
+from models.Posts import PostModel, Post, find_user_posts
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 load_dotenv()
@@ -48,6 +48,15 @@ class ProfileModel(BaseModel):
     username: str
     email: str
     bio: str
+
+    
+class PostModel(BaseModel):
+    username: str
+    post_id: str
+    content: str # Still need to refine this
+    timestamp: datetime = datetime.utcnow() # Still need to refine this
+    likes: list[dict] = []
+    comments: list[dict] = []
 
 '''
 #this is a post request to register users
@@ -111,4 +120,6 @@ def getRecentlyPlayed(uuid):
 def createPost(post:PostModel):
     newPost = Post(username=post.username, content=post.content)
     newPost.create_post()
+    print(find_user_posts(username="Shrek"))
+    
     return newPost
