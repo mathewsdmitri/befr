@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
 import bcrypt
@@ -18,6 +18,17 @@ class LoginModel(BaseModel):
      bio: str
      access_token: str
      refresh_token: str
+
+
+class UserModel(BaseModel):
+    email: str
+    username: str
+    password: str
+    bio: str
+    access_token: str
+    refresh_token: str
+    access_time : datetime
+    friends: list
 
 #This model is used when you need to make queries to access spotify api
 class ProfileModel(BaseModel):
@@ -41,14 +52,14 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", access_time:datetime=datetime, friends = []):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", friends = []):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
         self.bio = bio
         self.access_token = access_token
         self.refresh_token = refresh_token
-        self.access_time = access_time
+        self.access_time = datetime.now()
         self.friends = friends
 
         
@@ -125,13 +136,13 @@ def find_user(user:User):
         existing_user = users_collection.find_one({"username": user.username})
 
         if existing_user:
-            auth_user = LoginModel(**existing_user)
+            auth_user = UserModel(**existing_user)
             return auth_user
 
         existing_user = users_collection.find_one({"email": user.email})
 
         if user:
-            return LoginModel(**existing_user)
+            return UserModel(**existing_user)
         
 
         return {"error": "User not found!"}
@@ -160,6 +171,7 @@ def create_session(user:User):
 
 def uuid_to_user(uuid:str):
     session = find_in_session(uuid)
+    print (session)
     user = find_user(User(username=session.username, email=session.email, password=""))
     return user
     
@@ -179,12 +191,12 @@ def token_post_to_user(access_token: str, uuid: str, refresh_token: str):
     return {"message": "Access token updated successfully!"}
 
 def check_access(user:User):
-    return "No Access"
+    difference = datetime.now() - user.access_time
+    if difference > timedelta(hours=1):
+        return False
+    return True
 #Gets user spotify access_token from the uuid
 def uuid_to_access_token(uuid):
-    cur_user = uuid_to_user(uuid)
-    isExpired = check_access(cur_user)
-    if isExpired:
-        
+    cur_user = uuid_to_user(uuid)   
     return cur_user.access_token
     

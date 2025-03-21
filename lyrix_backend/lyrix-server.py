@@ -9,7 +9,7 @@ from models.Users import User, LoginModel, ProfileModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access
 from models.Posts import PostModel, Post, find_user_posts
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
@@ -111,7 +111,9 @@ def callback(request:Request):
 
 @app.get("/getRecentlyPlayed")
 def getRecentlyPlayed(uuid):
-    #isExpired = check_access()
+    cur_user = uuid_to_user(uuid=uuid)
+    isExpired = check_access(cur_user)
+    print(isExpired)
     access_token = uuid_to_access_token(uuid=uuid)
     list = spotify_client.getsongs(access_token=access_token)
     print(list)
