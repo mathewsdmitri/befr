@@ -78,12 +78,12 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
   List <dynamic> songs = [];
 
-  List<Map<String, String>> posts = [];
+  List<Map<String, String?>> posts = [];
 
 
-  void addPost(String song, String caption) {
+  void addPost(String song, String? albumArtUrl, String caption) {
     setState(() {
-      posts.insert(0, {"song": song, "caption": caption});
+      posts.add({'song': song, 'album_art_url': albumArtUrl, 'caption': caption});
     });
   }
 

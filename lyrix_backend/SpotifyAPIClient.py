@@ -56,15 +56,22 @@ class SpotifyAPIClient:
             raise HTTPException(status_code=response.status_code,detail=response.json())
         print(response)
         data = response.json()
-        
+   
         items = data["items"]
+        print (items)
         tracks = []
         for item in items:
-            tracks.append({"track_name": item["track"]["name"],
-                        "artist_name": item["track"]["artists"][0]["name"],
-                        "played_at": item["played_at"],
-                        })
-            
+            track_data = item.get("track", {})
+            album_data = track_data.get("album", {})
+            images = album_data.get("images", [])
+
+            tracks.append({
+                "track_name": track_data.get("name"),
+                "artist_name": track_data.get("artists", [{}])[0].get("name"),
+                "played_at": item.get("played_at"),
+                "album_art_url": images[0]["url"] if images else None
+            })
+                    
         return tracks
     
     def search_track(self, access_token: str, track_name: str) -> str:
