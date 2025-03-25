@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Remove the second "posts" list entirely
+  final Map<int, bool> likedPost = {};
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,23 @@ class _HomePageState extends State<HomePage> {
                         : const Icon(Icons.music_note),
                     title: Text(post['song'] ?? 'No Song'),
                     subtitle: Text(post['caption'] ?? ''),
+                  
+                  trailing: Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            likedPost[index] == true ? Icons.favorite : Icons.favorite_border,
+                            color: likedPost[index] == true ? Colors.pink : Colors.grey[700], 
+                          ),
+                          onPressed: () {
+                            setState(() {
+                                  likedPost[index] = !(likedPost[index] ?? false);
+                                });
+                          },
+                          ),
+                      ],
+                    ),
+                  
                   ),
                 );
               },
