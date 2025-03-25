@@ -14,11 +14,13 @@ class _LoginPageState extends State<LoginPage>{
   final TextEditingController password = TextEditingController();
   bool isLoading = false;
   String errorMessage = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page',
+        title: const Text(
+          'Login Page',
           style: TextStyle(
           color: Colors.white,
           fontSize: 18,
@@ -66,7 +68,7 @@ class _LoginPageState extends State<LoginPage>{
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   )),
-                  obscureText: false
+                  obscureText: true
                 
               ),
             ),
@@ -80,6 +82,10 @@ class _LoginPageState extends State<LoginPage>{
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: () async {
+                      print("Login button here");
+                      print("Username: ${username.text.trim()}");
+                      print("Password: ${password.text.trim()}");
+
                       setState(() {
                         isLoading = true;
                         errorMessage = "";
