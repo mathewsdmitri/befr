@@ -14,9 +14,9 @@ def test_register_user():
     """Register a new user."""
     url = f"{BASE_URL}/register_user"
     user_data = {
-        "username": "Shrek",
-        "email": "isLove@",
-        "password": "Shrek",
+        "username": "Steve",
+        "email": "steveisLove@",
+        "password": "steve",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -31,9 +31,9 @@ def test_login_user():
     """Log in the user and retrieve the session UUID."""
     url = f"{BASE_URL}/login"
     user_data = {
-        "username": "Shrek",
+        "username": "Steve",
         "email": "",
-        "password": "Shrek",
+        "password": "steve",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -78,7 +78,25 @@ def test_get_recently_played(uuid: str):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     return response.text
 
+def test_create_post():
+    url = f"{BASE_URL}/post"
+    post_data = {
+        "username": "Shrek",
+        "post_id": "",
+        "content": "",
+        "date_created": "",
+        "likes": [{}],
+        "comments": [{}],
+    }
+    response = requests.post(url, json=post_data)
+    print("Post Response:", response.text)
+    # Example assertion
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 def main():
+    # 0. Create Post
+    test_create_post()
+
     # 1. Register user
     test_register_user()
 
