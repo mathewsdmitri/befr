@@ -114,9 +114,11 @@ def getRecentlyPlayed(uuid):
     cur_user = uuid_to_user(uuid=uuid)
     isExpired = check_access(cur_user)
     print(isExpired)
+    response = spotify_client.refresh_access(isExpired, cur_user.access_token, cur_user.refresh_token)
+    if isExpired:
+        response = token_post_to_user(access_token=response['access_token'], uuid=uuid, refresh_token=response['refresh_token'])
     access_token = uuid_to_access_token(uuid=uuid)
     list = spotify_client.getsongs(access_token=access_token)
-    print(list)
     return list
 
 @app.post("/post")

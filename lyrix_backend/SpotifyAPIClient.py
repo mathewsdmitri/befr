@@ -2,7 +2,7 @@ import os
 from urllib.parse import urlencode
 from fastapi import Request, HTTPException
 import requests
-
+import base64
 
 
 
@@ -54,11 +54,9 @@ class SpotifyAPIClient:
 
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code,detail=response.json())
-        print(response)
         data = response.json()
    
         items = data["items"]
-        print (items)
         tracks = []
         for item in items:
             track_data = item.get("track", {})
@@ -74,6 +72,54 @@ class SpotifyAPIClient:
                     
         return tracks
     
+    def refresh_access(self, isExpired, access_token: str, refresh_token:str):
+
+        if not isExpired:
+            # If not expired, just return existing tokens.
+            return {
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
+
+        # Encode client credentials for Basic auth
+        credentials = f"{self.client_id}:{self.client_secret}"
+        encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+        url = "https://accounts.spotify.com/api/token"
+        headers = {
+            "Authorization": f"Basic {encoded_credentials}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+
+        response = requests.post(url, headers=headers, data=data)
+        if response.status_code != 200:
+            raise Exception(
+                f"Failed to refresh token. Status code: {response.status_code}, Response: {response.text}"
+            )
+
+        tokens = response.json()
+
+        # Example response tokens dict could include:
+        # {
+        #   "access_token": "newAccessTokenString",
+        #   "token_type": "Bearer",
+        #   "scope": "...",
+        #   "expires_in": 3600,
+        #   "refresh_token": "newRefreshTokenString"
+        # }
+
+        new_access_token = tokens.get("access_token")
+        new_refresh_token = tokens.get("refresh_token", refresh_token)
+
+        return {
+            "access_token": new_access_token,
+            "refresh_token": new_refresh_token
+        }
+
     def search_track(self, access_token: str, track_name: str) -> str:
         """
         Searches Spotify for a track and returns the preview (snippet) URL if available.
@@ -95,7 +141,6 @@ class SpotifyAPIClient:
 
         data = response.json()
         tracks = data.get("tracks", {}).get("items", [])
-        print(tracks)
         if not tracks:
             # No matching track found
             return None

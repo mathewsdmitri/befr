@@ -182,7 +182,7 @@ def token_post_to_user(access_token: str, uuid: str, refresh_token: str):
     user  = uuid_to_user(uuid)
     result = users_collection.update_one(
         filter=users_collection.find_one({"username": user.username}),
-        update={"$set": {"access_token": access_token, "refresh_token": refresh_token}}
+        update={"$set": {"access_token": access_token, "refresh_token": refresh_token, "access_time": datetime.now()}}
     )
 
     if result.matched_count == 0:
@@ -192,7 +192,8 @@ def token_post_to_user(access_token: str, uuid: str, refresh_token: str):
 
 def check_access(user:User):
     difference = datetime.now() - user.access_time
-    if difference > timedelta(hours=1):
+    print(difference)
+    if difference < timedelta(hours=1):
         return False
     return True
 #Gets user spotify access_token from the uuid
