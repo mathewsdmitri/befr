@@ -13,6 +13,8 @@ from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user,
 from models.Posts import PostModel, Post, find_user_posts
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -119,7 +121,17 @@ def getRecentlyPlayed(uuid):
         response = token_post_to_user(access_token=response['access_token'], uuid=uuid, refresh_token=response['refresh_token'])
     access_token = uuid_to_access_token(uuid=uuid)
     list = spotify_client.getsongs(access_token=access_token)
-    return list
+    pacific_tz = ZoneInfo("America/Los_Angeles")
+    todays_date = datetime.now(pacific_tz).date()
+    filtered = []
+    for track in list:
+        track_time = track["played_at"].replace("Z", "+00:00")
+        played_dt_utc = datetime.fromisoformat(track_time)
+        played_dt_pacific = played_dt_utc.astimezone(pacific_tz)
+        if played_dt_pacific.date() == todays_date:
+            filtered.append(track)
+    print(filtered)
+    return filtered
 
 @app.post("/post")
 def createPost(post:PostModel):
