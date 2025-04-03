@@ -19,9 +19,26 @@ class _LinkSpotify extends State<LinkSpotify> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        shape: Border(
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 3
+          )
+        ),
+        title: const Text(
+          'Link to Spotify',
+          style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,)
+        ),
+        centerTitle: true,
+      ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             alignment: Alignment.center,
@@ -55,7 +72,7 @@ class _LinkSpotify extends State<LinkSpotify> {
                     print("Request failed: $e");
                   }
                 },
-                child: const Text('Link Account to Spotify!'),
+                child: const Text('Link Account to Spotify!', style: TextStyle(color: Colors.black),),
               ),
             ),
           ),

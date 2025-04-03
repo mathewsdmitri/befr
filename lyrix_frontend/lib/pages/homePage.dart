@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: currentPosts.isEmpty
-          ? const Center(child: Text("No posts yet", style: TextStyle(color: Colors.black),))
+          ? const Center(child: Text("No posts yet", style: TextStyle(color: Colors.white),))
           : ListView.separated(
               itemCount: currentPosts.length,
               itemBuilder: (context, index) {
@@ -35,19 +35,27 @@ class _HomePageState extends State<HomePage> {
           children: [
             
             SizedBox(
-              width: 250,
+              width: 350,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  CircleAvatar(
+                    radius:23,
+                    backgroundImage: AssetImage("assets/profile.png"),
+                    backgroundColor: Colors.grey[400],
+                  ),
+                  const SizedBox(width: 8),
                   Text(
                         widget.username ?? "User",
-                        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)
+                        style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
                     ),
                   const SizedBox(height: 10.0),
                 ],
               ),
             ),
-            
+
+            Padding(padding: EdgeInsets.only(top: 10)),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -61,9 +69,11 @@ class _HomePageState extends State<HomePage> {
                           fit: BoxFit.cover,
                         ),
                     )
-                  : const Icon(Icons.music_note, size: 250),
+                  : const Icon(Icons.music_note, size: 250, color: Colors.white),
               ],
             ),
+
+            Padding(padding: EdgeInsets.only(top: 5)),
 
             SizedBox(
               width: 250,
@@ -73,12 +83,12 @@ class _HomePageState extends State<HomePage> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,   
                     children: [
-                    Icon(Icons.comment_outlined, size: 30),
+                    Icon(Icons.comment_outlined, size: 30, color: Colors.white),
                     Padding(
                       padding: const EdgeInsets.all(7.0),
                       child: Text(
                         "View Comments",
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200),
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200, color: Colors.white),
                         ),
                     )
                     ],
@@ -89,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                       IconButton(
                         icon: Icon(
                           likedPost[index] == true ? Icons.favorite : Icons.favorite_border,
-                          color: likedPost[index] == true ? Colors.pink : Colors.black,
+                          color: likedPost[index] == true ? Colors.pink : Colors.white,
                         ),
                         
                         onPressed: () {
@@ -104,15 +114,26 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(padding: EdgeInsets.only(top: 30)),
-                Text(
-                  post['caption'] ?? '',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300),
-                ),
-              ],
+            Padding(padding: EdgeInsets.only(top: 5)),
+
+            SizedBox(
+              width: 325,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
+                  Column(
+                    children: [
+                      Text(
+                        post['caption'] ?? '',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: Colors.white),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
 
           ],
@@ -120,7 +141,7 @@ class _HomePageState extends State<HomePage> {
       );
     },
 
-    separatorBuilder: (context, index) => const Divider(color: Colors.black, thickness: 1),
+    separatorBuilder: (context, index) => const Divider(color: Colors.white, thickness: 1),
     ),
 
     );

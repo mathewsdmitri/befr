@@ -41,6 +41,7 @@ class _PostPageState extends State<PostPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text("Make a Post"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -88,9 +89,16 @@ class _PostPageState extends State<PostPage> {
               if (selectedOption != null)
                 TextField(
                   controller: captionController,
+                  style: const TextStyle(color: Colors.black), //color of input caption
                   decoration:
-                      const InputDecoration(hintText: "Enter a caption..."),
-                  maxLength: 120,
+                    const InputDecoration(
+                      hintText: "Enter a caption...",
+                      hintStyle: TextStyle(
+                        color: Colors.grey
+                      ) 
+                    ),
+                    maxLength: 120,
+                    
                 ),
               const SizedBox(height: 10),
 
@@ -118,7 +126,7 @@ class _PostPageState extends State<PostPage> {
                                   const SnackBar(content: Text("Post submitted!")),
                                 );
                               },
-                child: const Text("Post"),
+                child: const Text("Post", style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -134,11 +142,11 @@ class _PostPageState extends State<PostPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text("Add Post",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.white)),
           const SizedBox(height: 5), // Space between text and icon
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
-            color: Colors.black,
+            color: Colors.white,
             iconSize: 50,
             onPressed: () async {
               options = await listSongs(); // Fetch list of songs from your backend

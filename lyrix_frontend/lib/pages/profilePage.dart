@@ -28,7 +28,7 @@ class _ProfilepageState extends State<Profilepage> {
               const CircleAvatar(
                 radius: 50,
                 backgroundImage: AssetImage("assets/profile.png"),
-                backgroundColor: Colors.grey,
+                backgroundColor: Color.fromARGB(255, 189, 189, 189),
               ),
               const SizedBox(width: 30), //boxes profile pic controlling the distance between pic and username
 
@@ -37,13 +37,13 @@ class _ProfilepageState extends State<Profilepage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(widget.username ?? "User", // Updated to use passed username
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 5),
                   const Text(
                     "bio",  //should let users edit this for their bio
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.normal
                     ),
                   )
@@ -65,7 +65,7 @@ class _ProfilepageState extends State<Profilepage> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: showSongs ? Colors.black : Colors.grey,
+                    color: showSongs ? Colors.white : Colors.grey,
                   ),
                 ),
               ),
@@ -85,7 +85,7 @@ class _ProfilepageState extends State<Profilepage> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: !showSongs ? Colors.black : Colors.grey,
+                  color: !showSongs ? Colors.white : Colors.grey,
                 ),
               ),
             ),
@@ -130,8 +130,8 @@ Widget buildSongsGrid() {
       itemBuilder: (context, index) {
         return ListTile(
           leading: CircleAvatar(backgroundColor: Colors.blueGrey),
-          title: Text("Friend ${index + 1}"),
-          subtitle: Text("Mutual friend"),
+          title: Text("Friend ${index + 1}", style: TextStyle(color: Colors.white),),
+          subtitle: Text("Mutual friend", style: TextStyle(color: Colors.white),),
         );
       },
     );

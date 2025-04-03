@@ -52,8 +52,13 @@ class MyApp extends StatelessWidget {
       title: 'befr demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,      //Background of app
-         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.black,      //Background of app
+        primarySwatch: Colors.blue,
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+          bodySmall: TextStyle(color: Colors.white),
+        ),
         //      useMaterial3: false,
       ),
       initialRoute: isLoggedIn? "/home" : "/login",
@@ -110,7 +115,14 @@ void _onItemTapped(int index) {
       String username = snapshot.data ?? "Guest User"; //default to "Guest User" if null
     return Scaffold(
       appBar: AppBar(
-         backgroundColor: Colors.black,
+        // shape: Border(
+        //   bottom: BorderSide(
+        //     color: Colors.white,     //if we want a border on lyrix appbar
+        //     width: 2
+        //   )
+        // ),
+        shadowColor: Colors.white,
+        backgroundColor: Colors.black,
         title: Center(
           child: Text(
             'lyrix',
@@ -127,28 +139,37 @@ void _onItemTapped(int index) {
       body: Center(
         child: _widgetOptions(username).elementAt(_selectedIndex), // Display the selected widget
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: 'Post',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
-
-        currentIndex: _selectedIndex, // Highlight the selected item
-        onTap: _onItemTapped, // Handle item tap
-        selectedItemColor: Colors.lightBlue[200], // Change selected item color
-        unselectedItemColor: Colors.white, // Change unselected item color
+      
+      bottomNavigationBar: 
+      
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.white, width: 3.0))
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.black,
+        
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline),
+              label: 'Post',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Profile',
+            ),
+          ],
+        
+          currentIndex: _selectedIndex, // Highlight the selected item
+          onTap: _onItemTapped, // Handle item tap
+          selectedItemColor: Colors.lightBlue[200], // Change selected item color
+          unselectedItemColor: Colors.white, // Change unselected item color
+        ),
       ),
       );
     },

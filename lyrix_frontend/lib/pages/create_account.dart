@@ -104,7 +104,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(20)
                 ),
-                child: const Text('Confirm'),
+                child: const Text('Confirm', style: TextStyle(color: Colors.black),),
               ),
             ),
           )
@@ -122,7 +122,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 child: Text(
                   label,
                   style: const TextStyle(
-                    color: Color.fromARGB(255, 49, 49, 49),
+                    color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600
                   ),
@@ -146,6 +146,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             ),
             child: TextField(
               controller: controllerUsername,
+              style: TextStyle(color: Colors.black),
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
@@ -153,7 +154,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 contentPadding: const EdgeInsets.all(15),
                 hintText: example,
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 194, 186, 186),
+                  color: Colors.grey,
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -185,6 +186,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             ),
             child: TextField(
               controller: controllerEmail,
+              style: TextStyle(color: Colors.black),
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
@@ -192,7 +194,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 contentPadding: const EdgeInsets.all(15),
                 hintText: example,
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 194, 186, 186),
+                  color: Colors.grey,
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -224,6 +226,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             ),
             child: TextField(
               controller: controllerPassword,
+              style: TextStyle(color: Colors.black),
               textAlign: TextAlign.left,
               decoration: InputDecoration(
                 filled: true,
@@ -231,7 +234,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 contentPadding: const EdgeInsets.all(15),
                 hintText: example,
                 hintStyle: const TextStyle(
-                  color: Color.fromARGB(255, 194, 186, 186),
+                  color: Colors.grey,
                 ),
                 /*prefixIcon: Padding(
                   padding: const EdgeInsets.all(12),
@@ -253,7 +256,14 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   AppBar appBar() {
     return AppBar(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Colors.black,
+      iconTheme: const IconThemeData(color: Colors.white),
+      shape: Border(
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 3
+          )
+        ),
   //    automaticallyImplyLeading: false, //Gets rid of backarrow caused by new appbar
       title: const Text(
         "Create Account",
