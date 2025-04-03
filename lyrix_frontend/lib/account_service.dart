@@ -32,7 +32,12 @@ Future<bool> sendLoginRequest(BuildContext context, String username, String pass
     }),
     );
     if (response.statusCode == 200) {
-      await storage.write(key: 'user_uuid', value: response.body); // Store UUID
+      print(response.body);
+      dynamic value = json.decode(response.body);
+      String uuid = value['uuid'];
+      String username = value['username'];
+      await storage.write(key: 'user_uuid', value: uuid); // Store UUID
+      await storage.write(key: 'user_username', value: username);//Store username
       return true;
     } else {
       print("Error: ${response.statusCode} - ${response.body}");

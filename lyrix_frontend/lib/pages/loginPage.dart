@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/account_service.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';
 import 'package:lyrix_frontend/pages/forgot_password.dart';
+import 'package:lyrix_frontend/pages/homePage.dart';
+import 'package:lyrix_frontend/pages/profilePage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,11 +16,13 @@ class _LoginPageState extends State<LoginPage>{
   final TextEditingController password = TextEditingController();
   bool isLoading = false;
   String errorMessage = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page',
+        title: const Text(
+          'Login Page',
           style: TextStyle(
           color: Colors.white,
           fontSize: 18,
@@ -66,7 +70,7 @@ class _LoginPageState extends State<LoginPage>{
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   )),
-                  obscureText: false
+                  obscureText: true
                 
               ),
             ),
@@ -80,6 +84,10 @@ class _LoginPageState extends State<LoginPage>{
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: () async {
+                      print("Login button here");
+                      print("Username: ${username.text.trim()}");
+                      print("Password: ${password.text.trim()}");
+
                       setState(() {
                         isLoading = true;
                         errorMessage = "";
@@ -97,9 +105,9 @@ class _LoginPageState extends State<LoginPage>{
                         if (!success) {
                           errorMessage = "Invalid email or password.";
                         }else{
-                          Navigator.pushReplacementNamed(context, "/home"); // Navigate to HomePage
-                        }
-                        
+                          Navigator.pushReplacementNamed(
+                              context, "/home");
+                        } 
                       });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.white),

@@ -5,13 +5,16 @@ from dotenv import load_dotenv
 #The fastapi imports are for the app, Request is used to receive spotify authorization code
 #HTTPException is for error handling
 from fastapi import FastAPI, Request, HTTPException
-from models.Users import User, LoginModel, AccessModel, create_session
+from models.Users import User, LoginModel, ProfileModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access
+from models.Posts import PostModel, Post, find_user_posts
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -43,10 +46,19 @@ class LoginModel(BaseModel):
     access_token: str
     refresh_token: str
 
-class SessionModel(BaseModel):
+class ProfileModel(BaseModel):
     username: str
     email: str
-    uuid: str
+    bio: str
+
+    
+class PostModel(BaseModel):
+    username: str
+    post_id: str
+    content: str # Still need to refine this
+    timestamp: datetime = datetime.utcnow() # Still need to refine this
+    likes: list[dict] = []
+    comments: list[dict] = []
 
 '''
 #this is a post request to register users
@@ -59,16 +71,19 @@ def register_user(user: LoginModel):
 def login_user(user:LoginModel):
     print(user)
     session = create_session(user)
-    return session.uuid
+    return session
 
 @app.post("/forgot_password")
 def forgot_password(user:LoginModel):
     return find_user(user).password
     
-    
+@app.get("/get_user")   
+def get_user(user: LoginModel):
+    user = find_user(user).username
+    return user
 
 @app.get("/spotifyAuth")
-def auth_spotify(uniqueID):
+def auth_spotify(uniqueID:str):
     uniqueID = uniqueID.replace('"', '')
     cur_user = uuid_to_user(uuid=uniqueID)
     existing_token = cur_user.access_token
@@ -98,7 +113,30 @@ def callback(request:Request):
 
 @app.get("/getRecentlyPlayed")
 def getRecentlyPlayed(uuid):
+    cur_user = uuid_to_user(uuid=uuid)
+    isExpired = check_access(cur_user)
+    print(isExpired)
+    response = spotify_client.refresh_access(isExpired, cur_user.access_token, cur_user.refresh_token)
+    if isExpired:
+        response = token_post_to_user(access_token=response['access_token'], uuid=uuid, refresh_token=response['refresh_token'])
     access_token = uuid_to_access_token(uuid=uuid)
     list = spotify_client.getsongs(access_token=access_token)
-    print(list)
-    return list
+    pacific_tz = ZoneInfo("America/Los_Angeles")
+    todays_date = datetime.now(pacific_tz).date()
+    filtered = []
+    for track in list:
+        track_time = track["played_at"].replace("Z", "+00:00")
+        played_dt_utc = datetime.fromisoformat(track_time)
+        played_dt_pacific = played_dt_utc.astimezone(pacific_tz)
+        if played_dt_pacific.date() == todays_date:
+            filtered.append(track)
+    print(filtered)
+    return filtered
+
+@app.post("/post")
+def createPost(post:PostModel):
+    newPost = Post(username=post.username, content=post.content)
+    newPost.create_post()
+    print(find_user_posts(username="Shrek"))
+    
+    return newPost

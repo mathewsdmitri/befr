@@ -21,11 +21,16 @@ Future<void> deleteUUID() async {
   await storage.delete(key: 'user_uuid');
 }
 
+// Get username
+Future<String?> getUser() async {
+  return await storage.read(key: 'user_username');
+}
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   final bool isLoggedIn = await checkLoginStatus();
-
+  print(getUser());
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
@@ -73,24 +78,20 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
   List <dynamic> songs = [];
 
-  // void updateSongs(List <dynamic> newSongs) {
-  //   setState(() {
-  //     songs = newSongs;
-  //   });
-  //}
-  List<Map<String, String>> posts = [];
+  List<Map<String, String?>> posts = [];
 
-  void addPost(String song, String caption) {
+
+  void addPost(String song, String? albumArtUrl, String caption) {
     setState(() {
-      posts.insert(0, {"song": song, "caption": caption});
+      posts.add({'song': song, 'album_art_url': albumArtUrl, 'caption': caption});
     });
   }
 
-  List<Widget> _widgetOptions() {
+  List<Widget> _widgetOptions(String username) {
   return <Widget>[
     HomePage(posts: posts),
     PostPage(addPost: addPost),
-    const Profilepage(),
+    Profilepage(username: username),
   ];
   }
 
@@ -103,6 +104,10 @@ void _onItemTapped(int index) {
    @override
   Widget build(BuildContext context) {
 
+    return FutureBuilder<String?>(
+    future: getUser(),
+    builder: (context, snapshot) {
+      String username = snapshot.data ?? "Guest User"; //default to "Guest User" if null
     return Scaffold(
       appBar: AppBar(
          backgroundColor: Colors.black,
@@ -120,8 +125,7 @@ void _onItemTapped(int index) {
         ),
       ),
       body: Center(
-        child: _widgetOptions()
-            .elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions(username).elementAt(_selectedIndex), // Display the selected widget
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
@@ -147,5 +151,7 @@ void _onItemTapped(int index) {
         unselectedItemColor: Colors.white, // Change unselected item color
       ),
       );
-  }
+    },
+  );
+}
 }
