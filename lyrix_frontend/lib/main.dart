@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> _widgetOptions(String username) {
   return <Widget>[
-    HomePage(posts: posts),
+    HomePage(posts: posts, username:username),
     PostPage(addPost: addPost),
     Profilepage(username: username),
   ];

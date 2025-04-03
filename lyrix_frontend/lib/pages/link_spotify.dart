@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:lyrix_frontend/main.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lyrix_frontend/pages/loginPage.dart';
 
 class LinkSpotify extends StatefulWidget {
   const LinkSpotify({super.key});
@@ -40,6 +41,10 @@ class _LinkSpotify extends State<LinkSpotify> {
                       var data = jsonDecode(response.body);
                       data = Uri.parse(data);
                       print(data);
+                      Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()), // Navigate to LoginPage
+                          );
                       if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
                         throw Exception('COULD NOT LOAD $response');
                       }
