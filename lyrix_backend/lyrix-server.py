@@ -10,7 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access
-from models.Posts import PostModel, Post, find_user_posts
+from models.Posts import PostModel, Post, InitPost, find_user_posts
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 from datetime import datetime, timezone
@@ -134,9 +134,12 @@ def getRecentlyPlayed(uuid):
     return filtered
 
 @app.post("/post")
-def createPost(post:PostModel):
-    newPost = Post(username=post.username, content=post.content)
-    newPost.create_post()
-    print(find_user_posts(username="Shrek"))
+def createPost(post:InitPost):
+    user = uuid_to_user(post.uniqueId)
+    if user.username == post.username:
+        newPost = Post(username=post.username, content=post.content, album_url=post.album_url, track_name=post.track_name, artist_name=post.artist_name)
+        newPost.create_post()
+        print(find_user_posts(username=post.username))
+        return "You Posted!"
     
-    return newPost
+    return "You are not who you say you are"

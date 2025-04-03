@@ -14,11 +14,21 @@ class PostModel(BaseModel):
     username: str
     post_id: str
     content: str # Still need to refine this
+    album_url: str
+    track_name: str
+    artist_name: str
     timestamp: datetime = datetime.utcnow() # Still need to refine this
     likes: list[dict]
     comments: list[dict]
 
-
+#Helper model for receiving unique ID and posts
+class InitPost(BaseModel):
+    username: str
+    content: str # Still need to refine this
+    album_url: str
+    track_name: str
+    artist_name: str
+    uniqueId: str
 
 
 
@@ -36,11 +46,14 @@ class Post:
     
     """
 
-    def __init__(self, username: str, content,): # Add a unique post ID
+    def __init__(self, username: str, content, track_name, artist_name, album_url=""): # Add a unique post ID
         self.post_id = str(uuid.uuid4()) # Will generate a random 36 character long string
         self.username = username
         self.content = content
         self.timestamp = datetime.now()
+        self.album_url = album_url
+        self.track_name = track_name
+        self.artist_name = artist_name
         self.likes = []
         self.comments = []
 
@@ -56,6 +69,9 @@ class Post:
             "username": self.username,
             "content": self.content,
             "comments": self.comments,
+            "album_url": self.album_url,
+            "track_name": self.track_name,
+            "artist_name": self.artist_name,
             "likes": self.likes,
             "date_created": self.timestamp          
         }

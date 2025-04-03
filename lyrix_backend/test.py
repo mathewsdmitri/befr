@@ -45,9 +45,8 @@ def test_login_user():
 
     # Parse the UUID from the response
     data = json.loads(response.text)
-    uuid = data
-    assert uuid, "No 'uuid' found in login response!"
-    return uuid
+    assert data, "No data found in login response!"
+    return data
 
 def test_spotify_auth(uuid: str):
     """
@@ -78,15 +77,15 @@ def test_get_recently_played(uuid: str):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     return response.text
 
-def test_create_post():
+def test_create_post(uuid:str, username:str):
     url = f"{BASE_URL}/post"
     post_data = {
-        "username": "Shrek",
-        "post_id": "",
-        "content": "",
-        "date_created": "",
-        "likes": [{}],
-        "comments": [{}],
+        "username": username,
+        "content": "This song gets me pumped!", # Still need to refine this
+        "album_url": "https://images.genius.com/1b3a29b3ea00ab2c45a1831ede4dad49.500x500x1.jpg",
+        "track_name": "If I Could Hold Your Soul",
+        "artist_name": "Cities Aviv",
+        "uniqueId": uuid
     }
     response = requests.post(url, json=post_data)
     print("Post Response:", response.text)
@@ -95,22 +94,23 @@ def test_create_post():
 
 def main():
     # 0. Create Post
-    test_create_post()
+
 
     # 1. Register user
     test_register_user()
 
     # 2. Log in to retrieve UUID
-    user_uuid = test_login_user()
-    print("Extracted UUID:", user_uuid)
+    logged_user = test_login_user()
+    print("Extracted UUID:", logged_user['uuid'])
 
     # 3. Prompt user for Spotify Auth
-    test_spotify_auth(user_uuid)
+    test_spotify_auth(logged_user['uuid'])
 
     # 4. Get recently played tracks
-    recently_played = test_get_recently_played(user_uuid)
+    recently_played = test_get_recently_played(logged_user['uuid'])
     print("Recently Played:", recently_played)
 
+    test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
     print("\nAll test steps completed successfully.")
 
 if __name__ == "__main__":
