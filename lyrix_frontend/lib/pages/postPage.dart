@@ -159,7 +159,17 @@ class _PostPageState extends State<PostPage> {
             onPressed: () async {
               options = await listSongs(); // Fetch list of songs from your backend
               print(options);
+              if (options.isEmpty){
+                showDialog(
+                  context: context, 
+                  builder: (_){
+                    return AlertDialog(
+                      title: const Text("No Songs Found. Listen to Something!"),
+                    );
+                  });
+              }else{
               showPostDialog();
+              }
             },
           ),
         ],
