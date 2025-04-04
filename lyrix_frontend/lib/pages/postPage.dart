@@ -47,7 +47,10 @@ class _PostPageState extends State<PostPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Dropdown menu
-              DropdownButton<String>(
+            SizedBox(
+              width: 1000,
+              child: DropdownButton<String>(
+                itemHeight: 100,
                 value: selectedOption,
                 hint: const Text("Select a song"),
                 isExpanded: true,
@@ -61,7 +64,11 @@ class _PostPageState extends State<PostPage> {
                   showPostDialog();
                 },
                 items: options.map((dynamic option) {
+                  final String track_name = option['track_name'];
+                  final String artist_name = option['artist_name'];
+                  final displayText = '$track_name\nBy $artist_name';
                   return DropdownMenuItem<String>(
+                    
                     value: option['track_name'],
                     child: Row(
                       children: [
@@ -70,19 +77,20 @@ class _PostPageState extends State<PostPage> {
                             option['album_art_url'].isNotEmpty)
                           Image.network(
                             option['album_art_url'],
-                            width: 40,
-                            height: 40,
+                            width: 100,
+                            height: 100,
                             fit: BoxFit.cover,
                           )
                         else
                           const Icon(Icons.music_note),
-                        const SizedBox(width: 8),
-                        Text(option['track_name']),
+                        const SizedBox(width: 30),
+                        Flexible(child: Text(displayText)),
                       ],
                     ),
                   );
                 }).toList(),
-              ),
+              )
+            ),
               const SizedBox(height: 10),
 
               // Show caption input only after an option is selected

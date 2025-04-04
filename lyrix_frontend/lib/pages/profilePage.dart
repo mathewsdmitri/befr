@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lyrix_frontend/account_service.dart';
-import 'package:lyrix_frontend/pages/create_account.dart';
-import 'package:lyrix_frontend/pages/loginPage.dart';
 
 class Profilepage extends StatefulWidget {
   final String? username;
