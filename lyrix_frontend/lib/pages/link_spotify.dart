@@ -60,7 +60,7 @@ class _LinkSpotify extends State<LinkSpotify> {
                       print(data);
                       Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginPage()), // Navigate to LoginPage
+                            MaterialPageRoute(builder: (context) => MyHomePage()), // Navigate to LoginPage
                           );
                       if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
                         throw Exception('COULD NOT LOAD $response');
