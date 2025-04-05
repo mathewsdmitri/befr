@@ -14,9 +14,9 @@ def test_register_user():
     """Register a new user."""
     url = f"{BASE_URL}/register_user"
     user_data = {
-        "username": "Steve",
-        "email": "steveisLove@",
-        "password": "steve",
+        "username": "Rodger",
+        "email": "rodger@",
+        "password": "rodger",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -31,9 +31,9 @@ def test_login_user():
     """Log in the user and retrieve the session UUID."""
     url = f"{BASE_URL}/login"
     user_data = {
-        "username": "Steve",
+        "username": "Rodger",
         "email": "",
-        "password": "steve",
+        "password": "rodger",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -49,7 +49,7 @@ def test_login_user():
     assert uuid, "No 'uuid' found in login response!"
     return uuid
 
-def test_spotify_auth(uuid: str):
+#def test_spotify_auth(uuid: str):
     """
     Instruct the user to manually open the /spotifyAuth endpoint in their browser
     (simulating an OAuth flow), then wait for them to come back to the terminal.
@@ -66,10 +66,8 @@ def test_spotify_auth(uuid: str):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     # 2. Wait for the user to finish
     input("After completing the browser-based Spotify authorization, close the browser window/tab and press ENTER here to continue...")
-    
 
-
-def test_get_recently_played(uuid: str):
+#def test_get_recently_played(uuid: str):
     """Call getRecentlyPlayed using the existing UUID."""
     url = f"{BASE_URL}/getRecentlyPlayed?uuid={uuid}"
     response = requests.get(url)
@@ -78,7 +76,7 @@ def test_get_recently_played(uuid: str):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     return response.text
 
-def test_create_post():
+#def test_create_post():
     url = f"{BASE_URL}/post"
     post_data = {
         "username": "",
@@ -91,23 +89,51 @@ def test_create_post():
     # Example assertion
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def test_follow_user():
+    url = f"{BASE_URL}/follow"
+    data = {
+            "follower_user": "Rodger",      # The user who is following
+            "user_account": "Shrek" 
+        }
+    response = requests.post(url, json=data)
+    print("Follow Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+def test_unfollow_user():
+    """
+    Test the /unfollow endpoint.
+    """
+    url = f"{BASE_URL}/unfollow"
+    data = {
+        "follower_user": "Thomas",      # The user who is unfollowing
+        "user_account": "Shrek"       # The user being unfollowed
+    }
+    response = requests.post(url, json=data)
+    print("Unfollow Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+
 def main():
     # 0. Create Post
-    test_create_post()
+    #test_create_post()
 
     # 1. Register user
-    #test_register_user()
+    test_register_user()
 
     # 2. Log in to retrieve UUID
     user_uuid = test_login_user()
     print("Extracted UUID:", user_uuid)
 
     # 3. Prompt user for Spotify Auth
-    test_spotify_auth(user_uuid)
+    #test_spotify_auth(user_uuid)
 
     # 4. Get recently played tracks
-    recently_played = test_get_recently_played(user_uuid)
-    print("Recently Played:", recently_played)
+    #recently_played = test_get_recently_played(user_uuid)
+    #print("Recently Played:", recently_played)
+
+     # 5. Test follow/unfollow
+    #test_follow_user()
+    test_unfollow_user()
 
     print("\nAll test steps completed successfully.")
 

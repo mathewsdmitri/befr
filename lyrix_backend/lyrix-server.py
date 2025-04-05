@@ -9,10 +9,13 @@ from models.Users import User, LoginModel, AccessModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, follow_user, unfollow_user
 from models.Posts import PostModel, Post
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
+from pydantic import BaseModel
+
+
 load_dotenv()
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -50,6 +53,12 @@ class SessionModel(BaseModel):
     uuid: str
 
 '''
+
+class FollowRequest(BaseModel):
+    follower_user: str
+    user_account: str
+
+
 #this is a post request to register users
 @app.post("/register_user")
 def register_user(user: LoginModel):
@@ -109,3 +118,21 @@ def createPost(post:PostModel):
     newPost = Post(username=post.username, content=post.content)
     newPost.create_post()
     return newPost
+
+@app.post("/follow")
+def follow_endpoint(body: FollowRequest):
+    """
+    Endpoint to make 'follower_username' follow 'main_username'.
+    JSON structure: { "follower_username": "...", "maine_username": "..." }
+    """
+    result = follow_user(body.follower_user, body.user_account)
+    return result
+
+@app.post("/unfollow")
+def unfollow_endpoint(body: FollowRequest):
+    """
+    Endpoint to make 'follower_username' unfollow 'main_username'.
+    JSON structure: { "follower_username": "...", "main_username": "..." }
+    """
+    result = unfollow_user(body.follower_user, body.user_account)
+    return result

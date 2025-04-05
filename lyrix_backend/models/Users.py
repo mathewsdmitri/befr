@@ -77,7 +77,10 @@ class User:
             "password": hashed_str, 
             "bio": self.bio,
             "access_token": self.access_token,
-            "refresh_token": self.refresh_token
+            "refresh_token": self.refresh_token,
+
+            "followers": [],
+            "following": []
 
         }
 
@@ -130,6 +133,72 @@ def find_user(user:User):
         
 
         return {"error": "User not found!"}
+
+def follow_user(follower_user: str, user_account: str):
+    """
+    Make 'follower_user' follow 'user_account' by:
+      1) Pushing 'follower_user' into user_account's "followers"
+      2) Pushing 'user_account' into follower_user's "following"
+    """
+    # 1. Grab each document
+    useraccount_doc = users_collection.find_one({"username": user_account})
+    follower_doc = users_collection.find_one({"username": follower_user})
+
+    if not follower_doc or not useraccount_doc:
+        return {"error": "One or both users not found."}
+
+    # 2. Check if already following
+    # If the user_account has 'follower_user' in 'followers' array,
+    # or if 'follower_user' doc has 'user_account' in 'following'.
+    if follower_user in useraccount_doc.get("followers", []) \
+       or user_account in follower_doc.get("following", []):
+        return {"message": f"{follower_user} already follows {user_account}."}
+
+    # 3. Add 'follower_user' to user_account's "followers"
+    users_collection.update_one(
+        {"username": user_account},
+        {"$push": {"followers": follower_user}}
+    )
+    # 4. Add 'user_account' to follower_user's "following"
+    users_collection.update_one(
+        {"username": follower_user},
+        {"$push": {"following": user_account}}
+    )
+
+    return {"message": f"{follower_user} is now following {user_account}."}
+
+
+def unfollow_user(follower_user: str, user_account: str):
+    """
+    Make 'follower_user' unfollow 'user_account' by:
+      1) Pulling 'follower_user' from user_account's "followers"
+      2) Pulling 'user_account' from follower_user's "following"
+    """
+    # 1. Grab each document
+    useraccount_doc = users_collection.find_one({"username": user_account})
+    follower_doc = users_collection.find_one({"username": follower_user})
+
+    if not follower_doc or not useraccount_doc:
+        return {"error": "One or both users not found."}
+
+    # 2. Check if follower_user is actually following user_account
+    if follower_user not in useraccount_doc.get("followers", []) \
+       or user_account not in follower_doc.get("following", []):
+        return {"message": f"{follower_user} is not following {user_account}."}
+
+    # 3. Remove 'follower_user' from user_account's "followers"
+    users_collection.update_one(
+        {"username": user_account},
+        {"$pull": {"followers": follower_user}}
+    )
+    # 4. Remove 'user_account' from follower_user's "following"
+    users_collection.update_one(
+        {"username": follower_user},
+        {"$pull": {"following": user_account}}
+    )
+
+    return {"message": f"{follower_user} has unfollowed {user_account}."}
+
 
 #Finds user with username and authorizes account with their password. If the account is found it returns the whole user from database
 def auth_user(user:User):
