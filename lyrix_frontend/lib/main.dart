@@ -84,9 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String?>> posts = [];
 
 
-  void addPost(String song, String? albumArtUrl, String caption) {
+  void addPost(String song, String artistName, String? albumArtUrl, String caption) {
     setState(() {
-      posts.add({'song': song, 'album_art_url': albumArtUrl, 'caption': caption});
+      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption});
     });
   }
 
@@ -113,12 +113,12 @@ void _onItemTapped(int index) {
       String username = snapshot.data ?? "Guest User"; //default to "Guest User" if null
     return Scaffold(
       appBar: AppBar(
-        // shape: Border(
-        //   bottom: BorderSide(
-        //     color: Colors.white,     //if we want a border on lyrix appbar
-        //     width: 2
-        //   )
-        // ),
+        shape: Border(
+          bottom: BorderSide(
+            color: Colors.white,     ////if we want a border on lyrix appbar
+            width: 1
+          )
+        ),
         shadowColor: Colors.white,
         backgroundColor: Colors.black,
         title: Center(

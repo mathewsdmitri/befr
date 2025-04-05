@@ -7,7 +7,7 @@ class PostPage extends StatefulWidget {
 //  final Function(List <dynamic>) updateSongs;
  // const PostPage({super.key, required this.updateSongs});
   
- final Function(String song, String? albumArtUrl, String caption) addPost;
+ final Function(String song, String artistName, String? albumArtUrl, String caption) addPost;
   const PostPage({super.key, required this.addPost}); 
   @override
   // ignore: library_private_types_in_public_api
@@ -24,10 +24,12 @@ class _PostPageState extends State<PostPage> {
 
   Future <List <dynamic>> listSongs() async{
     const String url = 'http://localhost:8000/getRecentlyPlayed';
-    String? uniqueID = await getUUID();
+    String? uniqueID = await getUUID(); //Get user unique id
     final response = await http.get(Uri.parse('$url?uuid=$uniqueID'));
     List <dynamic> data = jsonDecode(response.body);
-            return data.map((song) {
+
+    //Format each song into a map with the track info and return list to save as options
+        return data.map((song) {
           return {
             'track_name': song['track_name'],
             'artist_name': song['artist_name'],
@@ -36,6 +38,7 @@ class _PostPageState extends State<PostPage> {
         }).toList();
   }
 
+//Dialog asking user to post a song and caption
   void showPostDialog() {
     showDialog(
       context: context,
@@ -45,24 +48,29 @@ class _PostPageState extends State<PostPage> {
           title: const Text("Make a Post"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Dropdown menu
+              //Dropdown menu to choose a song
             SizedBox(
-              width: 1000,
+              width: 700,
               child: DropdownButton<String>(
-                itemHeight: 100,
+                menuMaxHeight: 1000,  
+                itemHeight: 90,
                 value: selectedOption,
                 hint: const Text("Select a song"),
                 isExpanded: true,
                 onChanged: (String? newValue) {
                   setState(() {
-                    selectedOption = newValue;
+                    selectedOption = newValue;  //whenever a user selects/changes a selection, save the selected song 
                   });
                   print('Selected song: $selectedOption');
+
                   // Close & reopen to force rebuild with new selectedOption
                   Navigator.of(context).pop();
                   showPostDialog();
                 },
+
                 items: options.map((dynamic option) {
                   final String track_name = option['track_name'];
                   final String artist_name = option['artist_name'];
@@ -77,8 +85,8 @@ class _PostPageState extends State<PostPage> {
                             option['album_art_url'].isNotEmpty)
                           Image.network(
                             option['album_art_url'],
-                            width: 100,
-                            height: 100,
+                            width: 80,
+                            height: 80,
                             fit: BoxFit.cover,
                           )
                         else
@@ -110,30 +118,38 @@ class _PostPageState extends State<PostPage> {
                 ),
               const SizedBox(height: 10),
 
+              //Submit posting
               ElevatedButton(
                 onPressed: () {
-                                // Find the track that matches the selectedOption
-                                final chosenTrack = options.firstWhere(
-                                (track) => track['track_name'] == selectedOption,
-                                orElse: () => <String, dynamic>{}, // Return an empty map if none is found
-                                );
+                  // Find the track that matches the selectedOption from options
+                  final chosenTrack = options.firstWhere(
+                    (track) => track['track_name'] == selectedOption,
+                    orElse: () => <String, dynamic>{}, // Return an empty map if none is found
+                  );
 
-                                // Safely retrieve the album art URL (can be null if not present)
-                                final String? albumArtUrl = chosenTrack?['album_art_url'] as String?;
+                  //Construct post map to send back
+                  
+                  // Safely retrieve the album art URL (can be null if not present)
+                  final String? albumArtUrl = chosenTrack?['album_art_url'] as String?;
 
-                                // Call the parent’s callback to add the post
-                                widget.addPost(
-                                  selectedOption!,         // Non-null track name
-                                  albumArtUrl,            // Nullable album art
-                                  captionController.text, // User's caption
-                                );
+                  //Retrieve artist name
+                  final String? artistName = chosenTrack?['artist_name'] as String?;
+                  
+                  
+                  // Call the parent’s callback to pass the post back to parent using addPost() from main.dart
+                  widget.addPost(
+                    selectedOption!,         // Non-null track name
+                    artistName!,            // artist name
+                    albumArtUrl,            // Nullable album art
+                    captionController.text, // User's caption
+                  );
 
-                                Navigator.of(context).pop(); // Close dialog
+                  Navigator.of(context).pop(); // Close dialog
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Post submitted!")),
-                                );
-                              },
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Post submitted!")),
+                  );
+                },
                 child: const Text("Post", style: TextStyle(color: Colors.black)),
               ),
             ],
@@ -157,7 +173,7 @@ class _PostPageState extends State<PostPage> {
             color: Colors.white,
             iconSize: 50,
             onPressed: () async {
-              options = await listSongs(); // Fetch list of songs from your backend
+              options = await listSongs(); // Fetch list of songs from api and store in options list
               print(options);
               if (options.isEmpty){
                 showDialog(

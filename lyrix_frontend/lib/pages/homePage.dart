@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 
 class HomePage extends StatefulWidget {
-  final List<Map<String, dynamic>> posts;
-  final String? username;
+  final List<Map<String, dynamic>> posts;  //lists of posts to display
+  final String? username;  //Username of current user
 
   const HomePage({super.key, required this.posts, required this.username});
 
@@ -12,20 +12,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Map<int, bool> likedPost = {};
+  final Map<int, bool> likedPost = {};  //tracks liked status per post by index
 
   @override
   Widget build(BuildContext context) {
-    final currentPosts = widget.posts;
+    final currentPosts = widget.posts;  //store current list of posts
 
     return Scaffold(
       body: currentPosts.isEmpty
+      //if no posts exists display no posts
           ? const Center(child: Text("No posts yet", style: TextStyle(color: Colors.white),))
+      //if posts exist, show list of posts on feed
           : ListView.separated(
+            //tracks number of posts
               itemCount: currentPosts.length,
+
+            //each post in the list will get a post container containing post info
               itemBuilder: (context, index) {
                 final post = currentPosts[index];
+                final trackName = post['song'] as String?;
                 final albumArtUrl = post['album_art_url'] as String?;
+                final artist_name = post['artistName'] as String?;
 
       return Container(
         padding: const EdgeInsets.all(10.0),
@@ -34,6 +41,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             
+            //For username on feed
             SizedBox(
               width: 350,
               child: Row(
@@ -56,6 +64,7 @@ class _HomePageState extends State<HomePage> {
 
             Padding(padding: EdgeInsets.only(top: 10)),
 
+            //For album art in feed
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -75,6 +84,24 @@ class _HomePageState extends State<HomePage> {
 
             Padding(padding: EdgeInsets.only(top: 5)),
 
+            //For row showing track and artist name
+            SizedBox(
+              width: 250,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (trackName != null && trackName.isNotEmpty)
+                    Text(
+                      '$trackName - $artist_name',
+                      style: TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.bold
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            //For row with comment and like icon
             SizedBox(
               width: 250,
               child: Row(
@@ -116,6 +143,7 @@ class _HomePageState extends State<HomePage> {
 
             Padding(padding: EdgeInsets.only(top: 5)),
 
+            //row for outputting the user caption
             SizedBox(
               width: 325,
               child: Row(
