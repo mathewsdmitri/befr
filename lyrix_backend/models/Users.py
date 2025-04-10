@@ -28,7 +28,8 @@ class UserModel(BaseModel):
     access_token: str
     refresh_token: str
     access_time : datetime
-    friends: list
+    followers : list
+    following : list
 
 #This model is used when you need to make queries to access spotify api
 class ProfileModel(BaseModel):
@@ -52,7 +53,7 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", friends = []):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", followers = [], following = []):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
@@ -60,7 +61,8 @@ class User:
         self.access_token = access_token
         self.refresh_token = refresh_token
         self.access_time = datetime.now()
-        self.friends = friends
+        self.followers = followers
+        self.following = following
 
         
     
@@ -93,10 +95,8 @@ class User:
             "access_token": self.access_token,
             "refresh_token": self.refresh_token,
             "access_time" : self.access_time,
-            "friends": self.friends,
-
-            "followers": [],
-            "following": []
+            "followers": self.followers,
+            "following": self.following
 
         }
 

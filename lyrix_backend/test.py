@@ -13,7 +13,7 @@ BASE_URL = "http://127.0.0.1:8000"
 def test_register_user():
     """Register a new user."""
     url = f"{BASE_URL}/register_user"
-    user_data = {
+    user_data1 = {
         "username": "Rodger",
         "email": "rodger@",
         "password": "rodger",
@@ -21,9 +21,35 @@ def test_register_user():
         "access_token": "",
         "refresh_token": "",
     }
+    user_data2 = {
+        "username": "Shrek",
+        "email": "shrek@",
+        "password": "shrek",
+        "bio": "",
+        "access_token": "",
+        "refresh_token": "",
+    }
+    user_data3 = {
+        "username": "Donkey",
+        "email": "donkey@",
+        "password": "rodger",
+        "bio": "",
+        "access_token": "",
+        "refresh_token": "",
+    }
 
-    response = requests.post(url, json=user_data)
-    print("Register User Response:", response.text)
+    response = requests.post(url, json=user_data1)
+    print("Register User 1 Response:", response.text)
+    # Example assertion
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+    response = requests.post(url, json=user_data2)
+    print("Register User 2 Response:", response.text)
+    # Example assertion
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+    response = requests.post(url, json=user_data3)
+    print("Register User 3 Response:", response.text)
     # Example assertion
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
@@ -48,7 +74,7 @@ def test_login_user():
     assert data, "No data found in login response!"
     return data
 
-#def test_spotify_auth(uuid: str):
+def test_spotify_auth(uuid: str):
     """
     Instruct the user to manually open the /spotifyAuth endpoint in their browser
     (simulating an OAuth flow), then wait for them to come back to the terminal.
@@ -66,7 +92,7 @@ def test_login_user():
     # 2. Wait for the user to finish
     input("After completing the browser-based Spotify authorization, close the browser window/tab and press ENTER here to continue...")
 
-#def test_get_recently_played(uuid: str):
+def test_get_recently_played(uuid: str):
     """Call getRecentlyPlayed using the existing UUID."""
     url = f"{BASE_URL}/getRecentlyPlayed?uuid={uuid}"
     response = requests.get(url)
@@ -75,7 +101,7 @@ def test_login_user():
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     return response.text
 
-def test_create_post():
+def test_create_post(username:str, uuid:str):
     url = f"{BASE_URL}/post"
     post_data = {
         "username": username,
@@ -106,7 +132,7 @@ def test_unfollow_user():
     """
     url = f"{BASE_URL}/unfollow"
     data = {
-        "follower_user": "Thomas",      # The user who is unfollowing
+        "follower_user": "Rodger",      # The user who is unfollowing
         "user_account": "Shrek"       # The user being unfollowed
     }
     response = requests.post(url, json=data)
@@ -115,8 +141,6 @@ def test_unfollow_user():
 
 
 def main():
-    # 0. Create Post
-    #test_create_post()
 
     # 1. Register user
     test_register_user()
@@ -133,7 +157,7 @@ def main():
     #print("Recently Played:", recently_played)
 
      # 5. Test follow/unfollow
-    #test_follow_user()
+    test_follow_user()
     test_unfollow_user()
 
     test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])

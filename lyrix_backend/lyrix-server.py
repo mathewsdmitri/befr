@@ -147,7 +147,30 @@ def getRecentlyPlayed(uuid):
     return filtered
 
 @app.post("/post")
-def createPost(post:PostModel):
-    newPost = Post(username=post.username, content=post.content)
-    newPost.create_post()
-    return newPost
+def createPost(post:InitPost):
+    user = uuid_to_user(post.uniqueId)
+    if user.username == post.username:
+        newPost = Post(username=post.username, content=post.content, album_url=post.album_url, track_name=post.track_name, artist_name=post.artist_name)
+        newPost.create_post()
+        print(find_user_posts(username=post.username))
+        return "You Posted!"
+    
+    return "You are not who you say you are"
+
+@app.post("/follow")
+def follow_endpoint(body: FollowRequest):
+    """
+    Endpoint to make 'follower_username' follow 'main_username'.
+    JSON structure: { "follower_username": "...", "maine_username": "..." }
+    """
+    result = follow_user(body.follower_user, body.user_account)
+    return result
+
+@app.post("/unfollow")
+def unfollow_endpoint(body: FollowRequest):
+    """
+    Endpoint to make 'follower_username' unfollow 'main_username'.
+    JSON structure: { "follower_username": "...", "main_username": "..." }
+    """
+    result = unfollow_user(body.follower_user, body.user_account)
+    return result
