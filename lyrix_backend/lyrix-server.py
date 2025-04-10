@@ -131,7 +131,9 @@ def getRecentlyPlayed(uuid):
         played_dt_utc = datetime.fromisoformat(track_time)
         played_dt_pacific = played_dt_utc.astimezone(pacific_tz)
         if played_dt_pacific.date() == todays_date:
-            filtered.append(track)
+            exists = any(d.get("track_name") == track['track_name'] and d.get('artist_name') == track['artist_name']  for d in filtered)
+            if not exists:
+                filtered.append(track)
     print(filtered)
     return filtered
 

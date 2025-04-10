@@ -87,36 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String?>> posts = [];
 
 
-  void addPost(String song, String artistName, String? albumArtUrl, String caption) {
-    setState(() async{
-      const String url = 'http://localhost:8000/login'; // FastAPI endpoint
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json", 
-        },
-        body: jsonEncode({
-          'username': getUser(),
-          'content': caption,
-          'album_url': albumArtUrl,
-          'track_name': song,
-          'artist_name': artistName,
-          'uniqueId': getUUID()
-      }),
-      );
-      if (response.statusCode == 200) {
-        print(response.body);
-        dynamic value = json.decode(response.body);
-        posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption});
-      } else {
-        print("Error: ${response.statusCode} - ${response.body}");
-      }
-    } catch (e) {
-      print("Request failed: $e");
-    }
-        
+  void addPost(String song, String artistName, String albumArtUrl, String caption) {
+    setState(() {
+      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption});
       });
   }
 
