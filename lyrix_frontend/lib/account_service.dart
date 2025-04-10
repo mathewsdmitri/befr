@@ -38,6 +38,14 @@ Future<bool> sendLoginRequest(BuildContext context, String username, String pass
       String username = value['username'];
       await storage.write(key: 'user_uuid', value: uuid); // Store UUID
       await storage.write(key: 'user_username', value: username);//Store username
+
+      if (value['access_token'] !=null) {
+        await storage.write(key: 'access_token', value: value['access_token']);
+      }
+
+      if (value['refresh_token'] != null) {
+        await storage.write(key: 'refresh_token', value: value['refresh_token']);
+      }
       return true;
     } else {
       print("Error: ${response.statusCode} - ${response.body}");

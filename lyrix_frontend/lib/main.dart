@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/homePage.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
@@ -5,6 +7,7 @@ import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 const storage = FlutterSecureStorage();
 
@@ -84,10 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String?>> posts = [];
 
 
-  void addPost(String song, String artistName, String? albumArtUrl, String caption) {
+  void addPost(String song, String artistName, String albumArtUrl, String caption) {
     setState(() {
       posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption});
-    });
+      });
   }
 
   List<Widget> _widgetOptions(String username) {

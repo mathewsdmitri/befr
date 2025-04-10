@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +8,7 @@ class PostPage extends StatefulWidget {
 //  final Function(List <dynamic>) updateSongs;
  // const PostPage({super.key, required this.updateSongs});
   
- final Function(String song, String artistName, String? albumArtUrl, String caption) addPost;
+ final Function(String song, String artistName, String albumArtUrl, String caption) addPost;
   const PostPage({super.key, required this.addPost}); 
   @override
   // ignore: library_private_types_in_public_api
@@ -120,7 +121,7 @@ class _PostPageState extends State<PostPage> {
 
               //Submit posting
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
                   // Find the track that matches the selectedOption from options
                   final chosenTrack = options.firstWhere(
                     (track) => track['track_name'] == selectedOption,
@@ -130,17 +131,46 @@ class _PostPageState extends State<PostPage> {
                   //Construct post map to send back
                   
                   // Safely retrieve the album art URL (can be null if not present)
-                  final String? albumArtUrl = chosenTrack?['album_art_url'] as String?;
+                  final String albumArtUrl = chosenTrack['album_art_url'];
 
                   //Retrieve artist name
-                  final String? artistName = chosenTrack?['artist_name'] as String?;
+                  final String artistName = chosenTrack['artist_name'];
                   
-                  
+                  final String? track = await selectedOption;
+                  print (track);
+                  print(await getUser());
+                  const String url = 'http://localhost:8000/post'; // FastAPI endpoint
+                  try {
+                    final response = await http.post(
+                      Uri.parse(url),
+                      headers: {
+                        "Content-Type": "application/json", 
+                      },
+                      body: jsonEncode({
+                        'username': await getUser(),
+                        'content': captionController.text,
+                        'album_url': albumArtUrl,
+                        'track_name': track,
+                        'artist_name': artistName,
+                        'uniqueId': await getUUID()
+                    }),
+                    );
+                    if (response.statusCode == 200) {
+                      print(response.body);
+                      dynamic value = json.decode(response.body);
+                      
+                    } else {
+                      print("Error: ${response.statusCode} - ${response.body}");
+                    }
+                  } catch (e) {
+                    print("Request failed: $e");
+                  }
+                      
                   // Call the parent’s callback to pass the post back to parent using addPost() from main.dart
                   widget.addPost(
                     selectedOption!,         // Non-null track name
                     artistName!,            // artist name
-                    albumArtUrl,            // Nullable album art
+                    albumArtUrl!,            // Nullable album art
                     captionController.text, // User's caption
                   );
 
