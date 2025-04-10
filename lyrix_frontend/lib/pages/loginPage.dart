@@ -14,19 +14,26 @@ class _LoginPageState extends State<LoginPage>{
   final TextEditingController password = TextEditingController();
   bool isLoading = false;
   String errorMessage = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page',
+        shape: Border(
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 3
+          )
+        ),
+        title: const Text(
+          'Login Page',
           style: TextStyle(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold,)),
         centerTitle: true,
   //      automaticallyImplyLeading: false,
-        backgroundColor: Colors.lightBlue,
-        
+        backgroundColor: Colors.black,
         ),
       
       body: Padding(
@@ -40,7 +47,7 @@ class _LoginPageState extends State<LoginPage>{
               'Welcome Back!',
               style: TextStyle(
                 fontSize: 28,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold, color: Colors.white
               ),
             ),
             const SizedBox(height: 20),
@@ -50,23 +57,35 @@ class _LoginPageState extends State<LoginPage>{
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: username,
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                     labelText: 'Email or Username',
+                    labelStyle: const TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                    )),
+                    ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
               ),
             ), 
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: password,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: "Password",
+                  labelStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                  )),
-                  obscureText: false
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                obscureText: true
                 
               ),
             ),
@@ -80,6 +99,10 @@ class _LoginPageState extends State<LoginPage>{
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: () async {
+                      print("Login button here");
+                      print("Username: ${username.text.trim()}");
+                      print("Password: ${password.text.trim()}");
+
                       setState(() {
                         isLoading = true;
                         errorMessage = "";
@@ -97,9 +120,9 @@ class _LoginPageState extends State<LoginPage>{
                         if (!success) {
                           errorMessage = "Invalid email or password.";
                         }else{
-                          Navigator.pushReplacementNamed(context, "/home"); // Navigate to HomePage
-                        }
-                        
+                          Navigator.pushReplacementNamed(
+                              context, "/home");
+                        } 
                       });
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
@@ -164,7 +187,7 @@ class _LoginPageState extends State<LoginPage>{
                   },
                   child: const Text(
                     'Sign up',
-                    style: TextStyle(color: Colors.black),  
+                    style: TextStyle(color: Colors.white),  
                   ),
                 ),
               ],

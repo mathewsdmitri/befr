@@ -1,67 +1,177 @@
 import 'package:flutter/material.dart';
 
-// class HomePage extends StatefullsWidget {
-//   final List<Map<String, String>> posts; //List of posts passed to the HomePage
-  
-
-//   HomePage({super.key, required this.posts}); //Constructor to accept posts list
 
 class HomePage extends StatefulWidget {
-  final List<Map<String, dynamic>> posts;
+  final List<Map<String, dynamic>> posts;  //lists of posts to display
+  final String? username;  //Username of current user
 
-  const HomePage({super.key, required this.posts});
+  const HomePage({super.key, required this.posts, required this.username});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final Map<int, bool> likedPost = {};
+  final Map<int, bool> likedPost = {};  //tracks liked status per post by index
 
   @override
   Widget build(BuildContext context) {
-    return widget.posts.isEmpty //Check if there are no posts
-        ? const Center(child: Text("No posts yet")) //Display message if no posts
-        : ListView.separated( 
-            itemCount: widget.posts.length, 
-            itemBuilder: (context, index) {
-              final post = widget.posts[index]; //Get the current post
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 16), //Margin around each card
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0), //Padding for inside card
-                  child: 
-                  ListTile(
-                    title: Text(
-                      post["song"] ?? "No Song", //Display song or "No Song" if song is null
-                      style: const TextStyle(fontWeight: FontWeight.bold), 
-                    ),
-                    subtitle: Text(post["caption"] ?? ""), //Display caption if exists
-                    trailing: Column(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            likedPost[index] == true ? Icons.favorite : Icons.favorite_border,
-                            color: likedPost[index] == true ? Colors.pink : Colors.grey[700], 
-                          ),
-                          onPressed: () {
-                            setState(() {
-                                  likedPost[index] = !(likedPost[index] ?? false);
-                                });
-                          },
-                          ),
-                      ],
-                    ),
+    final currentPosts = widget.posts;  //store current list of posts
+
+    return Scaffold(
+      body: currentPosts.isEmpty
+      //if no posts exists display no posts
+          ? const Center(child: Text("No posts yet", style: TextStyle(color: Colors.white),))
+      //if posts exist, show list of posts on feed
+          : ListView.separated(
+            //tracks number of posts
+              itemCount: currentPosts.length,
+
+            //each post in the list will get a post container containing post info
+              itemBuilder: (context, index) {
+                final post = currentPosts[index];
+                final trackName = post['song'] as String?;
+                final albumArtUrl = post['album_art_url'] as String?;
+                final artist_name = post['artistName'] as String?;
+
+      return Container(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            
+            //For username on feed
+            SizedBox(
+              width: 350,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius:23,
+                    backgroundImage: AssetImage("assets/profile.png"),
+                    backgroundColor: Colors.grey[400],
                   ),
-                ),
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const Divider( 
-                color: Colors.grey, 
-                thickness: 1, 
-              );
-            },
-          );
+                  const SizedBox(width: 8),
+                  Text(
+                        widget.username ?? "User",
+                        style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
+                    ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            ),
+
+            Padding(padding: EdgeInsets.only(top: 10)),
+
+            //For album art in feed
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                albumArtUrl != null && albumArtUrl.isNotEmpty
+                  ? ClipRRect( 
+                     child: Image.network
+                        (
+                          albumArtUrl,
+                          width: 250,
+                          height: 250,
+                          fit: BoxFit.cover,
+                        ),
+                    )
+                  : const Icon(Icons.music_note, size: 250, color: Colors.white),
+              ],
+            ),
+
+            Padding(padding: EdgeInsets.only(top: 5)),
+
+            //For row showing track and artist name
+            SizedBox(
+              width: 250,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (trackName != null && trackName.isNotEmpty)
+                    Text(
+                      '$trackName - $artist_name',
+                      style: TextStyle(
+                        fontSize: 10, fontWeight: FontWeight.bold
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            //For row with comment and like icon
+            SizedBox(
+              width: 250,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,   
+                    children: [
+                    Icon(Icons.comment_outlined, size: 30, color: Colors.white),
+                    Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: Text(
+                        "View Comments",
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200, color: Colors.white),
+                        ),
+                    )
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          likedPost[index] == true ? Icons.favorite : Icons.favorite_border,
+                          color: likedPost[index] == true ? Colors.pink : Colors.white,
+                        ),
+                        
+                        onPressed: () {
+                          setState(() {
+                            likedPost[index] = !(likedPost[index] ?? false);
+                          });
+                        },
+                      ),
+                    ],
+                  ),        
+                ],
+              ),
+            ),
+
+            Padding(padding: EdgeInsets.only(top: 5)),
+
+            //row for outputting the user caption
+            SizedBox(
+              width: 325,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
+                  Column(
+                    children: [
+                      Text(
+                        post['caption'] ?? '',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: Colors.white),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+          ],
+        )
+      );
+    },
+
+    separatorBuilder: (context, index) => const Divider(color: Colors.white, thickness: 1),
+    ),
+
+    );
   }
 }

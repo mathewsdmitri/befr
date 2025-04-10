@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/account_service.dart';
 import 'package:lyrix_frontend/pages/create_account.dart';

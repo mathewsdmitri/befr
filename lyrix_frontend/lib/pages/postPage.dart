@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lyrix_frontend/main.dart';
 
 class PostPage extends StatefulWidget {
 //  final Function(List <dynamic>) updateSongs;
  // const PostPage({super.key, required this.updateSongs});
   
-  final Function(String, String) addPost;
-  const PostPage({super.key, required this.addPost});
-
-
+ final Function(String song, String artistName, String? albumArtUrl, String caption) addPost;
+  const PostPage({super.key, required this.addPost}); 
   @override
   // ignore: library_private_types_in_public_api
   _PostPageState createState() => _PostPageState();
@@ -21,83 +20,137 @@ class _PostPageState extends State<PostPage> {
   final TextEditingController captionController = TextEditingController();
 
   //List of predefined dropdown options (will be replaced with backend data later)
-  List<dynamic> options = ["Song 1", "Song 2", "Song 3"];
+  late List<dynamic> options;
 
   Future <List <dynamic>> listSongs() async{
     const String url = 'http://localhost:8000/getRecentlyPlayed';
-    const String uniqueID = 'qwert';
+    String? uniqueID = await getUUID(); //Get user unique id
     final response = await http.get(Uri.parse('$url?uuid=$uniqueID'));
     List <dynamic> data = jsonDecode(response.body);
-    options = data;
-    print(data);
-   // widget.updateSongs(data);
-    return data;
+
+    //Format each song into a map with the track info and return list to save as options
+        return data.map((song) {
+          return {
+            'track_name': song['track_name'],
+            'artist_name': song['artist_name'],
+            'album_art_url': song['album_art_url']
+          };
+        }).toList();
   }
 
+//Dialog asking user to post a song and caption
   void showPostDialog() {
-    if (hasPosted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("You have already posted")),
-      );
-      return;
-    }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: const Text("Make a Post"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [     
-                //Dropdown menu
-              DropdownButton<String>(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              //Dropdown menu to choose a song
+            SizedBox(
+              width: 700,
+              child: DropdownButton<String>(
+                menuMaxHeight: 1000,  
+                itemHeight: 90,
                 value: selectedOption,
                 hint: const Text("Select a song"),
                 isExpanded: true,
                 onChanged: (String? newValue) {
                   setState(() {
-                    print(options);
-                    selectedOption = newValue;
+                    selectedOption = newValue;  //whenever a user selects/changes a selection, save the selected song 
                   });
-                  print('selected song: $selectedOption');
+                  print('Selected song: $selectedOption');
+
+                  // Close & reopen to force rebuild with new selectedOption
                   Navigator.of(context).pop();
-                  showPostDialog(); //Reopen dialog to reflect selection
+                  showPostDialog();
                 },
+
                 items: options.map((dynamic option) {
+                  final String track_name = option['track_name'];
+                  final String artist_name = option['artist_name'];
+                  final displayText = '$track_name\nBy $artist_name';
                   return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
+                    
+                    value: option['track_name'],
+                    child: Row(
+                      children: [
+                        // Display album art if available
+                        if (option['album_art_url'] != null &&
+                            option['album_art_url'].isNotEmpty)
+                          Image.network(
+                            option['album_art_url'],
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          )
+                        else
+                          const Icon(Icons.music_note),
+                        const SizedBox(width: 30),
+                        Flexible(child: Text(displayText)),
+                      ],
+                    ),
                   );
                 }).toList(),
-              ),
+              )
+            ),
               const SizedBox(height: 10),
 
-              //Show caption input only after an option is selected
+              // Show caption input only after an option is selected
               if (selectedOption != null)
                 TextField(
                   controller: captionController,
-                  decoration: const InputDecoration(hintText: "Enter a caption..."),
-                  maxLength: 120,
+                  style: const TextStyle(color: Colors.black), //color of input caption
+                  decoration:
+                    const InputDecoration(
+                      hintText: "Enter a caption...",
+                      hintStyle: TextStyle(
+                        color: Colors.grey
+                      ) 
+                    ),
+                    maxLength: 120,
+                    
                 ),
               const SizedBox(height: 10),
 
+              //Submit posting
               ElevatedButton(
-                onPressed: selectedOption == null
-                    ? null //Disable button if a selection isn't made
-                    : () {
-                        widget.addPost(selectedOption!, captionController.text);
-                        setState(() {
-                          hasPosted = true; //Track that a post has been made
-                        });
-                        String caption = captionController.text;
-                        print('caption: $caption');
-                        Navigator.of(context).pop(); //Close dialog
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Post submitted!")),
-                        );
-                      },
-                child: const Text("Post"),
+                onPressed: () {
+                  // Find the track that matches the selectedOption from options
+                  final chosenTrack = options.firstWhere(
+                    (track) => track['track_name'] == selectedOption,
+                    orElse: () => <String, dynamic>{}, // Return an empty map if none is found
+                  );
+
+                  //Construct post map to send back
+                  
+                  // Safely retrieve the album art URL (can be null if not present)
+                  final String? albumArtUrl = chosenTrack?['album_art_url'] as String?;
+
+                  //Retrieve artist name
+                  final String? artistName = chosenTrack?['artist_name'] as String?;
+                  
+                  
+                  // Call the parent’s callback to pass the post back to parent using addPost() from main.dart
+                  widget.addPost(
+                    selectedOption!,         // Non-null track name
+                    artistName!,            // artist name
+                    albumArtUrl,            // Nullable album art
+                    captionController.text, // User's caption
+                  );
+
+                  Navigator.of(context).pop(); // Close dialog
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Post submitted!")),
+                  );
+                },
+                child: const Text("Post", style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -112,16 +165,28 @@ class _PostPageState extends State<PostPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Add Post", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text("Add Post",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.white)),
           const SizedBox(height: 5), // Space between text and icon
           IconButton(
-            onPressed: ()async {
-              options = await listSongs();  //THIS IS FOR GETTIN LIST OF SONGS
-              showPostDialog();
-              }, 
             icon: const Icon(Icons.add_circle_outline),
-            color: Colors.black,
-            iconSize: 50, 
+            color: Colors.white,
+            iconSize: 50,
+            onPressed: () async {
+              options = await listSongs(); // Fetch list of songs from api and store in options list
+              print(options);
+              if (options.isEmpty){
+                showDialog(
+                  context: context, 
+                  builder: (_){
+                    return AlertDialog(
+                      title: const Text("No Songs Found. Listen to Something!"),
+                    );
+                  });
+              }else{
+              showPostDialog();
+              }
+            },
           ),
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:lyrix_frontend/main.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lyrix_frontend/pages/loginPage.dart';
 
 class LinkSpotify extends StatefulWidget {
   const LinkSpotify({super.key});
@@ -18,9 +19,26 @@ class _LinkSpotify extends State<LinkSpotify> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        shape: Border(
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 3
+          )
+        ),
+        title: const Text(
+          'Link to Spotify',
+          style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,)
+        ),
+        centerTitle: true,
+      ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             alignment: Alignment.center,
@@ -40,6 +58,10 @@ class _LinkSpotify extends State<LinkSpotify> {
                       var data = jsonDecode(response.body);
                       data = Uri.parse(data);
                       print(data);
+                      Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => MyHomePage()), // Navigate to LoginPage
+                          );
                       if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
                         throw Exception('COULD NOT LOAD $response');
                       }
@@ -50,7 +72,7 @@ class _LinkSpotify extends State<LinkSpotify> {
                     print("Request failed: $e");
                   }
                 },
-                child: const Text('Link Account to Spotify!'),
+                child: const Text('Link Account to Spotify!', style: TextStyle(color: Colors.black),),
               ),
             ),
           ),

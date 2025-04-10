@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lyrix_frontend/pages/create_account.dart';
 import 'package:lyrix_frontend/pages/homePage.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
 import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 
 const storage = FlutterSecureStorage();
@@ -21,11 +19,16 @@ Future<void> deleteUUID() async {
   await storage.delete(key: 'user_uuid');
 }
 
+// Get username
+Future<String?> getUser() async {
+  return await storage.read(key: 'user_username');
+}
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   final bool isLoggedIn = await checkLoginStatus();
-
+  print(getUser());
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
@@ -47,8 +50,13 @@ class MyApp extends StatelessWidget {
       title: 'befr demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,      //Background of app
-         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.black,      //Background of app
+        primarySwatch: Colors.blue,
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+          bodySmall: TextStyle(color: Colors.white),
+        ),
         //      useMaterial3: false,
       ),
       initialRoute: isLoggedIn? "/home" : "/login",
@@ -73,24 +81,20 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0; // Track the currently selected index
   List <dynamic> songs = [];
 
-  // void updateSongs(List <dynamic> newSongs) {
-  //   setState(() {
-  //     songs = newSongs;
-  //   });
-  //}
-  List<Map<String, String>> posts = [];
+  List<Map<String, String?>> posts = [];
 
-  void addPost(String song, String caption) {
+
+  void addPost(String song, String artistName, String? albumArtUrl, String caption) {
     setState(() {
-      posts.insert(0, {"song": song, "caption": caption});
+      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption});
     });
   }
 
-  List<Widget> _widgetOptions() {
+  List<Widget> _widgetOptions(String username) {
   return <Widget>[
-    HomePage(posts: posts),
+    HomePage(posts: posts, username:username),
     PostPage(addPost: addPost),
-    const Profilepage(),
+    Profilepage(username: username),
   ];
   }
 
@@ -103,9 +107,20 @@ void _onItemTapped(int index) {
    @override
   Widget build(BuildContext context) {
 
+    return FutureBuilder<String?>(
+    future: getUser(),
+    builder: (context, snapshot) {
+      String username = snapshot.data ?? "Guest User"; //default to "Guest User" if null
     return Scaffold(
       appBar: AppBar(
-         backgroundColor: Colors.black,
+        shape: Border(
+          bottom: BorderSide(
+            color: Colors.white,     ////if we want a border on lyrix appbar
+            width: 1
+          )
+        ),
+        shadowColor: Colors.white,
+        backgroundColor: Colors.black,
         title: Center(
           child: Text(
             'lyrix',
@@ -120,32 +135,42 @@ void _onItemTapped(int index) {
         ),
       ),
       body: Center(
-        child: _widgetOptions()
-            .elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions(username).elementAt(_selectedIndex), // Display the selected widget
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: 'Post',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
-
-        currentIndex: _selectedIndex, // Highlight the selected item
-        onTap: _onItemTapped, // Handle item tap
-        selectedItemColor: Colors.lightBlue[200], // Change selected item color
-        unselectedItemColor: Colors.white, // Change unselected item color
+      
+      bottomNavigationBar: 
+      
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.white, width: 3.0))
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.black,
+        
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline),
+              label: 'Post',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Profile',
+            ),
+          ],
+        
+          currentIndex: _selectedIndex, // Highlight the selected item
+          onTap: _onItemTapped, // Handle item tap
+          selectedItemColor: Colors.lightBlue[200], // Change selected item color
+          unselectedItemColor: Colors.white, // Change unselected item color
+        ),
       ),
       );
-  }
+    },
+  );
+}
 }
