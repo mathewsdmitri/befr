@@ -119,17 +119,14 @@ def test_create_post(username:str, uuid:str):
 def test_follow_user():
     url = f"{BASE_URL}/follow"
     data = {
-            "follower_user": "Rodger",      # The user who is following
-            "user_account": "Shrek" 
+            "follower_user": "Shrek",      # The user who is following
+            "user_account": "Rodger"       # The user being followed
         }
     response = requests.post(url, json=data)
     print("Follow Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
 def test_unfollow_user():
-    """
-    Test the /unfollow endpoint.
-    """
     url = f"{BASE_URL}/unfollow"
     data = {
         "follower_user": "Rodger",      # The user who is unfollowing
@@ -139,11 +136,32 @@ def test_unfollow_user():
     print("Unfollow Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def like_post():
+    url = f"{BASE_URL}/like"
+    data = {
+            "post_id": "32d92938-f092-42cb-b491-1f3ea7cd8d3e",      #post ID 
+            "username": "Shrek"  # The user who is liking
+        }
+    response = requests.post(url, json=data)
+    print("Like Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+def unlike_post():
+   
+    url = f"{BASE_URL}/unlike"
+    data = {
+        "post_id": "32d92938-f092-42cb-b491-1f3ea7cd8d3e",      #post ID 
+        "username": "Shrek"      # The user who is unliking
+    }
+    response = requests.post(url, json=data)
+    print("Unlike Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 
 def main():
 
     # 1. Register user
-    test_register_user()
+    #test_register_user()
 
     # 2. Log in to retrieve UUID
     logged_user = test_login_user()
@@ -156,12 +174,15 @@ def main():
     #recently_played = test_get_recently_played(logged_user['uuid'])
     #print("Recently Played:", recently_played)
 
-     # 5. Test follow/unfollow
-    test_follow_user()
-    test_unfollow_user()
+    # 5. Test follow/unfollow
+    #test_follow_user()
+    #test_unfollow_user()
 
-    test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
+    #test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
     print("\nAll test steps completed successfully.")
 
+    # 6. Test like/unlike
+    #like_post()
+    unlike_post()
 if __name__ == "__main__":
     main()

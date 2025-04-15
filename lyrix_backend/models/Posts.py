@@ -18,8 +18,9 @@ class PostModel(BaseModel):
     track_name: str
     artist_name: str
     timestamp: datetime = datetime.utcnow() # Still need to refine this
-    likes: list[dict]
+    likes: list
     comments: list[dict]
+
 
 #Helper model for receiving unique ID and posts
 class InitPost(BaseModel):
@@ -29,7 +30,6 @@ class InitPost(BaseModel):
     track_name: str
     artist_name: str
     uniqueId: str
-
 
 
 class Post:
@@ -107,27 +107,32 @@ def like_post(post_id:str, username: str):
 
     post = posts_collection.find_one({"post_id": post_id})
 
-    if post:
-        if username in post["likes"]:
-            return {"message": "User already liked this post!"}
+    if not post:
+        return {"error": "Post not found"}
+    
+    if username in post.get("likes", []):
+        return {"message": "User already liked this post!"}
 
-        posts_collection.update_one({"_id": post_id}, {"$push": {"likes": username}})
-        return {"message": "Post liked!"}
+    posts_collection.update_one({"post_id": post_id}, {"$push": {"likes": username}})
+    return {"message": "Post liked!"}
 
-    return {"error": "Post not found"}
 
-def unlike_post (self, username: str):
+def unlike_post (post_id: str, username: str):
     """removes a like from the post. """
-    post = posts_collection.find_one({"post_id": self.post_id})
-    if post:
-        if username in post ["likes"]:
-            posts_collection.update_one({"post_id": self.post_id}, {"$pull": {"likes": username}})
-            return {"message": "User has unliked this post!"}
-    
-    
-        return {"message": "Post hasn't been liked yet"}
+    post = posts_collection.find_one({"post_id": post_id})
 
-    return {"error": "Post not found"}
+    if not post:
+        return {"error": "Post not found"}
+
+    if username not in post.get("likes", []):
+        return {"message": "Post hasn't been liked yet"}
+        
+        
+    posts_collection.update_one({"post_id": post_id}, {"$pull": {"likes": username}})
+    
+    return {"message": "User has unliked this post!"}
+
+    
         
 
 

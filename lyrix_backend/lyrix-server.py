@@ -10,7 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user
-from models.Posts import PostModel, Post, InitPost, find_user_posts
+from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 from datetime import datetime, timezone
@@ -68,6 +68,10 @@ class PostModel(BaseModel):
 class FollowRequest(BaseModel):
     follower_user: str
     user_account: str
+
+class LikeRequest(BaseModel):
+    post_id: str
+    username: str
 
 
 #this is a post request to register users
@@ -158,19 +162,21 @@ def createPost(post:InitPost):
     return "You are not who you say you are"
 
 @app.post("/follow")
-def follow_endpoint(body: FollowRequest):
-    """
-    Endpoint to make 'follower_username' follow 'main_username'.
-    JSON structure: { "follower_username": "...", "maine_username": "..." }
-    """
+def follow_endpoint(body: FollowRequest):  
     result = follow_user(body.follower_user, body.user_account)
     return result
 
 @app.post("/unfollow")
 def unfollow_endpoint(body: FollowRequest):
-    """
-    Endpoint to make 'follower_username' unfollow 'main_username'.
-    JSON structure: { "follower_username": "...", "main_username": "..." }
-    """
     result = unfollow_user(body.follower_user, body.user_account)
+    return result
+
+@app.post("/like")
+def like_endpoint(body: LikeRequest):
+    result = like_post(body.post_id, body.username)
+    return result
+
+@app.post("/unlike")
+def unlike_endpoint(body: LikeRequest):
+    result = unlike_post(body.post_id, body.username)
     return result
