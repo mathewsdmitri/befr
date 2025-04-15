@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +7,7 @@ class PostPage extends StatefulWidget {
 //  final Function(List <dynamic>) updateSongs;
  // const PostPage({super.key, required this.updateSongs});
   
- final Function(String song, String artistName, String albumArtUrl, String caption) addPost;
+ final Function (String song, String artistName, String albumArtUrl, String caption) addPost;
   const PostPage({super.key, required this.addPost}); 
   @override
   // ignore: library_private_types_in_public_api
@@ -132,13 +131,9 @@ class _PostPageState extends State<PostPage> {
                   
                   // Safely retrieve the album art URL (can be null if not present)
                   final String albumArtUrl = chosenTrack['album_art_url'];
-
                   //Retrieve artist name
-                  final String artistName = chosenTrack['artist_name'];
-                  
+                  final String artistName = chosenTrack?['artist_name'];
                   final String? track = await selectedOption;
-                  print (track);
-                  print(await getUser());
                   const String url = 'http://localhost:8000/post'; // FastAPI endpoint
                   try {
                     final response = await http.post(
@@ -165,12 +160,11 @@ class _PostPageState extends State<PostPage> {
                   } catch (e) {
                     print("Request failed: $e");
                   }
-                      
                   // Call the parent’s callback to pass the post back to parent using addPost() from main.dart
                   widget.addPost(
                     selectedOption!,         // Non-null track name
-                    artistName!,            // artist name
-                    albumArtUrl!,            // Nullable album art
+                    artistName,            // artist name
+                    albumArtUrl,            // Nullable album art
                     captionController.text, // User's caption
                   );
 

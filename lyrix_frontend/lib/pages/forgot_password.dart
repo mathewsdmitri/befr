@@ -72,8 +72,9 @@ class _ForgotPassword extends State<ForgotPassword> {
                         isLoading = true;
                         errorMessage = "";
                       });
-                
-                      bool success = await sendForgotPassword(
+                      AccountService accountService = new AccountService();
+
+                      bool success = await accountService.sendForgotPassword(
                         context, 
                         username.text.trim(),
                       );

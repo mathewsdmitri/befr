@@ -94,7 +94,8 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     headers: {"Content-Type": "application/json"},
                     body:body);
                   print("${response.statusCode}");
-                  sendLoginRequest(context, controllerUsername.text, controllerPassword.text);
+                  AccountService accountService = new AccountService();
+                  accountService.sendLoginRequest(context, controllerUsername.text, controllerPassword.text);
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const Scaffold(
                         body: LinkSpotify(), //Link Spotify Page
