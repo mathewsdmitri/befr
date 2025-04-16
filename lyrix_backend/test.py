@@ -116,6 +116,16 @@ def test_create_post(username:str, uuid:str):
     # Example assertion
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def delete_post_test():
+    url = f"{BASE_URL}/delete_post"
+    data = {
+        "post_id": "32d92938-f092-42cb-b491-1f3ea7cd8d3e",  # must exist in DB
+        "username": "Rodger"                                # must be post owner
+    }
+    response = requests.delete(url, json=data)
+    print("Delete Post Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 def test_follow_user():
     url = f"{BASE_URL}/follow"
     data = {
@@ -201,15 +211,17 @@ def main():
     #test_follow_user()
     #test_unfollow_user()
 
+    # 6. Test create/delete post
     #test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
+    delete_post_test()
 
-    # 6. Test like/unlike
+    # 7. Test like/unlike
     #like_post()
     #unlike_post()
 
-    # 7. Test comment
+    # 8. Test add/delete comment
     #add_comment()
-    delete_comment()
+    #delete_comment()
 
     print("\nAll test steps completed successfully.")
 

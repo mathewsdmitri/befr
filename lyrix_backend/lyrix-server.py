@@ -10,7 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user
-from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment
+from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment, delete_post
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 from datetime import datetime, timezone
@@ -82,6 +82,10 @@ class DeleteCommentRequest(BaseModel):
     post_id: str
     username: str
     comment_id: str
+
+class DeletePostRequest(BaseModel):
+    post_id: str
+    username: str 
 
 #this is a post request to register users
 @app.post("/register_user")
@@ -206,5 +210,15 @@ def comment_endpoint(body: DeleteCommentRequest):
         post_id=body.post_id,
         username=body.username,
         comment_id=body.comment_id
+    )
+    return result
+
+
+@app.delete("/delete_post")
+def delete_post_endpoint(body: DeletePostRequest):
+    
+    result = delete_post(
+        post_id=body.post_id,
+        username=body.username
     )
     return result

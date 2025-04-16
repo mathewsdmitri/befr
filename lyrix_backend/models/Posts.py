@@ -93,15 +93,21 @@ def find_user_posts(username: str):
     else:
         return {"message": "No posts found!"}
         
-def delete_post(self, username: str):
-    post = posts_collection.find_one({"post_id": self.post_id})
-    if post:
-        posts_collection.delete_one({"_id": self.post_id})
-        return {"message": "Post deleted!"}
-
-    else:
+def delete_post(post_id: str, username: str):
+    post = posts_collection.find_one({"post_id": post_id})
+    if not post:
         return {"message": "Post not found!"}
+    
+    if post["username"] != username:
+        return {"error": "You do not have permission to delete this post."}
+    
+    result = posts_collection.delete_one({"post_id": post_id})
         
+    if result.deleted_count == 1:
+        return {"message": "Post deleted successfully!"}
+    else:
+        return {"error": "Failed to delete the post. It may not exist."}
+    
 def like_post(post_id:str, username: str):
     """ Adds a like from the post. """
 
