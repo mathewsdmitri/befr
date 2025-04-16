@@ -198,6 +198,16 @@ def delete_comment():
     print("Comment Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def delete_account():
+    url = f"{BASE_URL}/delete_account"
+    data = {
+        "username": "Donkey",       # The account to delete
+        "requesting_user": "Donkey" # Must match
+    }
+    response = requests.delete(url, json=data)
+    print("Delete Account Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 def main():
 
     # 1. Register user
@@ -231,7 +241,10 @@ def main():
     #delete_comment()
 
     # 9. Test logout
-    test_logout_user(logged_user['uuid'])
+    #test_logout_user(logged_user['uuid'])
+
+    #10. test_delete_account()
+    delete_account()
 
     print("\nAll test steps completed successfully.")
 

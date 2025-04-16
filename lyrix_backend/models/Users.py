@@ -124,9 +124,17 @@ class User:
         else:
             return {"error": "Invalid password."}
 
+def delete_user(username: str, requesting_user: str):
+    if username != requesting_user:
+        return {"error": "You do not have permission to delete this account."}
     
-         
-
+    user_account = users_collection.find_one({"username": username})
+    if not user_account:
+        return {"error": "User not found."}
+    
+    users_collection.delete_one({"_id": user_account["_id"]})
+        
+    return {"message": "User account deleted successfully!"}
  
 #Pass in a User object can be passed with ex. User(username="some name", email= "")
 #This would find a user "some name" if they exist it will return all information that the user has in the database.
