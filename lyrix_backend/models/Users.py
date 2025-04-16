@@ -138,6 +138,9 @@ def delete_user(username: str, requesting_user: str):
  
 #Pass in a User object can be passed with ex. User(username="some name", email= "")
 #This would find a user "some name" if they exist it will return all information that the user has in the database.
+
+'''I am not sure if this function is needed'''
+
 def find_user(user:User):
 
         """Finds and returns a user in the database if the user exists."""
@@ -279,6 +282,7 @@ def uuid_to_access_token(uuid):
     return cur_user.access_token
     
 def search_users(query: str):
+
     cursor = users_collection.find({"username": {"$regex":query, "$options": "i"}})  
 
     results = []        
@@ -301,3 +305,19 @@ def search_users(query: str):
     results = [doc.get("username") for doc in cursor]
 
     return results 
+
+#primitive function to change password
+def change_password(username: str, new_password: str):
+    
+    user = users_collection.find_one({"username": username})
+    if not user:
+        return {"error": "User not found!"}
+
+    # Encrypt the new password
+    hashed_bytes = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt())
+    hashed_str = hashed_bytes.decode("utf-8")
+
+    # Update the user's password in the database
+    users_collection.update_one({"username": username}, {"$set": {"password": hashed_str}})
+    
+    return {"message": "Password updated successfully!"}

@@ -216,6 +216,15 @@ def search_users():
     print("Search Users Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def change_password():
+    url = f"{BASE_URL}/change_password"
+    data = {
+        "username": "Shrek",
+        "new_password": "superSecret123"
+    }
+    response = requests.post(url, json=data)
+    print("Change Password Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
 def main():
 
@@ -256,7 +265,10 @@ def main():
     #delete_account()
 
     #11. test search_user()
-    search_users()
+    #search_users()
+
+    #12 test change_password()
+    change_password()
 
     print("\nAll test steps completed successfully.")
 

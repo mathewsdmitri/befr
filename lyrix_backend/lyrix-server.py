@@ -9,7 +9,7 @@ from models.Users import User, LoginModel, ProfileModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users, change_password
 from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment, delete_post
 from models.Sessions import find_in_session, remove_session
 from auth_procs import generate_random_string, sha256, base64encode
@@ -93,6 +93,10 @@ class LogoutRequest(BaseModel):
 class DeleteAccountRequest(BaseModel):
     username: str
     requesting_user: str
+
+class ChangePasswordRequest(BaseModel):
+    username: str
+    new_password: str
 
 #this is a post request to register users
 @app.post("/register_user")
@@ -248,3 +252,8 @@ def delete_account(body: DeleteAccountRequest):
 def search_users_endpoint(query: str = Query(...)):
     results = search_users(query)
     return results
+
+@app.post("/change_password")
+def change_password_endpoint(body: ChangePasswordRequest):
+    result = change_password(username=body.username, new_password=body.new_password)
+    return result
