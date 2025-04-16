@@ -208,14 +208,23 @@ def delete_account():
     print("Delete Account Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def search_users():
+    url = f"{BASE_URL}/search_users"
+    params = {"query": "r"}
+    
+    response = requests.get(url, params=params)
+    print("Search Users Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+
 def main():
 
     # 1. Register user
     #test_register_user()
 
     # 2. Log in to retrieve UUID
-    logged_user = test_login_user()
-    print("Extracted UUID:", logged_user['uuid'])
+    #logged_user = test_login_user()
+    #print("Extracted UUID:", logged_user['uuid'])
 
     # 3. Prompt user for Spotify Auth
     #test_spotify_auth(logged_user['uuid'])
@@ -244,7 +253,10 @@ def main():
     #test_logout_user(logged_user['uuid'])
 
     #10. test_delete_account()
-    delete_account()
+    #delete_account()
+
+    #11. test search_user()
+    search_users()
 
     print("\nAll test steps completed successfully.")
 

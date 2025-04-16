@@ -278,3 +278,21 @@ def uuid_to_access_token(uuid):
     cur_user = uuid_to_user(uuid)   
     return cur_user.access_token
     
+def search_users(query: str):
+    cursor = users_collection.find({"username": {"$regex":query, "$options": "i"}})  
+
+    results = []        
+    
+    for doc in cursor:
+        doc.pop("password", None)       # Remove the password field from the document
+        doc.pop("access_token", None)   # Remove the access_token field from the document
+        doc.pop("refresh_token", None)  # Remove the refresh_token field from the document
+        doc.pop("_id", None)            # Remove the _id field from the document
+        doc.pop("email", None)          # Remove the email field from the document
+        doc.pop("bio", None)            # Remove the bio field from the document
+        doc.pop("access_time", None)    # Remove the access time field from the document
+        doc.pop("followers", None)      # Remove the followers field from the document
+        doc.pop("following", None)      # Remove the following field from the document
+        
+        results.append(doc)             # Append the modified document to the results list
+    return results 
