@@ -283,7 +283,8 @@ def search_users(query: str):
 
     results = []        
     
-    for doc in cursor:
+    #Useful if you want more information from the user search
+    '''for doc in cursor:
         doc.pop("password", None)       # Remove the password field from the document
         doc.pop("access_token", None)   # Remove the access_token field from the document
         doc.pop("refresh_token", None)  # Remove the refresh_token field from the document
@@ -294,5 +295,9 @@ def search_users(query: str):
         doc.pop("followers", None)      # Remove the followers field from the document
         doc.pop("following", None)      # Remove the following field from the document
         
-        results.append(doc)             # Append the modified document to the results list
+        results.append(doc)             # Append the modified document to the results list'''
+    
+    # Get only the usernames from the cursor
+    results = [doc.get("username") for doc in cursor]
+
     return results 
