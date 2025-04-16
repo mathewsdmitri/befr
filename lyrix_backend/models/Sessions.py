@@ -40,4 +40,11 @@ def find_in_session(uuid: str):
     else:
         return "Session not found"
     
+def remove_session(uuid: str):
+    result = sessions_collection.delete_one({"uuid": uuid})
+    if result.deleted_count == 1:
+        return {"message": "Session removed successfully. User logged out."}
+    else:
+        return {"error": "Session not found or already removed."}
+    
 

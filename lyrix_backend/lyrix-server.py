@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user
 from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment, delete_post
-from models.Sessions import find_in_session
+from models.Sessions import find_in_session, remove_session
 from auth_procs import generate_random_string, sha256, base64encode
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
@@ -87,6 +87,9 @@ class DeletePostRequest(BaseModel):
     post_id: str
     username: str 
 
+class LogoutRequest(BaseModel):
+    uuid: str
+
 #this is a post request to register users
 @app.post("/register_user")
 def register_user(user: LoginModel):
@@ -97,6 +100,11 @@ def register_user(user: LoginModel):
 def login_user(user:LoginModel):
     print(user)
     session = create_session(user)
+    return session
+
+@app.post("/logout")
+def logout_user(body: LogoutRequest):
+    session = remove_session(body.uuid)
     return session
 
 @app.post("/forgot_password")

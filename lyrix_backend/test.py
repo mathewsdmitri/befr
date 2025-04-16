@@ -74,6 +74,13 @@ def test_login_user():
     assert data, "No data found in login response!"
     return data
 
+def test_logout_user(uuid: str):
+    url = f"{BASE_URL}/logout"
+    data = {"uuid": uuid}
+    response = requests.post(url, json=data)
+    print("Logout Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
 def test_spotify_auth(uuid: str):
     """
     Instruct the user to manually open the /spotifyAuth endpoint in their browser
@@ -213,7 +220,7 @@ def main():
 
     # 6. Test create/delete post
     #test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
-    delete_post_test()
+    #delete_post_test()
 
     # 7. Test like/unlike
     #like_post()
@@ -222,6 +229,9 @@ def main():
     # 8. Test add/delete comment
     #add_comment()
     #delete_comment()
+
+    # 9. Test logout
+    test_logout_user(logged_user['uuid'])
 
     print("\nAll test steps completed successfully.")
 
