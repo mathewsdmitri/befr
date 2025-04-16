@@ -10,7 +10,7 @@ from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user
-from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post
+from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment
 from models.Sessions import find_in_session
 from auth_procs import generate_random_string, sha256, base64encode
 from datetime import datetime, timezone
@@ -73,6 +73,15 @@ class LikeRequest(BaseModel):
     post_id: str
     username: str
 
+class CommentRequest(BaseModel):
+    post_id: str
+    username: str
+    comment_text: str
+
+class DeleteCommentRequest(BaseModel):
+    post_id: str
+    username: str
+    comment_id: str
 
 #this is a post request to register users
 @app.post("/register_user")
@@ -179,4 +188,23 @@ def like_endpoint(body: LikeRequest):
 @app.post("/unlike")
 def unlike_endpoint(body: LikeRequest):
     result = unlike_post(body.post_id, body.username)
+    return result
+
+
+@app.post("/add_comment")
+def comment_endpoint(body: CommentRequest):
+    result = add_comment(
+        post_id=body.post_id, 
+        username=body.username, 
+        comment_text=body.comment_text
+    )
+    return result
+
+@app.post("/delete_comment")
+def comment_endpoint(body: DeleteCommentRequest):
+    result = delete_comment(
+        post_id=body.post_id,
+        username=body.username,
+        comment_id=body.comment_id
+    )
     return result

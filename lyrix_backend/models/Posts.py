@@ -132,8 +132,47 @@ def unlike_post (post_id: str, username: str):
     
     return {"message": "User has unliked this post!"}
 
+def add_comment (post_id: str, username: str, comment_text: str):
     
-        
+    post = posts_collection.find_one({"post_id": post_id})
+
+    if not post:
+        return {"error": "Post not found"}
+
+    comment_data = {
+       "comment_id": str(uuid.uuid4()), # Generate a unique ID for the comment
+        "username": username,
+        "comment": comment_text,
+        "timestamp": datetime.now().isoformat()
+    }
+
+    posts_collection.update_one({"post_id": post_id}, {"$push": {"comments": comment_data}})
+
+    return {"message": "Comment added!"}
+    
+def delete_comment (post_id: str, username: str, comment_id: str):
+    
+    post = posts_collection.find_one({"post_id": post_id})
+
+    if not post:
+        return {"error": "Post not found"}
+
+    comments = post.get("comments", [])
+    comment_obj = next((c for c in comments if c["comment_id"] == comment_id), None)
+
+    if not comment_obj:
+        return {"error": "Comment not found"}
+    
+    is_comment_author = (comment_obj["username"] == username)
+    is_post_author = (post["username"] == username)
+
+    if not (is_comment_author or is_post_author):
+        return {"error": "You do not have permission to delete this comment."}
+
+    posts_collection.update_one({"post_id": post_id}, {"$pull": {"comments": {"comment_id": comment_id}}})
+
+    return {"message": "Comment deleted!"}
+          
 
 
     

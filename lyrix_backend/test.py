@@ -157,6 +157,29 @@ def unlike_post():
     print("Unlike Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def add_comment():
+   
+    url = f"{BASE_URL}/add_comment"
+    data = {
+        "post_id": "32d92938-f092-42cb-b491-1f3ea7cd8d3e",      #post ID 
+        "username": "Donkey",      # The user who is commenting
+        "comment_text" : "So cool!"  # The comment text
+    }
+    response = requests.post(url, json=data)
+    print("Comment Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+def delete_comment():
+   
+    url = f"{BASE_URL}/delete_comment"
+    data = {
+        "post_id": "32d92938-f092-42cb-b491-1f3ea7cd8d3e",      #post ID 
+        "username": "Rodger",      # Post owner or comment owner
+        "comment_id" : "b95d5362-346d-4702-8802-d5a4525e02ab"  # The comment id
+    }
+    response = requests.post(url, json=data)
+    print("Comment Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
 def main():
 
@@ -179,10 +202,16 @@ def main():
     #test_unfollow_user()
 
     #test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
-    print("\nAll test steps completed successfully.")
 
     # 6. Test like/unlike
     #like_post()
-    unlike_post()
+    #unlike_post()
+
+    # 7. Test comment
+    #add_comment()
+    delete_comment()
+
+    print("\nAll test steps completed successfully.")
+
 if __name__ == "__main__":
     main()
