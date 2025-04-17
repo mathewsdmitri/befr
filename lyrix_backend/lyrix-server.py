@@ -1,5 +1,5 @@
 #These imports are for loading the enviroment with the ids from the spotify api
-import os
+import os, bcrypt
 from dotenv import load_dotenv
 
 #The fastapi imports are for the app, Request is used to receive spotify authorization code
@@ -11,11 +11,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
 from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users, change_password
 from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment, delete_post
+from ResetToken import send_password_reset_email, confirm_password_reset, validate_password_reset
 from models.Sessions import find_in_session, remove_session
 from auth_procs import generate_random_string, sha256, base64encode
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from bson.objectid import ObjectId
 
 
 load_dotenv()
@@ -97,6 +99,16 @@ class DeleteAccountRequest(BaseModel):
 class ChangePasswordRequest(BaseModel):
     username: str
     new_password: str
+
+class ResetRequest(BaseModel):
+    identifier: str #username or email
+
+class ResetConfirm(BaseModel):
+    token: str
+    new_password: str
+
+class ValidateResetRequest(BaseModel):
+    token: str
 
 #this is a post request to register users
 @app.post("/register_user")
@@ -256,4 +268,23 @@ def search_users_endpoint(query: str = Query(...)):
 @app.post("/change_password")
 def change_password_endpoint(body: ChangePasswordRequest):
     result = change_password(username=body.username, new_password=body.new_password)
+    return result
+
+@app.post("/password_reset/request")
+def password_reset_request(body: ResetRequest):
+    return send_password_reset_email(body.identifier)
+
+@app.get("/password_reset/validate")
+def password_reset_validate(token: str = Query(...)):
+    result = validate_password_reset(token)
+    if not result["valid"]:
+        raise HTTPException(400, result["error"])
+    return {"valid": True}
+
+
+@app.post("/password_reset/confirm")
+def password_reset_confirm(body: ResetConfirm):
+    result = confirm_password_reset(body.token, body.new_password)
+    if "error" in result:
+        raise HTTPException(400, result["error"])
     return result

@@ -10,6 +10,8 @@ client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (
 db = client["Users"] # Connect to the Users database
 users_collection = db["users"] #Connect to the users collection
 
+tokens_collection = db["password_rest_tokens"] #Connect to the tokens collection
+
 #This is how you would pass data to the database and to receive it from the frontend
 class LoginModel(BaseModel):
      email: str
