@@ -229,43 +229,43 @@ def change_password():
 def main():
 
     # 1. Register user
-    #test_register_user()
+    test_register_user()
 
     # 2. Log in to retrieve UUID
-    #logged_user = test_login_user()
-    #print("Extracted UUID:", logged_user['uuid'])
+    logged_user = test_login_user()
+    print("Extracted UUID:", logged_user['uuid'])
 
     # 3. Prompt user for Spotify Auth
-    #test_spotify_auth(logged_user['uuid'])
+    test_spotify_auth(logged_user['uuid'])
 
     # 4. Get recently played tracks
-    #recently_played = test_get_recently_played(logged_user['uuid'])
-    #print("Recently Played:", recently_played)
+    recently_played = test_get_recently_played(logged_user['uuid'])
+    print("Recently Played:", recently_played)
 
     # 5. Test follow/unfollow
-    #test_follow_user()
-    #test_unfollow_user()
+    test_follow_user()
+    test_unfollow_user()
 
     # 6. Test create/delete post
-    #test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
-    #delete_post_test()
+    test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
+    delete_post_test()
 
     # 7. Test like/unlike
-    #like_post()
-    #unlike_post()
+    like_post()
+    unlike_post()
 
     # 8. Test add/delete comment
-    #add_comment()
-    #delete_comment()
+    add_comment()
+    delete_comment()
 
     # 9. Test logout
-    #test_logout_user(logged_user['uuid'])
+    test_logout_user(logged_user['uuid'])
 
     #10. test_delete_account()
-    #delete_account()
+    #elete_account()
 
     #11. test search_user()
-    #search_users()
+    search_users()
 
     #12 test change_password()
     change_password()
