@@ -10,13 +10,16 @@ load_dotenv()
 
 BASE_URL = "http://127.0.0.1:8000"
 
+BASE_URL = "http://127.0.0.1:8000"
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+
 def test_register_user():
     """Register a new user."""
     url = f"{BASE_URL}/register_user"
     user_data1 = {
-        "username": "Rodger",
-        "email": "rodger@",
-        "password": "rodger",
+        "username": "mathewsdmitri",
+        "email": "mathewsdmitri@gmail.com",
+        "password": "mathews",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -226,6 +229,69 @@ def change_password():
     print("Change Password Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def request_reset(identifier: str) -> str | None:
+    """Call /password_reset/request and return raw token if DEBUG; else skip."""
+    resp = requests.post(f"{BASE_URL}/password_reset/request",
+                         json={"identifier": identifier})
+    print("Reset‑request response:", resp.text)
+    resp.raise_for_status()
+    data = resp.json()
+
+    if not DEBUG:
+        print(f"⚠️  No raw token returned (DEBUG={DEBUG}).")
+        print("   Skipping validate & confirm steps—you’ll need to grab the link from your email and test manually.")
+        return None
+
+    # DEBUG=true → token is returned in dev mode
+    token = data.get("token")
+    if not token:
+        raise AssertionError("DEBUG must be true to get raw token in response")
+    return token
+
+
+def confirm_reset(raw_token: str, new_pwd: str):
+    """Call /password_reset/confirm"""
+    resp = requests.post(f"{BASE_URL}/password_reset/confirm",
+                         json={"token": raw_token, "new_password": new_pwd})
+    print("Reset‑confirm response:", resp.text)
+    resp.raise_for_status()
+
+def validate_reset(raw_token: str):
+    """Call /password_reset/validate"""
+    resp = requests.get(f"{BASE_URL}/password_reset/validate", params={"token": raw_token})
+    print("Validate‑token response:", resp.text)
+    resp.raise_for_status()
+    assert resp.json().get("valid") is True
+
+def test_full_password_reset_flow():
+    username = " " #enter username
+    new_pwd  = " " #enter new password
+
+    # 1) request reset link
+    raw_token = request_reset(username)
+    if raw_token is None:
+        return  # DEBUG=false: we skip the rest
+
+    # 2) validate (user clicked the link)
+    validate_reset(raw_token)
+
+    # 3) confirm (user submitted new password)
+    confirm_reset(raw_token, new_pwd)
+
+    # 4) log in with new pwd
+    login_url = f"{BASE_URL}/login"
+    resp = requests.post(login_url, json={
+        "username": username,
+        "email": "",
+        "password": new_pwd,
+        "bio": "",
+        "access_token": "",
+        "refresh_token": ""
+    })
+    print("Login with new pwd:", resp.text)
+    resp.raise_for_status()
+    print("✅ Full password‑reset flow succeeded.")
+
 def main():
 
     # 1. Register user
@@ -268,7 +334,11 @@ def main():
     #search_users()
 
     #12 test change_password()
-    change_password()
+    #change_password()
+
+    #13 test password reset flow
+    test_full_password_reset_flow()
+    print("\nForgot‑password flow succeeded.")
 
     print("\nAll test steps completed successfully.")
 
