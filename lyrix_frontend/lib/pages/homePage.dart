@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:lyrix_frontend/main.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 class HomePage extends StatefulWidget {
   final List<Map<String, dynamic>> posts;  //lists of posts to display
   final String? username;  //Username of current user
@@ -13,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final Map<int, bool> likedPost = {};  //tracks liked status per post by index
-
+  final Map<int, int> numlikesmap = {};
   @override
   Widget build(BuildContext context) {
     final currentPosts = widget.posts;  //store current list of posts
@@ -117,7 +118,8 @@ class _HomePageState extends State<HomePage> {
                         "View Comments",
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200, color: Colors.white),
                         ),
-                    )
+                    ),
+                    Text('${numlikesmap[index]}'),
                     ],
                   ),
                   Column(
@@ -129,7 +131,31 @@ class _HomePageState extends State<HomePage> {
                           color: likedPost[index] == true ? Colors.pink : Colors.white,
                         ),
                         
-                        onPressed: () {
+                        onPressed: () async{
+                          const String url = 'http://localhost:8000/like';
+                          try {
+                            final response = await http.post(
+                              Uri.parse(url),
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: jsonEncode({
+                                'username': await getUser(),
+                                'post_id': post['post_id'],
+                              }),
+                            );
+                            if (response.statusCode == 200) {
+                              print(response.body);
+                              dynamic value = json.decode(response.body);
+                              print(numlikesmap[index]);
+                              numlikesmap[index] = value['num_likes'];
+                              print(numlikesmap[index]);
+                            }
+
+                          } catch (e) {
+                            print("Request failed: $e");
+                         
+                          }
                           setState(() {
                             likedPost[index] = !(likedPost[index] ?? false);
                           });

@@ -120,7 +120,11 @@ def like_post(post_id:str, username: str):
         return {"message": "User already liked this post!"}
 
     posts_collection.update_one({"post_id": post_id}, {"$push": {"likes": username}})
-    return {"message": "Post liked!"}
+    post = posts_collection.find_one({"post_id": post_id})
+    data = {
+            'num_likes': len(post['likes']),
+            }
+    return data
 
 
 def unlike_post (post_id: str, username: str):

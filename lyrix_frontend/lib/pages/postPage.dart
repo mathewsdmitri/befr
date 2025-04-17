@@ -7,7 +7,7 @@ class PostPage extends StatefulWidget {
 //  final Function(List <dynamic>) updateSongs;
  // const PostPage({super.key, required this.updateSongs});
   
- final Function (String song, String artistName, String albumArtUrl, String caption) addPost;
+ final Function (String song, String artistName, String albumArtUrl, String caption, String post_id) addPost;
   const PostPage({super.key, required this.addPost}); 
   @override
   // ignore: library_private_types_in_public_api
@@ -135,6 +135,7 @@ class _PostPageState extends State<PostPage> {
                   final String artistName = chosenTrack?['artist_name'];
                   final String? track = await selectedOption;
                   const String url = 'http://localhost:8000/post'; // FastAPI endpoint
+                  String post_id = "";
                   try {
                     final response = await http.post(
                       Uri.parse(url),
@@ -153,7 +154,8 @@ class _PostPageState extends State<PostPage> {
                     if (response.statusCode == 200) {
                       print(response.body);
                       dynamic value = json.decode(response.body);
-                      
+                      print(value);
+                      post_id = value;
                     } else {
                       print("Error: ${response.statusCode} - ${response.body}");
                     }
@@ -166,6 +168,7 @@ class _PostPageState extends State<PostPage> {
                     artistName,            // artist name
                     albumArtUrl,            // Nullable album art
                     captionController.text, // User's caption
+                    post_id,
                   );
 
                   Navigator.of(context).pop(); // Close dialog

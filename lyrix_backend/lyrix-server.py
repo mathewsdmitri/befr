@@ -197,8 +197,7 @@ def createPost(post:InitPost):
     if user.username == post.username:
         newPost = Post(username=post.username, content=post.content, album_url=post.album_url, track_name=post.track_name, artist_name=post.artist_name)
         newPost.create_post()
-        print(find_user_posts(username=post.username))
-        return "You Posted!"
+        return newPost.post_id
     
     return "You are not who you say you are"
 
