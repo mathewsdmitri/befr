@@ -1,8 +1,10 @@
 from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
 import uuid
-
-client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (Change if connecting to Atlas)
+from dotenv import load_dotenv
+import os
+load_dotenv()
+client = MongoClient(os.getenv("DATABASE_CONNECTION_STRING")) #Connect to Mongodb locally (Change if connecting to Atlas)
 db_session = client["Sessions"] 
 sessions_collection = db_session["sessions"] 
 

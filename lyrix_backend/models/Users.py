@@ -4,9 +4,11 @@ from pymongo import MongoClient
 from pydantic import BaseModel, EmailStr, ValidationError
 import bcrypt
 from .Sessions import Session, SessionModel, find_in_session
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-
-client = MongoClient("mongodb://localhost:27017/") #Connect to Mongodb locally (Change if connecting to Atlas)
+client = MongoClient(os.getenv("DATABASE_CONNECTION_STRING")) #Connect to Mongodb locally (Change if connecting to Atlas)
 db = client["Users"] # Connect to the Users database
 users_collection = db["users"] #Connect to the users collection
 

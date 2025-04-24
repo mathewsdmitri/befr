@@ -213,7 +213,7 @@ def delete_account():
 
 def search_users():
     url = f"{BASE_URL}/search_users"
-    params = {"query": "rod"}
+    params = {"query": "mos"}
     
     response = requests.get(url, params=params)
     print("Search Users Response:", response.text)

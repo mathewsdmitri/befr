@@ -287,3 +287,13 @@ def password_reset_confirm(body: ResetConfirm):
     if "error" in result:
         raise HTTPException(400, result["error"])
     return result
+
+
+@app.post("/getFollowingPost")
+def get_follow_post(query: str = Query(...)):
+    posts = []
+    #Find user
+    #Need to get the list of users that user follow
+    #Get the list of posts from each user
+    #Sort them by earliest time
+    return posts

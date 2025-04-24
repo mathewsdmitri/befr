@@ -119,7 +119,6 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.w200, color: Colors.white),
                         ),
                     ),
-                    Text('${numlikesmap[index]}'),
                     ],
                   ),
                   Column(
@@ -161,6 +160,7 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                       ),
+                      Text('${(numlikesmap[index] ?? 0)}'),
                     ],
                   ),        
                 ],
