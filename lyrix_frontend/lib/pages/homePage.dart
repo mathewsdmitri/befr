@@ -160,12 +160,23 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                       ),
-                      Text('${(numlikesmap[index] ?? 0)}'),
+                      
                     ],
-                  ),        
+                  ),      
                 ],
               ),
             ),
+
+            SizedBox(
+              width: 218,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('${(numlikesmap[index] ?? 0)}'),
+                          ],
+                        ),
+            ), 
 
             Padding(padding: EdgeInsets.only(top: 5)),
 
