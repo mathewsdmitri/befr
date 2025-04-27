@@ -289,11 +289,20 @@ def password_reset_confirm(body: ResetConfirm):
     return result
 
 
-@app.post("/getFollowingPost")
-def get_follow_post(query: str = Query(...)):
+@app.get("/getFollowingPost")
+def get_follow_post(username:str):
     posts = []
     #Find user
-    #Need to get the list of users that user follow
+    cur_user = find_user(User(username=username,password="",email=""))
+    #Need to get the list of users that user follows
+    following = cur_user.following
+    print(following)
     #Get the list of posts from each user
+    for followed in following:
+        followed_posts = find_user_posts(followed)
+        print(followed_posts)
+        for postings in followed_posts:
+            posts.append(postings)
+        
     #Sort them by earliest time
     return posts

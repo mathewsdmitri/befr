@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage>{
                         isLoading = true;
                         errorMessage = "";
                       });
-                      AccountService accountService = new AccountService();
+                      AccountService accountService = AccountService();
                       bool success = await accountService.sendLoginRequest(
                         context, 
                         username.text.trim(), 

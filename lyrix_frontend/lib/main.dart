@@ -87,9 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String?>> posts = [];
 
 
-  void addPost(String song, String artistName, String albumArtUrl, String caption, String post_id) {
+  void addPost(String song, String artistName, String albumArtUrl, String caption, String postId) {
     setState(() {
-      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption, 'post_id': post_id});
+      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption, 'post_id': postId});
       });
   }
 

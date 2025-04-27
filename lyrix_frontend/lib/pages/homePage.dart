@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lyrix_frontend/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,10 +16,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Map<int, bool> likedPost = {};  //tracks liked status per post by index
   final Map<int, int> numlikesmap = {};
-  @override
-  Widget build(BuildContext context) {
-    final currentPosts = widget.posts;  //store current list of posts
+  List<Map<String,dynamic>> _posts = [];
 
+  @override
+  void initState(){
+  super.initState();
+  _posts = widget.posts;
+  _fetchLatestPosts();    
+  }
+  Future<void> _fetchLatestPosts() async {
+    final user = await getUser();
+    if(user == null)return;
+
+    String baseUrl = 'http://localhost:8000/getFollowingPost?username=$user';
+    try{
+      final response = await http.get(Uri.parse(baseUrl));
+      if(response.statusCode == 200){
+        final List<dynamic> jsonPosts = jsonDecode(response.body);
+        setState(() => _posts = List<Map<String, dynamic>>.from(jsonPosts));
+      }
+      else{
+        print("Failed: ${response.statusCode} ${response.body}");
+      }
+    }
+    catch(e){
+      print("It didnt work :(");
+    }
+  }
+  Widget build(BuildContext context) {
+    final currentPosts = _posts;  //store current list of posts
+    print(currentPosts);
     return Scaffold(
       body: currentPosts.isEmpty
       //if no posts exists display no posts
@@ -31,9 +58,10 @@ class _HomePageState extends State<HomePage> {
             //each post in the list will get a post container containing post info
               itemBuilder: (context, index) {
                 final post = currentPosts[index];
-                final trackName = post['song'] as String?;
-                final albumArtUrl = post['album_art_url'] as String?;
-                final artist_name = post['artistName'] as String?;
+                final trackName = post['track_name'] as String?;
+                final albumArtUrl = post['album_url'] as String?;
+                final artistName = post['artist_name'] as String?;
+                final post_author = post['username'] as String?;
 
       return Container(
         padding: const EdgeInsets.all(10.0),
@@ -55,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                        widget.username ?? "User",
+                        post_author ?? "User",
                         style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
                     ),
                   const SizedBox(height: 10.0),
@@ -93,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   if (trackName != null && trackName.isNotEmpty)
                     Text(
-                      '$trackName - $artist_name',
+                      '$trackName - $artistName',
                       style: TextStyle(
                         fontSize: 10, fontWeight: FontWeight.bold
                       ),

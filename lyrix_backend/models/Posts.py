@@ -84,14 +84,15 @@ class Post:
 
 def find_user_posts(username: str):
     """ Finds a post in the database if it exists. """
+    posts = list(posts_collection.find({"username": username},
+                                        {"_id":0}
+                                        ))
 
-    list_posts = list(posts_collection.find_one({"username": username}))
+    # Optionally stringify ObjectIds so callers can JSON-dump the result
+    # for post in posts:
+    #     post["_id"] = str(post["_id"])
 
-    if list_posts:
-        return list_posts
-
-    else:
-        return {"message": "No posts found!"}
+    return posts if posts else {"message": "No posts found!"}
         
 def delete_post(post_id: str, username: str):
     post = posts_collection.find_one({"post_id": post_id})
