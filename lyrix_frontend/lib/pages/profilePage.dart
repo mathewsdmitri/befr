@@ -28,6 +28,7 @@ class _ProfilepageState extends State<Profilepage> {
                 backgroundColor: Color.fromARGB(255, 189, 189, 189),
               ),
               const SizedBox(width: 30), //boxes profile pic controlling the distance between pic and username
+              // Settings Icon that leads to profile settings page
 
             Expanded(
               child: Column(
@@ -43,11 +44,18 @@ class _ProfilepageState extends State<Profilepage> {
                       color: Colors.white,
                       fontWeight: FontWeight.normal
                     ),
-                  )
+                  ),
+                  
                 ],
                 )
               )
-            ],
+            , IconButton(
+                icon: const Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  // Navigate to settings page
+                  Navigator.pushNamed(context, '/settings');
+                },
+              ),],
           ),
         ),
         Row(

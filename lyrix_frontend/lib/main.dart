@@ -7,6 +7,7 @@ import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lyrix_frontend/pages/profileEditPage.dart';
 import 'package:http/http.dart' as http;
 
 const storage = FlutterSecureStorage();
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/login": (context) => const LoginPage(),
         "/home": (context) => const MyHomePage(),
+        "/settings" : (context) => ProfileEditPage(), 
       }
     );
   }

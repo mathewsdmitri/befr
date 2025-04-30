@@ -29,6 +29,7 @@ class UserModel(BaseModel):
     username: str
     password: str
     bio: str
+    profile_picture: str
     access_token: str
     refresh_token: str
     access_time : datetime
@@ -39,6 +40,7 @@ class UserModel(BaseModel):
 class ProfileModel(BaseModel):
     email: str
     username: str
+    profile_picture: str
     bio: str
 
 
@@ -57,11 +59,12 @@ class User:
 
     """ 
 
-    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", followers = [], following = []):
+    def __init__(self, username: str, email: str, password: str, bio="", access_token:str="" , refresh_token:str = "", followers = [], following = [], profile_picture = ""):
         self.username = username
         self.email = email
         self.password = password #Add hashing for encryption
         self.bio = bio
+        self.profile_picture = profile_picture
         self.access_token = access_token
         self.refresh_token = refresh_token
         self.access_time = datetime.now()
@@ -96,6 +99,7 @@ class User:
             "username": self.username,
             "password": hashed_str, 
             "bio": self.bio,
+            "profile_picture": self.profile_picture,
             "access_token": self.access_token,
             "refresh_token": self.refresh_token,
             "access_time" : self.access_time,
@@ -159,7 +163,7 @@ def find_user(user:User):
 
         existing_user = users_collection.find_one({"email": user.email})
 
-        if user:
+        if existing_user:
             return UserModel(**existing_user)
         
 
@@ -325,3 +329,11 @@ def change_password(username: str, new_password: str):
     users_collection.update_one({"username": username}, {"$set": {"password": hashed_str}})
     
     return {"message": "Password updated successfully!"}
+
+def update_profile_pic(username: str, profile_picture: str):
+    user = users_collection.find_one({"username": username})
+    if not user:
+        return {"error": "User not found!"}
+    # Update the user's profile picture in the database
+    users_collection.update_one({"username": username}, {"$set": {"profile_picture": profile_picture}})
+    return {"message": "Profile picture updated successfully!"}

@@ -299,6 +299,17 @@ def test_get_following_posts(user):
     print("Following Post Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
+def test_update_profile_picture(user:str, profile_picture:str):
+    url = f"{BASE_URL}/updateProfilePic"
+    data = {
+        "email": "",
+        "username": user,
+        "profile_picture": profile_picture,
+        "bio": ""
+    }
+    response = requests.post(url, json=data)
+    print("Update Profile Picture Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 def main():
 
     # 1. Register user
@@ -347,11 +358,12 @@ def main():
     #test_full_password_reset_flow()
 
     #14 Test listing user following posts
-    test_follow_user(follower_user="mosquito prime", user_account="Shrek")
-    test_follow_user(follower_user="mosquito prime", user_account="mosquito prime")
-    test_get_following_posts("mosquito prime")
+    test_follow_user(follower_user="Shrek", user_account="Donkey")
+    test_follow_user(follower_user="Shrek", user_account="Shrek")
+    test_get_following_posts("Shrek")
     print("\nForgot‑password flow succeeded.")
-
+    test_update_profile_picture(user="Shrek",
+                                profile_picture="https://static.wikia.nocookie.net/universalstudios/images/f/f2/Shrek2-disneyscreencaps.com-4369.jpg/revision/latest?cb=20250224023204")
     print("\nAll test steps completed successfully.")
 
 if __name__ == "__main__":
