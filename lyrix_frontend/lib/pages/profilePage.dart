@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:lyrix_frontend/main.dart';
 class Profilepage extends StatefulWidget {
   final String? username;
-
-  const Profilepage({super.key, required this.username});
+  final String? profilePicture;
+  const Profilepage({super.key, required this.username, required this.profilePicture});
 
   @override
   _ProfilepageState createState() => _ProfilepageState();
@@ -22,9 +23,13 @@ class _ProfilepageState extends State<Profilepage> {
           padding: const EdgeInsets.all(20.0),
           child: Row(
             children: [
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage("assets/profile.png"),
+              // Profile Picture
+              CircleAvatar(
+                radius: 50, 
+                // If you have a profile picture in base64, decode it and set it here
+                backgroundImage: widget.profilePicture != null && widget.profilePicture!.isNotEmpty
+                    ? MemoryImage(base64Decode(widget.profilePicture!))
+                    : AssetImage("assets/profile.png") as ImageProvider,
                 backgroundColor: Color.fromARGB(255, 189, 189, 189),
               ),
               const SizedBox(width: 30), //boxes profile pic controlling the distance between pic and username

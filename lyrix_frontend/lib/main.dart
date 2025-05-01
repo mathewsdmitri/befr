@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:lyrix_frontend/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/homePage.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
@@ -9,8 +9,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lyrix_frontend/pages/profileEditPage.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:lyrix_frontend/search_service.dart';
 const storage = FlutterSecureStorage();
+AccountService accountService = AccountService();
 
 
 // Get UUID
@@ -28,6 +29,20 @@ Future<String?> getUser() async {
   return await storage.read(key: 'user_username');
 }
 
+//Get profile picture
+Future<String?> getProfilePicture() async {
+  return await storage.read(key: 'profile_picture');
+}
+
+Future<Map<String, dynamic>?> getUserData() async {
+  String? username = await getUser();
+  String? profilePicture = await getProfilePicture(); 
+  return {
+    'username': username,
+    'profile_picture': profilePicture,
+  };
+}
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -39,6 +54,10 @@ void main() async{
 Future<bool> checkLoginStatus() async {
   const storage = FlutterSecureStorage();
   String? uuid = await storage.read(key: 'user_uuid');
+  if (uuid == null) {
+    return false; // User is not logged in
+  }
+  bool gotData = await accountService.loadLoggedInUser(await getUser());
   return uuid != null; // If UUID exists, user is logged in
 }
 
@@ -95,11 +114,11 @@ class _MyHomePageState extends State<MyHomePage> {
       });
   }
 
-  List<Widget> _widgetOptions(String username) {
+  List<Widget> _widgetOptions(String username, String? profilePicture) {
   return <Widget>[
     HomePage(posts: posts, username:username),
     PostPage(addPost: addPost),
-    Profilepage(username: username),
+    Profilepage(username: username, profilePicture:profilePicture),
   ];
   }
 
@@ -112,10 +131,14 @@ void _onItemTapped(int index) {
    @override
   Widget build(BuildContext context) {
 
-    return FutureBuilder<String?>(
-    future: getUser(),
+    return FutureBuilder<Map?>(
+    future: getUserData(),
     builder: (context, snapshot) {
-      String username = snapshot.data ?? "Guest User"; //default to "Guest User" if null
+      if (snapshot.connectionState != ConnectionState.done || !snapshot.hasData || snapshot.data == null) {
+        return Center(child: CircularProgressIndicator()); // Show a loading indicator while waiting for data
+      }
+      String username = snapshot.data!['username'] ?? "Guest User"; // Default to "Guest User" if null
+      String? profilePicture = snapshot.data!['profile_picture'];
     return Scaffold(
       appBar: AppBar(
         shape: Border(
@@ -138,9 +161,21 @@ void _onItemTapped(int index) {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {
+              // Open search text field
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: _widgetOptions(username).elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions(username, profilePicture).elementAt(_selectedIndex), // Display the selected widget
       ),
       
       bottomNavigationBar: 

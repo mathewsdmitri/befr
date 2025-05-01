@@ -132,9 +132,17 @@ def forgot_password(user:LoginModel):
     return find_user(user).password
     
 @app.get("/get_user")   
-def get_user(user: LoginModel):
-    user = find_user(user).username
-    return user
+def get_user(user:str):
+    print(user)
+    found_user = find_user(User(username=user, password="", email=""))
+    return {
+        "username": found_user.username,
+        "email": found_user.email,
+        "bio": found_user.bio,
+        "profile_picture": found_user.profile_picture,
+        "followers": found_user.followers,
+        "following": found_user.following
+        }
 
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID:str):
@@ -260,7 +268,7 @@ def delete_account(body: DeleteAccountRequest):
     return result
 
 @app.get("/search_users")
-def search_users_endpoint(query: str = Query(...)):
+def search_users_endpoint(query: str):
     results = search_users(query)
     return results
 

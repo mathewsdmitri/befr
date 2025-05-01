@@ -358,8 +358,8 @@ def main():
     #test_full_password_reset_flow()
 
     #14 Test listing user following posts
-    test_follow_user(follower_user="Shrek", user_account="Donkey")
-    test_follow_user(follower_user="Shrek", user_account="Shrek")
+    test_follow_user(follower_user="mosquito prime", user_account="Shrek")
+    test_follow_user(follower_user="mosquito prime", user_account="mosquito prime")
     test_get_following_posts("Shrek")
     print("\nForgot‑password flow succeeded.")
     test_update_profile_picture(user="Shrek",
