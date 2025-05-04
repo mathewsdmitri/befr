@@ -34,12 +34,18 @@ Future<String?> getProfilePicture() async {
   return await storage.read(key: 'profile_picture');
 }
 
+Future<String?> getBio() async {
+  return await storage.read(key: 'bio');
+}
+
 Future<Map<String, dynamic>?> getUserData() async {
   String? username = await getUser();
   String? profilePicture = await getProfilePicture(); 
+  String? bio = await getBio();
   return {
     'username': username,
     'profile_picture': profilePicture,
+    'bio': bio,
   };
 }
 
@@ -47,7 +53,6 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   final bool isLoggedIn = await checkLoginStatus();
-  print(getUser());
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
@@ -57,7 +62,7 @@ Future<bool> checkLoginStatus() async {
   if (uuid == null) {
     return false; // User is not logged in
   }
-  bool gotData = await accountService.loadLoggedInUser(await getUser());
+  accountService.loadLoggedInUser(await getUser()); 
   return uuid != null; // If UUID exists, user is logged in
 }
 
@@ -114,11 +119,11 @@ class _MyHomePageState extends State<MyHomePage> {
       });
   }
 
-  List<Widget> _widgetOptions(String username, String? profilePicture) {
+  List<Widget> _widgetOptions(String username, String? profilePicture, String? bio) {
   return <Widget>[
     HomePage(posts: posts, username:username),
     PostPage(addPost: addPost),
-    Profilepage(username: username, profilePicture:profilePicture),
+    Profilepage(username: username, profilePicture:profilePicture, bio: bio,),
   ];
   }
 
@@ -130,7 +135,7 @@ void _onItemTapped(int index) {
 
    @override
   Widget build(BuildContext context) {
-
+    
     return FutureBuilder<Map?>(
     future: getUserData(),
     builder: (context, snapshot) {
@@ -139,6 +144,7 @@ void _onItemTapped(int index) {
       }
       String username = snapshot.data!['username'] ?? "Guest User"; // Default to "Guest User" if null
       String? profilePicture = snapshot.data!['profile_picture'];
+      String? bio = snapshot.data!['bio']; 
     return Scaffold(
       appBar: AppBar(
         shape: Border(
@@ -175,7 +181,7 @@ void _onItemTapped(int index) {
         ],
       ),
       body: Center(
-        child: _widgetOptions(username, profilePicture).elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions(username, profilePicture, bio).elementAt(_selectedIndex), // Display the selected widget
       ),
       
       bottomNavigationBar: 

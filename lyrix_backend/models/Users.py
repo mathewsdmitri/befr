@@ -309,8 +309,20 @@ def search_users(query: str):
         
         results.append(doc)             # Append the modified document to the results list'''
     
-    # Get only the usernames from the cursor
-    results = [doc.get("username") for doc in cursor]
+    # Get usernames, profile picture, bio, followers, and following
+    for doc in cursor:
+        doc.pop("password", None)       # Remove the password field from the document
+        doc.pop("access_token", None)   # Remove the access_token field from the document
+        doc.pop("refresh_token", None)  # Remove the refresh_token field from the document
+        doc.pop("_id", None)            # Remove the _id field from the document
+        
+        results.append({
+            "username": doc["username"],
+            "profile_picture": doc["profile_picture"],
+            "bio": doc["bio"],
+            "followers": len(doc["followers"]),
+            "following": len(doc["following"])
+        })
 
     return results 
 
@@ -337,3 +349,12 @@ def update_profile_pic(username: str, profile_picture: str):
     # Update the user's profile picture in the database
     users_collection.update_one({"username": username}, {"$set": {"profile_picture": profile_picture}})
     return {"message": "Profile picture updated successfully!"}
+
+def update_user_bio(username: str, bio: str):
+    user = users_collection.find_one({"username": username})
+    if not user:
+        return {"error": "User not found!"}
+    # Update the user's profile picture in the database
+    users_collection.update_one({"username": username}, {"$set": {"bio": bio}})
+    return {"message": "Bio updated successfully!"}
+

@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   }
   Widget build(BuildContext context) {
     final currentPosts = _posts;  //store current list of posts
-    print(currentPosts);
+    //print(currentPosts);
     return Scaffold(
       body: currentPosts.isEmpty
       //if no posts exists display no posts
@@ -172,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                               }),
                             );
                             if (response.statusCode == 200) {
-                              print(response.body);
+                              //print(response.body);
                               dynamic value = json.decode(response.body);
                               print(numlikesmap[index]);
                               numlikesmap[index] = value['num_likes'];

@@ -7,6 +7,24 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:typed_data';
 import 'package:lyrix_frontend/main.dart';
 import 'package:http/http.dart' as http;
+
+void uploadProfilePicture(String base64Image) async {
+  final String baseUrl = 'http://localhost:8000/updateProfilePic';
+  String? username = await getUser();
+  final response = await http.post(
+    Uri.parse(baseUrl),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'username': username,
+      'profile_picture': base64Image,
+      'email': "",
+      'bio': "",
+    }),
+  );
+}
+
 class ProfileEditPage extends StatefulWidget {
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
@@ -56,9 +74,15 @@ if (kIsWeb) {
     // Handle saving the profile picture and bio
     print('Bio: $bio');
     print('Profile Image: ${_profileImage?.path}');
-    Uint8List imageBytes = await _profileImage!.readAsBytes();
+    if(_profileImage != null) {
+      // Encode the image to base64
+      Uint8List imageBytes = await _profileImage!.readAsBytes();
       String base64Image = base64Encode(imageBytes);
-      final String baseUrl = 'http://localhost:8000/updateProfilePic';
+      uploadProfilePicture(base64Image);
+    }
+    if(bio.isNotEmpty) {
+      // Make API call to save the bio
+      final String baseUrl = 'http://localhost:8000/update_bio';
       String? username = await getUser();
       final response = await http.post(
         Uri.parse(baseUrl),
@@ -67,12 +91,13 @@ if (kIsWeb) {
         },
         body: jsonEncode({
           'username': username,
-          'profile_picture': base64Image,
+          'profile_picture': "",
           'email': "",
-          'bio': "",
-
+          'bio': bio,
         }),
       );
+    }
+
   }
 
   @override

@@ -4,8 +4,8 @@ import 'package:lyrix_frontend/main.dart';
 class Profilepage extends StatefulWidget {
   final String? username;
   final String? profilePicture;
-  const Profilepage({super.key, required this.username, required this.profilePicture});
-
+  final String? bio; 
+  const Profilepage({super.key, required this.username, required this.profilePicture, required this.bio});
   @override
   _ProfilepageState createState() => _ProfilepageState();
 }
@@ -42,8 +42,8 @@ class _ProfilepageState extends State<Profilepage> {
                   Text(widget.username ?? "User", // Updated to use passed username
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 5),
-                  const Text(
-                    "bio",  //should let users edit this for their bio
+                  Text(
+                    widget.bio ?? "Bio",  //should let users edit this for their bio
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,

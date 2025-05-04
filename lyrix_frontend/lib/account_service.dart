@@ -34,7 +34,6 @@ class AccountService {
         }),
       );
       if (response.statusCode == 200) {
-        print(response.body);
         dynamic value = json.decode(response.body);
         String uuid = value['uuid'];
         String username = value['username'];
@@ -51,6 +50,7 @@ class AccountService {
           await storage.write(
               key: 'refresh_token', value: value['refresh_token']);
         }
+        bool gotData = await loadLoggedInUser(username);
         return true;
       } else {
         print("Error: ${response.statusCode} - ${response.body}");

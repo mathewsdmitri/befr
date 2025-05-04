@@ -9,7 +9,7 @@ from models.Users import User, LoginModel, ProfileModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users, change_password, update_profile_pic
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users, change_password, update_profile_pic, update_user_bio
 from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment, delete_post
 from ResetToken import send_password_reset_email, confirm_password_reset, validate_password_reset
 from models.Sessions import find_in_session, remove_session
@@ -325,4 +325,16 @@ def update_profile(user: ProfileModel):
     # Update the user's profile information
     updated_user = update_profile_pic(user.username, user.profile_picture)
     
+    return updated_user
+
+@app.post("/update_bio")
+def update_bio(user: ProfileModel):
+    # Find the user in the database
+    existing_user = find_user(User(username=user.username, password="", email=""))
+    if not existing_user:
+        return {"error": "User not found"}
+    
+    # Update the user's profile information
+    updated_user = update_user_bio(user.username, user.bio)
+    print(updated_user)
     return updated_user
