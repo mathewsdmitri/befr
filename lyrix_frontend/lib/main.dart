@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:lyrix_frontend/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/homePage.dart';
@@ -8,7 +7,6 @@ import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lyrix_frontend/pages/profileEditPage.dart';
-import 'package:http/http.dart' as http;
 import 'package:lyrix_frontend/search_service.dart';
 const storage = FlutterSecureStorage();
 AccountService accountService = AccountService();

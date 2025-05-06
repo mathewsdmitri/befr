@@ -26,6 +26,8 @@ void uploadProfilePicture(String base64Image) async {
 }
 
 class ProfileEditPage extends StatefulWidget {
+  const ProfileEditPage({super.key});
+
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
   
