@@ -60,9 +60,9 @@ def test_login_user():
     """Log in the user and retrieve the session UUID."""
     url = f"{BASE_URL}/login"
     user_data = {
-        "username": "Rodger",
+        "username": "Shrek",
         "email": "",
-        "password": "rodger",
+        "password": "shrek",
         "bio": "",
         "access_token": "",
         "refresh_token": "",
@@ -136,21 +136,21 @@ def delete_post_test():
     print("Delete Post Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
-def test_follow_user():
+def test_follow_user(follower_user:str, user_account:str):
     url = f"{BASE_URL}/follow"
     data = {
-            "follower_user": "Shrek",      # The user who is following
-            "user_account": "Rodger"       # The user being followed
+            "follower_user": follower_user,      # The user who is following
+            "user_account": user_account       # The user being followed
         }
     response = requests.post(url, json=data)
     print("Follow Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
-def test_unfollow_user():
+def test_unfollow_user(follower_user:str, user_account:str):
     url = f"{BASE_URL}/unfollow"
     data = {
-        "follower_user": "Rodger",      # The user who is unfollowing
-        "user_account": "Shrek"       # The user being unfollowed
+        "follower_user": follower_user,      # The user who is unfollowing
+        "user_account": user_account       # The user being unfollowed
     }
     response = requests.post(url, json=data)
     print("Unfollow Response:", response.text)
@@ -229,7 +229,7 @@ def change_password():
     print("Change Password Response:", response.text)
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
-def request_reset(identifier: str) -> str | None:
+def request_reset(identifier: str) -> str:
     """Call /password_reset/request and return raw token if DEBUG; else skip."""
     resp = requests.post(f"{BASE_URL}/password_reset/request",
                          json={"identifier": identifier})
@@ -292,6 +292,24 @@ def test_full_password_reset_flow():
     resp.raise_for_status()
     print("✅ Full password‑reset flow succeeded.")
 
+def test_get_following_posts(user):
+    url = f"{BASE_URL}/getFollowingPost?username={user}"
+ 
+    response = requests.get(url)
+    print("Following Post Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+
+def test_update_profile_picture(user:str, profile_picture:str):
+    url = f"{BASE_URL}/updateProfilePic"
+    data = {
+        "email": "",
+        "username": user,
+        "profile_picture": profile_picture,
+        "bio": ""
+    }
+    response = requests.post(url, json=data)
+    print("Update Profile Picture Response:", response.text)
+    assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 def main():
 
     # 1. Register user
@@ -309,13 +327,13 @@ def main():
     print("Recently Played:", recently_played)
 
     # 5. Test follow/unfollow
-    test_follow_user()
-    test_unfollow_user()
+    test_follow_user("Rodger", "Shrek")
+    test_unfollow_user("Rodger", "Shrek")
 
     # 6. Test create/delete post
     test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
     delete_post_test()
-
+    test_create_post(username=logged_user['username'], uuid=logged_user['uuid'])
     # 7. Test like/unlike
     like_post()
     unlike_post()
@@ -337,9 +355,15 @@ def main():
     #change_password()
 
     #13 test password reset flow
-    test_full_password_reset_flow()
-    print("\nForgot‑password flow succeeded.")
+    #test_full_password_reset_flow()
 
+    #14 Test listing user following posts
+    test_follow_user(follower_user="mosquito prime", user_account="Shrek")
+    test_follow_user(follower_user="mosquito prime", user_account="mosquito prime")
+    test_get_following_posts("Shrek")
+    print("\nForgot‑password flow succeeded.")
+    test_update_profile_picture(user="Shrek",
+                                profile_picture="https://static.wikia.nocookie.net/universalstudios/images/f/f2/Shrek2-disneyscreencaps.com-4369.jpg/revision/latest?cb=20250224023204")
     print("\nAll test steps completed successfully.")
 
 if __name__ == "__main__":

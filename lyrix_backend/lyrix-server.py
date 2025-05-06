@@ -9,7 +9,7 @@ from models.Users import User, LoginModel, ProfileModel, create_session
 from models.Sessions import Session
 from fastapi.middleware.cors import CORSMiddleware
 from SpotifyAPIClient import SpotifyAPIClient
-from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users, change_password
+from models.Users import token_post_to_user, uuid_to_access_token, uuid_to_user, find_user, check_access, follow_user, unfollow_user, delete_user, search_users, change_password, update_profile_pic, update_user_bio
 from models.Posts import PostModel, Post, InitPost, find_user_posts, like_post, unlike_post, add_comment, delete_comment, delete_post
 from ResetToken import send_password_reset_email, confirm_password_reset, validate_password_reset
 from models.Sessions import find_in_session, remove_session
@@ -132,9 +132,17 @@ def forgot_password(user:LoginModel):
     return find_user(user).password
     
 @app.get("/get_user")   
-def get_user(user: LoginModel):
-    user = find_user(user).username
-    return user
+def get_user(user:str):
+    print(user)
+    found_user = find_user(User(username=user, password="", email=""))
+    return {
+        "username": found_user.username,
+        "email": found_user.email,
+        "bio": found_user.bio,
+        "profile_picture": found_user.profile_picture,
+        "followers": found_user.followers,
+        "following": found_user.following
+        }
 
 @app.get("/spotifyAuth")
 def auth_spotify(uniqueID:str):
@@ -260,7 +268,7 @@ def delete_account(body: DeleteAccountRequest):
     return result
 
 @app.get("/search_users")
-def search_users_endpoint(query: str = Query(...)):
+def search_users_endpoint(query: str):
     results = search_users(query)
     return results
 
@@ -289,11 +297,44 @@ def password_reset_confirm(body: ResetConfirm):
     return result
 
 
-@app.post("/getFollowingPost")
-def get_follow_post(query: str = Query(...)):
+@app.get("/getFollowingPost")
+def get_follow_post(username:str):
     posts = []
     #Find user
-    #Need to get the list of users that user follow
+    cur_user = find_user(User(username=username,password="",email=""))
+    #Need to get the list of users that user follows
+    following = cur_user.following
+    print(following)
     #Get the list of posts from each user
+    for followed in following:
+        followed_posts = find_user_posts(followed)
+        print(followed_posts)
+        for postings in followed_posts:
+            posts.append(postings)
+        
     #Sort them by earliest time
     return posts
+
+@app.post("/updateProfilePic")
+def update_profile(user: ProfileModel):
+    # Find the user in the database
+    existing_user = find_user(User(username=user.username, password="", email=""))
+    if not existing_user:
+        return {"error": "User not found"}
+    
+    # Update the user's profile information
+    updated_user = update_profile_pic(user.username, user.profile_picture)
+    
+    return updated_user
+
+@app.post("/update_bio")
+def update_bio(user: ProfileModel):
+    # Find the user in the database
+    existing_user = find_user(User(username=user.username, password="", email=""))
+    if not existing_user:
+        return {"error": "User not found"}
+    
+    # Update the user's profile information
+    updated_user = update_user_bio(user.username, user.bio)
+    print(updated_user)
+    return updated_user

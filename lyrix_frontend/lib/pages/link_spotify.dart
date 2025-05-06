@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:lyrix_frontend/main.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:lyrix_frontend/pages/loginPage.dart';
 
 class LinkSpotify extends StatefulWidget {
   const LinkSpotify({super.key});

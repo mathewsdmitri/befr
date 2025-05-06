@@ -94,7 +94,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     headers: {"Content-Type": "application/json"},
                     body:body);
                   print("${response.statusCode}");
-                  AccountService accountService = new AccountService();
+                  AccountService accountService = AccountService();
                   accountService.sendLoginRequest(context, controllerUsername.text, controllerPassword.text);
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const Scaffold(

@@ -72,9 +72,9 @@ class _PostPageState extends State<PostPage> {
                 },
 
                 items: options.map((dynamic option) {
-                  final String track_name = option['track_name'];
-                  final String artist_name = option['artist_name'];
-                  final displayText = '$track_name\nBy $artist_name';
+                  final String trackName = option['track_name'];
+                  final String artistName = option['artist_name'];
+                  final displayText = '$trackName\nBy $artistName';
                   return DropdownMenuItem<String>(
                     
                     value: option['track_name'],
@@ -133,9 +133,9 @@ class _PostPageState extends State<PostPage> {
                   final String albumArtUrl = chosenTrack['album_art_url'];
                   //Retrieve artist name
                   final String artistName = chosenTrack?['artist_name'];
-                  final String? track = await selectedOption;
+                  final String? track = selectedOption;
                   const String url = 'http://localhost:8000/post'; // FastAPI endpoint
-                  String post_id = "";
+                  String postId = "";
                   try {
                     final response = await http.post(
                       Uri.parse(url),
@@ -155,7 +155,7 @@ class _PostPageState extends State<PostPage> {
                       print(response.body);
                       dynamic value = json.decode(response.body);
                       print(value);
-                      post_id = value;
+                      postId = value;
                     } else {
                       print("Error: ${response.statusCode} - ${response.body}");
                     }
@@ -168,7 +168,7 @@ class _PostPageState extends State<PostPage> {
                     artistName,            // artist name
                     albumArtUrl,            // Nullable album art
                     captionController.text, // User's caption
-                    post_id,
+                    postId,
                   );
 
                   Navigator.of(context).pop(); // Close dialog

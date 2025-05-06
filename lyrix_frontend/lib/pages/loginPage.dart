@@ -99,15 +99,12 @@ class _LoginPageState extends State<LoginPage>{
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: () async {
-                      print("Login button here");
-                      print("Username: ${username.text.trim()}");
-                      print("Password: ${password.text.trim()}");
 
                       setState(() {
                         isLoading = true;
                         errorMessage = "";
                       });
-                      AccountService accountService = new AccountService();
+                      AccountService accountService = AccountService();
                       bool success = await accountService.sendLoginRequest(
                         context, 
                         username.text.trim(), 

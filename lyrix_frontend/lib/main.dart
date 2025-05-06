@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:lyrix_frontend/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:lyrix_frontend/pages/homePage.dart';
 import 'package:lyrix_frontend/pages/postPage.dart';
@@ -7,9 +6,10 @@ import 'package:lyrix_frontend/pages/loginPage.dart';
 import 'package:lyrix_frontend/pages/profilePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-
+import 'package:lyrix_frontend/pages/profileEditPage.dart';
+import 'package:lyrix_frontend/search_service.dart';
 const storage = FlutterSecureStorage();
+AccountService accountService = AccountService();
 
 
 // Get UUID
@@ -27,17 +27,40 @@ Future<String?> getUser() async {
   return await storage.read(key: 'user_username');
 }
 
+//Get profile picture
+Future<String?> getProfilePicture() async {
+  return await storage.read(key: 'profile_picture');
+}
+
+Future<String?> getBio() async {
+  return await storage.read(key: 'bio');
+}
+
+Future<Map<String, dynamic>?> getUserData() async {
+  String? username = await getUser();
+  String? profilePicture = await getProfilePicture(); 
+  String? bio = await getBio();
+  return {
+    'username': username,
+    'profile_picture': profilePicture,
+    'bio': bio,
+  };
+}
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   final bool isLoggedIn = await checkLoginStatus();
-  print(getUser());
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 Future<bool> checkLoginStatus() async {
   const storage = FlutterSecureStorage();
   String? uuid = await storage.read(key: 'user_uuid');
+  if (uuid == null) {
+    return false; // User is not logged in
+  }
+  accountService.loadLoggedInUser(await getUser()); 
   return uuid != null; // If UUID exists, user is logged in
 }
 
@@ -66,6 +89,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/login": (context) => const LoginPage(),
         "/home": (context) => const MyHomePage(),
+        "/settings" : (context) => ProfileEditPage(), 
       }
     );
   }
@@ -87,17 +111,17 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Map<String, String?>> posts = [];
 
 
-  void addPost(String song, String artistName, String albumArtUrl, String caption, String post_id) {
+  void addPost(String song, String artistName, String albumArtUrl, String caption, String postId) {
     setState(() {
-      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption, 'post_id': post_id});
+      posts.add({'song': song, 'artistName': artistName, 'album_art_url': albumArtUrl, 'caption': caption, 'post_id': postId});
       });
   }
 
-  List<Widget> _widgetOptions(String username) {
+  List<Widget> _widgetOptions(String username, String? profilePicture, String? bio) {
   return <Widget>[
     HomePage(posts: posts, username:username),
     PostPage(addPost: addPost),
-    Profilepage(username: username),
+    Profilepage(username: username, profilePicture:profilePicture, bio: bio,),
   ];
   }
 
@@ -109,11 +133,16 @@ void _onItemTapped(int index) {
 
    @override
   Widget build(BuildContext context) {
-
-    return FutureBuilder<String?>(
-    future: getUser(),
+    
+    return FutureBuilder<Map?>(
+    future: getUserData(),
     builder: (context, snapshot) {
-      String username = snapshot.data ?? "Guest User"; //default to "Guest User" if null
+      if (snapshot.connectionState != ConnectionState.done || !snapshot.hasData || snapshot.data == null) {
+        return Center(child: CircularProgressIndicator()); // Show a loading indicator while waiting for data
+      }
+      String username = snapshot.data!['username'] ?? "Guest User"; // Default to "Guest User" if null
+      String? profilePicture = snapshot.data!['profile_picture'];
+      String? bio = snapshot.data!['bio']; 
     return Scaffold(
       appBar: AppBar(
         shape: Border(
@@ -136,9 +165,21 @@ void _onItemTapped(int index) {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {
+              // Open search text field
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: _widgetOptions(username).elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions(username, profilePicture, bio).elementAt(_selectedIndex), // Display the selected widget
       ),
       
       bottomNavigationBar: 

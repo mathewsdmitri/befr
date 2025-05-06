@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
 class Profilepage extends StatefulWidget {
   final String? username;
-
-  const Profilepage({super.key, required this.username});
-
+  final String? profilePicture;
+  final String? bio; 
+  const Profilepage({super.key, required this.username, required this.profilePicture, required this.bio});
   @override
   _ProfilepageState createState() => _ProfilepageState();
 }
@@ -22,12 +22,17 @@ class _ProfilepageState extends State<Profilepage> {
           padding: const EdgeInsets.all(20.0),
           child: Row(
             children: [
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage("assets/profile.png"),
+              // Profile Picture
+              CircleAvatar(
+                radius: 50, 
+                // If you have a profile picture in base64, decode it and set it here
+                backgroundImage: widget.profilePicture != null && widget.profilePicture!.isNotEmpty
+                    ? MemoryImage(base64Decode(widget.profilePicture!))
+                    : AssetImage("assets/profile.png") as ImageProvider,
                 backgroundColor: Color.fromARGB(255, 189, 189, 189),
               ),
               const SizedBox(width: 30), //boxes profile pic controlling the distance between pic and username
+              // Settings Icon that leads to profile settings page
 
             Expanded(
               child: Column(
@@ -36,18 +41,25 @@ class _ProfilepageState extends State<Profilepage> {
                   Text(widget.username ?? "User", // Updated to use passed username
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 5),
-                  const Text(
-                    "bio",  //should let users edit this for their bio
+                  Text(
+                    widget.bio ?? "Bio",  //should let users edit this for their bio
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
                       fontWeight: FontWeight.normal
                     ),
-                  )
+                  ),
+                  
                 ],
                 )
               )
-            ],
+            , IconButton(
+                icon: const Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  // Navigate to settings page
+                  Navigator.pushNamed(context, '/settings');
+                },
+              ),],
           ),
         ),
         Row(
