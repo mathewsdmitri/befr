@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/widgets.dart';
 import 'package:lyrix_frontend/pages/profileViewer.dart';
 
 //Helper function to get profile information of searched users

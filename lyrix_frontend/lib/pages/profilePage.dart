@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:lyrix_frontend/main.dart';
 class Profilepage extends StatefulWidget {
   final String? username;
   final String? profilePicture;

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:lyrix_frontend/main.dart';
 
 //Profile Viewer Page shows profile of other users
 // This page is used when searching for users and clicking on their profile

@@ -57,9 +57,10 @@ class _LinkSpotify extends State<LinkSpotify> {
                       var data = jsonDecode(response.body);
                       data = Uri.parse(data);
                       print(data);
-                      Navigator.pushReplacement(
+                      Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => MyHomePage()), // Navigate to LoginPage
+                            MaterialPageRoute(builder: (context) => MyHomePage()),
+                            (route) => false, //this removes all previous routes and navigates to homepage
                           );
                       if (!await launchUrl(data, mode: LaunchMode.externalApplication)) {
                         throw Exception('COULD NOT LOAD $response');

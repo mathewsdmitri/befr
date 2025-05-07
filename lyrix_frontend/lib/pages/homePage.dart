@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
       print("It didnt work :(");
     }
   }
+  @override
   Widget build(BuildContext context) {
     final currentPosts = _posts;  //store current list of posts
 
@@ -70,8 +71,8 @@ class _HomePageState extends State<HomePage> {
                 final trackName = post['track_name'] as String?;
                 final albumArtUrl = post['album_url'] as String?;
                 final artistName = post['artist_name'] as String?;
-                final post_author = post['username'] as String?;
-                final caption = post['caption'] as String?;
+                final postAuthor = post['username'] as String?;
+              
 
       return Container(
         padding: const EdgeInsets.all(10.0),
@@ -95,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                        post_author ?? "User",
+                        postAuthor ?? "User",
                         style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold)
                     ),
                   const SizedBox(height: 10.0),
@@ -230,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                   Column(
                     children: [
                       Text(
-                        post['caption'] ?? '',
+                        post['content'] ?? '',
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: Colors.white),
                         softWrap: true,
                         overflow: TextOverflow.visible,
