@@ -7,8 +7,8 @@ import 'dart:convert';
 class HomePage extends StatefulWidget {
   final List<Map<String, dynamic>> posts;  //lists of posts to display
   final String? username;  //Username of current user
-
-  const HomePage({super.key, required this.posts, required this.username});
+  final bool hasPostedToday; //Track if a post has already been posted
+  const HomePage({super.key, required this.posts, required this.username, required this.hasPostedToday});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,13 +18,17 @@ class _HomePageState extends State<HomePage> {
   final Map<int, bool> likedPost = {};  //tracks liked status per post by index
   final Map<int, int> numlikesmap = {};
   List<Map<String,dynamic>> _posts = [];
-
+  bool hasPosted = false; //Track if a post has already been posted
   @override
   void initState(){
   super.initState();
   _posts = widget.posts;
-  _fetchLatestPosts();    
+  hasPostedToday(widget.username!);
+  _fetchLatestPosts();
+  
+
   }
+
   Future<void> _fetchLatestPosts() async {
     final user = await getUser();
     if(user == null)return;
@@ -56,9 +60,13 @@ class _HomePageState extends State<HomePage> {
 
     //print(currentPosts);
     return Scaffold(
-      body: currentPosts.isEmpty
+      body: widget.hasPostedToday == false
+          ? const Center(child: Text("You must post a song today", style: TextStyle(color: Colors.white),))
+          : currentPosts.isEmpty
       //if no posts exists display no posts
           ? const Center(child: Text("No posts yet", style: TextStyle(color: Colors.white),))
+      //if user has not posted today, let user know that they must post a song 
+      //if user has posted today, show the feed of posts
       //if posts exist, show list of posts on feed
           : ListView.separated(
             //tracks number of posts
@@ -187,9 +195,9 @@ class _HomePageState extends State<HomePage> {
                             if (response.statusCode == 200) {
                               //print(response.body);
                               dynamic value = json.decode(response.body);
-                              print(numlikesmap[index]);
+                              //print(numlikesmap[index]);
                               numlikesmap[index] = value['num_likes'];
-                              print(numlikesmap[index]);
+                              //print(numlikesmap[index]);
                             }
 
                           } catch (e) {

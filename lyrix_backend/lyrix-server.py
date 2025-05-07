@@ -167,8 +167,8 @@ def callback(request:Request):
     token_data = response.json()
     access_token  = token_data["access_token"]
     refresh_token = token_data["refresh_token"]
-    print(access_token)
-    print(refresh_token)
+    #print(access_token)
+    #print(refresh_token)
     update_response = token_post_to_user(access_token = access_token, uuid = uuid, refresh_token = refresh_token)
     # Open the file in write mode
     return update_response
@@ -179,7 +179,7 @@ def getRecentlyPlayed(uuid):
     if cur_user.access_token == "":
         return []
     isExpired = check_access(cur_user)
-    print(isExpired)
+    #print(isExpired)
     response = spotify_client.refresh_access(isExpired, cur_user.access_token, cur_user.refresh_token)
     if isExpired:
         response = token_post_to_user(access_token=response['access_token'], uuid=uuid, refresh_token=response['refresh_token'])
@@ -196,7 +196,7 @@ def getRecentlyPlayed(uuid):
             exists = any(d.get("track_name") == track['track_name'] and d.get('artist_name') == track['artist_name']  for d in filtered)
             if not exists:
                 filtered.append(track)
-    print(filtered)
+    #print(filtered)
     return filtered
 
 @app.post("/post")
@@ -304,15 +304,15 @@ def get_follow_post(username:str):
     cur_user = find_user(User(username=username,password="",email=""))
     #Need to get the list of users that user follows
     following = cur_user.following
-    print(following)
+    #print(following)
     #Get the list of posts from each user
     for followed in following:
         followed_posts = find_user_posts(followed)
-        print(followed_posts)
+        #print(followed_posts)
         for postings in followed_posts:
-            posts.append(postings)
-        
+            posts.append(postings)    
     #Sort them by earliest time
+    posts.sort(key=lambda x: x['date_created'], reverse=True)
     return posts
 
 @app.post("/updateProfilePic")
@@ -336,5 +336,22 @@ def update_bio(user: ProfileModel):
     
     # Update the user's profile information
     updated_user = update_user_bio(user.username, user.bio)
-    print(updated_user)
+    #print(updated_user)
     return updated_user
+
+@app.get("/has_posted_today")
+def has_posted_today(username: str):
+    # Get the current date in Pacific Time
+    pacific_tz = ZoneInfo("America/Los_Angeles")
+    todays_date = datetime.now(pacific_tz).date()
+
+    # Find the user's posts
+    posts = find_user_posts(username)
+    posts.sort(key=lambda x: x['date_created'], reverse=True)
+
+    #Check if first post is from today
+    if posts:
+        first_post_time = posts[0]['date_created'].replace(tzinfo=timezone.utc).astimezone(pacific_tz).date()
+        if first_post_time == todays_date:
+            return {"has_posted_today": True}
+    return {"has_posted_today": False}

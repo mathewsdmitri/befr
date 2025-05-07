@@ -82,7 +82,7 @@ class AccountService {
       );
       if (response.statusCode == 200) {
         var data = response.body;
-        print(data);
+        //print(data);
         return true;
       } else {
         print("Error: ${response.statusCode} - ${response.body}");
@@ -104,7 +104,7 @@ class AccountService {
       );
       if (response.statusCode == 200) {
         var data = response.body;
-        print(data);
+        //print(data);
         dynamic value = json.decode(data);
         String bio = value['bio'];
         String profilePicture = value['profile_picture'];
@@ -137,7 +137,7 @@ Future<Map<String,dynamic>> loadUser(String? username) async {
       );
       if (response.statusCode == 200) {
         var data = response.body;
-        print(data);
+        //print(data);
         dynamic value = json.decode(data);
         String bio = value['bio'];
         String profilePicture = value['profile_picture'];
@@ -173,4 +173,27 @@ Future<Map<String,dynamic>> loadUser(String? username) async {
     }
   }
 
-
+Future <void> hasPostedToday(String? username) async {
+  const String url = 'http://localhost:8000/has_posted_today'; // FastAPI endpoint
+  try {
+    final response = await http.get(
+      Uri.parse('$url?username=$username'),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = response.body;
+      print(data);
+      dynamic value = json.decode(data);
+      print (value['has_posted_today']);
+      storage.write(key: 'has_posted_today', value: value['has_posted_today'].toString());
+    } else {
+      print("Error: ${response.statusCode} - ${response.body}");
+    
+    }
+  } catch (e) {
+    print("Request failed: $e");
+   
+  }
+}

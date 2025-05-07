@@ -36,14 +36,20 @@ Future<String?> getBio() async {
   return await storage.read(key: 'bio');
 }
 
+Future<bool> getHasPostedToday() async {
+  return await storage.read(key: 'has_posted_today') == 'true';
+}
+
 Future<Map<String, dynamic>?> getUserData() async {
   String? username = await getUser();
   String? profilePicture = await getProfilePicture(); 
   String? bio = await getBio();
+  bool hasPostedToday = await getHasPostedToday();
   return {
     'username': username,
     'profile_picture': profilePicture,
     'bio': bio,
+    'has_posted_today': hasPostedToday,
   };
 }
 
@@ -90,6 +96,10 @@ class MyApp extends StatelessWidget {
         "/login": (context) => const LoginPage(),
         "/home": (context) => const MyHomePage(),
         "/settings" : (context) => ProfileEditPage(), 
+        "/post":(context) => PostPage(addPost: (String song, String artistName, String albumArtUrl, String caption, String postId) {
+          // Handle the post submission here
+          // You can use the addPost function from MyHomePage to add the post to the list
+        }),
       }
     );
   }
@@ -117,9 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
       });
   }
 
-  List<Widget> _widgetOptions(String username, String? profilePicture, String? bio) {
+  List<Widget> _widgetOptions(String username, String? profilePicture, String? bio, bool hasPostedToday) {
   return <Widget>[
-    HomePage(posts: posts, username:username),
+    HomePage(posts: posts, username:username, hasPostedToday: hasPostedToday,),
     PostPage(addPost: addPost),
     Profilepage(username: username, profilePicture:profilePicture, bio: bio,),
   ];
@@ -143,6 +153,7 @@ void _onItemTapped(int index) {
       String username = snapshot.data!['username'] ?? "Guest User"; // Default to "Guest User" if null
       String? profilePicture = snapshot.data!['profile_picture'];
       String? bio = snapshot.data!['bio']; 
+      bool hasPostedToday = snapshot.data!['has_posted_today'] == true; // Convert to boolean
     return Scaffold(
       appBar: AppBar(
         shape: Border(
@@ -179,7 +190,7 @@ void _onItemTapped(int index) {
         ],
       ),
       body: Center(
-        child: _widgetOptions(username, profilePicture, bio).elementAt(_selectedIndex), // Display the selected widget
+        child: _widgetOptions(username, profilePicture, bio,hasPostedToday).elementAt(_selectedIndex), // Display the selected widget
       ),
       
       bottomNavigationBar: 
