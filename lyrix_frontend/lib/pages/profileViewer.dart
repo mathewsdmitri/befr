@@ -7,7 +7,8 @@ import 'package:lyrix_frontend/main.dart';
 class ProfileViewerPage extends StatefulWidget {
   final String? username;
   final String? profilePicture;
-  const ProfileViewerPage({super.key, required this.username, required this.profilePicture});
+  final String? bio; //bio of the user
+  const ProfileViewerPage({super.key, required this.username, required this.profilePicture, required this.bio});
 
   @override
   _ProfileViewerPageState createState() => _ProfileViewerPageState();
@@ -58,9 +59,9 @@ class _ProfileViewerPageState extends State<ProfileViewerPage> {
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       const SizedBox(height: 5),
-                      const Text(
-                        "bio",
-                        style: TextStyle(
+                      Text(
+                        widget.bio ?? "Bio",
+                        style: const TextStyle(
                           fontSize: 20,
                           color: Colors.white,
                           fontWeight: FontWeight.normal,

@@ -126,3 +126,51 @@ class AccountService {
     }
   }
 }
+Future<Map<String,dynamic>> loadUser(String? username) async {
+    const String url = 'http://localhost:8000/get_user'; // FastAPI endpoint
+    try {
+      final response = await http.get(
+        Uri.parse('$url?user=$username'),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+      if (response.statusCode == 200) {
+        var data = response.body;
+        print(data);
+        dynamic value = json.decode(data);
+        String bio = value['bio'];
+        String profilePicture = value['profile_picture'];
+        List<String> followers = List<String>.from(value['followers']);
+        List<String> following = List<String>.from(value['following']);
+        Map<String, dynamic> userData = {
+          'username': username,
+          'bio': bio,
+          'profile_picture': profilePicture,
+          'followers': followers,
+          'following': following,
+        };
+        return userData;
+      } else {
+        print("Error: ${response.statusCode} - ${response.body}");
+        return {          
+          'username': "",
+          'bio': "",
+          'profile_picture': "",
+          'followers': [],
+          'following': []
+          }; // Return empty map on error
+      }
+    } catch (e) {
+      print("Request failed: $e");
+      return {          
+          'username': "",
+          'bio': "",
+          'profile_picture': "",
+          'followers': [],
+          'following': []
+          }; // Return empty map on exception
+    }
+  }
+
+

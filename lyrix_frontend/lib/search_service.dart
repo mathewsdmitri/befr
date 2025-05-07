@@ -89,6 +89,7 @@ class CustomSearchDelegate extends SearchDelegate {
                           builder: (context) => ProfileViewerPage(
                             username: userInfo['username'],
                             profilePicture: userInfo['profile_picture'],
+                            bio: userInfo['bio'],
                           ),
                         ),
                       );
@@ -137,6 +138,7 @@ class CustomSearchDelegate extends SearchDelegate {
                           builder: (context) => ProfileViewerPage(
                             username: userInfo['username'],
                             profilePicture: userInfo['profile_picture'],
+                            bio: userInfo['bio'],
                           ),
                         ),
                       );

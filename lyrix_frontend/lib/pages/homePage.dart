@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:lyrix_frontend/account_service.dart';
 import 'package:lyrix_frontend/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -33,7 +34,13 @@ class _HomePageState extends State<HomePage> {
       final response = await http.get(Uri.parse(baseUrl));
       if(response.statusCode == 200){
         final List<dynamic> jsonPosts = jsonDecode(response.body);
+        _posts = List<Map<String, dynamic>>.from(jsonPosts);
+        for (int i = 0; i < _posts.length; i++) {
+          final userProfile = await loadUser(_posts[i]['username']);
+          _posts[i]['profile_picture'] = userProfile['profile_picture'];
+        }
         setState(() => _posts = List<Map<String, dynamic>>.from(jsonPosts));
+
       }
       else{
         print("Failed: ${response.statusCode} ${response.body}");
@@ -45,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   }
   Widget build(BuildContext context) {
     final currentPosts = _posts;  //store current list of posts
+
     //print(currentPosts);
     return Scaffold(
       body: currentPosts.isEmpty
@@ -56,12 +64,14 @@ class _HomePageState extends State<HomePage> {
               itemCount: currentPosts.length,
 
             //each post in the list will get a post container containing post info
-              itemBuilder: (context, index) {
+              itemBuilder: (context, index)  {
                 final post = currentPosts[index];
+                final profile_picture = post['profile_picture'] as String?;
                 final trackName = post['track_name'] as String?;
                 final albumArtUrl = post['album_url'] as String?;
                 final artistName = post['artist_name'] as String?;
                 final post_author = post['username'] as String?;
+                final caption = post['caption'] as String?;
 
       return Container(
         padding: const EdgeInsets.all(10.0),
@@ -78,7 +88,9 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   CircleAvatar(
                     radius:23,
-                    backgroundImage: AssetImage("assets/profile.png"),
+                    backgroundImage:  profile_picture != null && profile_picture.isNotEmpty
+                      ? MemoryImage(base64Decode(profile_picture))
+                      : const AssetImage("assets/profile.png") as ImageProvider,
                     backgroundColor: Colors.grey[400],
                   ),
                   const SizedBox(width: 8),
